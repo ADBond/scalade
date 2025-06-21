@@ -1,25 +1,27 @@
 import { Card } from './card';
+import { Pack } from './pack';
+import { Player } from './player';
 
 export class GameState {
-  public players: Map<string, Card[]> = new Map();
-  public pile: Card[] = [];
+  public players: Player[] = [];
+  public pack: Pack = new Pack();
 
   constructor(public playerNames: string[]) {
-    for (const name of playerNames) {
-      this.players.set(name, []);
-    }
+    // for (const name of playerNames) {
+    //   this.players.set(name, []);
+    // }
   }
 
-  giveCardToPlayer(player: string, card: Card) {
-    this.players.get(player)?.push(card);
+  giveCardToPlayer(playerIndex: number, card: Card) {
+    this.players[playerIndex].hand.push(card);
   }
 
-  getPlayerHand(player: string): Card[] {
-    return this.players.get(player) ?? [];
+  getPlayerHand(playerIndex: number): Card[] {
+    return this.players[playerIndex].hand ?? [];
   }
 
-  playCard(player: string, card: Card): boolean {
-    const hand = this.players.get(player);
+  playCard(playerIndex: number, card: Card): boolean {
+    const hand = this.getPlayerHand(playerIndex);
     if (!hand) return false;
 
     const index = hand.findIndex(
@@ -27,7 +29,7 @@ export class GameState {
     );
     if (index >= 0) {
       const [playedCard] = hand.splice(index, 1);
-      this.pile.push(playedCard);
+    //   this.pile.push(playedCard);
       return true;
     }
     return false;

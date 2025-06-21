@@ -3,7 +3,7 @@ import { Card, RANKS, SUITS } from './card';
 export class Pack {
   private cards: Card[] = [];
 
-  constructor() {
+  constructor(public minRank: number = 4) {
     this.reset();
   }
 
@@ -11,7 +11,11 @@ export class Pack {
     this.cards = [];
     for (const suit of SUITS) {
       for (const rank of RANKS) {
-        this.cards.push(new Card(suit, rank));
+        let card = new Card(suit, rank)
+        if (rank.name == "A") {
+            card.rank.ttRankAbove = this.minRank;
+        }
+        this.cards.push();
       }
     }
     this.shuffle();
