@@ -1,10 +1,12 @@
-class Card {
-  constructor(public suit: string, public rank: string) { }
+import { Game } from './game/game';
 
-  toString(): string {
-    return `${this.rank} of ${this.suit}`;
-  }
+const game = new Game(['Alice', 'Bob']);
+console.log(game.getGameState().getPlayerHand('Alice'));
+
+const cardToPlay = game.getGameState().getPlayerHand('Alice')[0];
+if (cardToPlay) {
+  const success = game.playCard('Alice', cardToPlay);
+  console.log(`Alice played ${cardToPlay.toString()}: ${success}`);
 }
 
-const card = new Card('Hearts', 'A');
-console.log(card.toString());
+console.log('Pile:', game.getGameState().pile.map(c => c.toString()));
