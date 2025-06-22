@@ -1,5 +1,7 @@
 import { createCardElement, createSuitElement } from './ui';
-import { GameState, PlayerName, ScoreDetails } from './types';
+import { Game } from '../game/game';
+import { GameStateForUI, ScoreDetails } from '../game/gamestate';
+import { PlayerName } from '../game/player';
 
 function constructScoreBreakdownText(scoreDetails: ScoreDetails): string {
   return ['player', 'comp1', 'comp2'].map(name => {
@@ -20,13 +22,13 @@ function constructScoreBreakdownText(scoreDetails: ScoreDetails): string {
   }).join(", ");
 }
 
-export function renderState(state: GameState): void {
+export function renderState(state: GameStateForUI): void {
   console.log(state);
 
   const handEl = document.getElementById('player-hand')!;
   handEl.innerHTML = '';
   state.hands.player.forEach(card => {
-    handEl.appendChild(createCardElement(card, playCard));
+    handEl.appendChild(createCardElement(card.toStringShort(), playCard));
   });
 
   ['player', 'comp1', 'comp2'].forEach(p => {
@@ -34,7 +36,7 @@ export function renderState(state: GameState): void {
     playedEl.innerHTML = '';
     const card = state.played[p as PlayerName];
     if (card) {
-      const el = createCardElement(card);
+      const el = createCardElement(card.toStringShort());
       el.classList.add('played-card');
       playedEl.appendChild(el);
     }
@@ -45,7 +47,7 @@ export function renderState(state: GameState): void {
     prevEl.innerHTML = '';
     const card = state.previous[p as PlayerName];
     if (card) {
-      const el = createCardElement(card);
+      const el = createCardElement(card.toStringShort());
       el.classList.add('played-card');
       prevEl.appendChild(el);
     }
@@ -68,7 +70,7 @@ export function renderState(state: GameState): void {
     const ladderEl = document.getElementById(`ladder-${p}`)!;
     ladderEl.innerHTML = '';
     state.ladder[p as PlayerName].forEach(card => {
-      ladderEl.appendChild(createCardElement(card));
+      ladderEl.appendChild(createCardElement(card.toStringShort()));
     });
   });
 
@@ -76,8 +78,8 @@ export function renderState(state: GameState): void {
   const deadEl = document.getElementById("dead-display")!;
   penultimateEl.innerHTML = '';
   deadEl.innerHTML = '';
-  state.penultimate.forEach(card => penultimateEl.appendChild(createCardElement(card)));
-  state.dead.forEach(card => deadEl.appendChild(createCardElement(card)));
+  state.penultimate.forEach(card => penultimateEl.appendChild(createCardElement(card.toStringShort())));
+  state.dead.forEach(card => deadEl.appendChild(createCardElement(card.toStringShort())));
 
   document.getElementById('scores')!.innerText =
     `You: ${state.scores.player}, comp 1: ${state.scores.comp1}, comp 2: ${state.scores.comp2}`;
@@ -121,9 +123,11 @@ function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export async function fetchState(): Promise<void> {
-  const res = await fetch('/game_state');
-  const state: GameState = await res.json();
+export async function fetchState(game: Game): Promise<void> {
+  // TODO: just for something to look at for time being:
+  const handEl = document.getElementById('player-hand')!;
+  handEl.appendChild(createCardElement("4D"));
+  const state: GameStateForUI = game.getGameStateForUI();
   renderState(state);
 }
 
@@ -133,12 +137,12 @@ export async function playCard(card: string): Promise<void> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ card })
   });
-  const state: GameState = await res.json();
+  const state: GameStateForUI = await res.json();
   renderState(state);
 }
 
 export async function incrementState(): Promise<void> {
   const res = await fetch('/increment_state', { method: 'POST' });
-  const state: GameState = await res.json();
+  const state: GameStateForUI = await res.json();
   renderState(state);
 }

@@ -1,4 +1,4 @@
-import { Card, Rank, Suit, GameState, ScoreDetails, PlayerName } from './types';
+import { Rank, Suit } from './types';
 
 const cardMap: Record<Rank, number> = {
   '2': 0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5,

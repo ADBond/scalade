@@ -1,6 +1,6 @@
 import { Card } from './card';
 import { Pack } from './pack';
-import { Player } from './player';
+import { Player, PlayerName } from './player';
 
 export class GameState {
   public players: Player[] = [];
@@ -38,4 +38,55 @@ export class GameState {
     }
     return false;
   }
+
+  getStateForUI(): GameStateForUI {
+    return {
+      // TODO: probably only need one hand, don't fix index
+      hands: {comp1: this.getPlayerHand(1), player: this.getPlayerHand(0), comp2: this.getPlayerHand(2), neutral: []},
+      // TODO: placeholders:
+      played: {comp1: null, player: null, comp2: null, neutral: null},
+      previous: {comp1: null, player: null, comp2: null, neutral: null},
+      ladder: {comp1: [], player: [], comp2: [], neutral: []},
+      scores: {comp1: 0, player: 0, comp2: 0, neutral: 0},
+      scores_previous: {comp1: 0, player: 0, comp2: 0, neutral: 0},
+      score_details: {},
+      holding_bonus: {comp1: {}, player: {}, comp2: {}, neutral: {}},
+      dead: [],
+      penultimate: [],
+      escalations: -1,
+      hand_number: -1,
+      trumps: "S",
+      advance: "C",
+      game_state: "play_card",
+      whose_turn: "human",
+    }
+  }
+}
+
+export interface ScoreDetails {
+  [player: string]: {
+    ladder_bonuses: Record<string, { rank_base_value: number; holding_bonus_multiplier: number }>;
+    final_trick_bonus: number;
+  };
+}
+
+
+export interface GameStateForUI {
+  hands: Record<PlayerName, Card[]>;
+  played: Record<PlayerName, Card | null>;
+  previous: Record<PlayerName, Card | null>;
+  holding_bonus: Record<PlayerName, Record<string, number>>;
+  ladder: Record<PlayerName, Card[]>;
+  penultimate: Card[];
+  dead: Card[];
+  scores: Record<PlayerName, number>;
+  scores_previous: Record<PlayerName, number>;
+  score_details: ScoreDetails;
+  escalations: number;
+  hand_number: number;
+  // TODO: suits:
+  trumps: string;
+  advance: string;
+  game_state: 'play_card' | 'trick_complete' | 'hand_complete';
+  whose_turn: 'human' | 'comp1' | 'comp2';
 }

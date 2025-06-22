@@ -1,5 +1,5 @@
 import { Pack } from './pack';
-import { GameState } from './gamestate';
+import { GameState, GameStateForUI } from './gamestate';
 import { Card } from './card';
 
 export class Game {
@@ -22,6 +22,10 @@ export class Game {
 
   getGameState(): GameState {
     return this.state;
+  }
+
+  getGameStateForUI(): GameStateForUI {
+    return this.state.getStateForUI();
   }
 
   playCard(player: string, card: Card): boolean {

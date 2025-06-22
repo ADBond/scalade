@@ -4,12 +4,20 @@ export class Rank {
     toString(): string {
         return this.name;
     }
+
+    toStringShort(): string {
+        return this.name[0];
+    }
 }
 export class Suit {
     constructor(public name: string, public rankForTrumpPreference: number) { }
 
     toString(): string {
         return this.name;
+    }
+
+    toStringShort(): string {
+        return this.name[0];
     }
 }
 
@@ -18,6 +26,10 @@ export class Card {
 
     toString(): string {
         return `${this.rank.toString()} of ${this.suit.toString()}`;
+    }
+
+    toStringShort(): string {
+        return `${this.rank.toStringShort()}${this.suit.toStringShort()}`;
     }
 }
 
