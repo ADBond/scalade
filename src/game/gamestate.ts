@@ -9,9 +9,9 @@ export class GameState {
   public currentPlayerIndex: number;
 
   constructor(public playerNames: string[]) {
-    // for (const name of playerNames) {
-    //   this.players.set(name, []);
-    // }
+    for (const name of playerNames) {
+      this.players.push(new Player(name, 'player', [], 0));
+    }
     this.dealerIndex = 0;
     this.currentPlayerIndex = 0;
   }

@@ -5,6 +5,7 @@ export class Pack {
 
   constructor(public minRank: number = 4) {
     this.reset();
+    // console.log(this.cards);
   }
 
   reset() {
@@ -15,7 +16,9 @@ export class Pack {
         if (rank.name == "A") {
             card.rank.ttRankAbove = this.minRank;
         }
-        this.cards.push();
+        this.cards.push(card);
+        // console.log("The cards");
+        // console.log(this.cards)
       }
     }
     this.shuffle();

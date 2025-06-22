@@ -11,11 +11,14 @@ export class Game {
     this.dealInitialCards();
   }
 
-  private dealInitialCards(count: number = 5) {
+  private dealInitialCards(count: number = 12) {
     for (let i = 0; i < count; i++) {
-      for (const player of this.state.players) {
+      // for (const player of this.state.players) {
+        // TODO: loop this properly!
+      for (let playerIndex = 0; playerIndex < 3; playerIndex++) {
         const card = this.pack.draw();
-        // if (card) this.state.giveCardToPlayer(playerIndex, card);
+        console.log(card)
+        if (card) this.state.giveCardToPlayer(playerIndex, card);
       }
     }
   }
