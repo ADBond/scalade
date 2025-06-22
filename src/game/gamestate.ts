@@ -5,11 +5,15 @@ import { Player } from './player';
 export class GameState {
   public players: Player[] = [];
   public pack: Pack = new Pack();
+  public dealerIndex: number;
+  public currentPlayerIndex: number;
 
   constructor(public playerNames: string[]) {
     // for (const name of playerNames) {
     //   this.players.set(name, []);
     // }
+    this.dealerIndex = 0;
+    this.currentPlayerIndex = 0;
   }
 
   giveCardToPlayer(playerIndex: number, card: Card) {
