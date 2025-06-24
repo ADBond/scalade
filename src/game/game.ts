@@ -12,7 +12,7 @@ export class Game {
   }
 
   private dealCards(count: number = 12) {
-    const pack = this.pack.filterOut(this.state.ladder_cards);
+    const pack = this.pack.filterOut(this.state.ladderCards);
     Pack.shuffle(pack);
     for (let i = 0; i < count; i++) {
       // for (const player of this.state.players) {
@@ -22,6 +22,7 @@ export class Game {
         if (card) this.state.giveCardToPlayer(playerIndex, card);
       }
     }
+    this.state.trumpSuit = this.state.trumpSuitFromLadders();
   }
 
   getGameState(): GameState {

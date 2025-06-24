@@ -94,15 +94,15 @@ export function renderState(state: GameStateForUI): void {
   document.getElementById('scores-previous')!.innerText =
     `prev: (You: ${state.scores_previous.player}, comp 1: ${state.scores_previous.comp1}, comp 2: ${state.scores_previous.comp2})`;
 
-  document.getElementById('score-breakdown')!.innerText =
-    constructScoreBreakdownText(state.score_details);
+  // document.getElementById('score-breakdown')!.innerText =
+  //   constructScoreBreakdownText(state.score_details);
 
   document.getElementById('escalations')!.innerText =
     `Escalations: ${state.escalations} (hand #${state.hand_number})`;
 
   const trumpEl = document.getElementById('trumps')!;
   trumpEl.innerHTML = '';
-  trumpEl.appendChild(createSuitElement(state.trumps));
+  trumpEl.appendChild(createSuitElement(state.trumps ? state.trumps.toStringShort() : ""));
 
   const advanceEl = document.getElementById('advance')!;
   advanceEl.innerHTML = '';
