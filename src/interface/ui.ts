@@ -1,4 +1,6 @@
-import { Rank, Suit } from './types';
+type Suit = 'S' | 'H' | 'C' | 'D';
+type Rank = '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | 'T' | 'J' | 'Q' | 'K' | 'A';
+
 
 const cardMap: Record<Rank, number> = {
   '2': 0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5,
