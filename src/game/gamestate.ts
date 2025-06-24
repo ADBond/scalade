@@ -7,6 +7,7 @@ export class GameState {
   public pack: Pack = new Pack();
   public dealerIndex: number;
   public currentPlayerIndex: number;
+  public ladders: [Card, Player | null][] = this.getStartingLadders();
 
   constructor(public playerNames: string[]) {
     for (const name of playerNames) {
@@ -14,6 +15,18 @@ export class GameState {
     }
     this.dealerIndex = 0;
     this.currentPlayerIndex = 0;
+  }
+
+  getStartingLadders(): [Card, Player | null][] {
+    return ["5D", "6H", "7S", "8C"].map(
+      (card_str => [this.pack.getCard(card_str), null])
+    );
+  }
+
+  get ladder_cards(): Card[] {
+    return this.ladders.map(
+      ([card, _player]) => card
+    )
   }
 
   giveCardToPlayer(playerIndex: number, card: Card) {

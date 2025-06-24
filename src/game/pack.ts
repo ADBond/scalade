@@ -4,12 +4,11 @@ export class Pack {
   private cards: Card[] = [];
 
   constructor(public minRank: number = 4) {
-    this.reset();
-    // console.log(this.cards);
+    this.cards = this.getFullPack();
   }
 
-  reset() {
-    this.cards = [];
+  getFullPack(): Card[] {
+    const cards = [];
     for (const suit of SUITS) {
       for (const rank of RANKS) {
         if (rank.trickTakingRank < this.minRank) {
@@ -19,27 +18,40 @@ export class Pack {
         if (rank.name == "A") {
             card.rank.ttRankAbove = this.minRank;
         }
-        this.cards.push(card);
-        // console.log("The cards");
-        // console.log(this.cards)
+        cards.push(card);
       }
     }
-    this.shuffle();
+    return cards;
   }
 
-  shuffle() {
-    for (let i = this.cards.length - 1; i > 0; i--) {
+  getCard(card_string: string): Card {
+    // define it here so we definitely have correct ttRankAbove
+    for (const card of this.getFullPack()) {
+      if (card.toStringShort() == card_string) {
+        return card;
+      }
+    }
+    throw new Error(`Failed to locate card: ${card_string}`);
+  }
+
+  static shuffle(cards: Card[]) {
+    for (let i = cards.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+      [cards[i], cards[j]] = [cards[j], cards[i]];
     }
   }
 
-  draw(): Card | undefined {
-    return this.cards.pop();
-  }
+  // draw(): Card | undefined {
+  //   return this.cards.pop();
+  // }
 
   isEmpty(): boolean {
     return this.cards.length === 0;
+  }
+
+  filterOut(cards: Card[]): Card[] {
+    const filteredCards = this.cards.filter((card: Card) => !cards.some(c => Card.cardEquals(card, c)));
+    return filteredCards;
   }
 
   get count(): number {

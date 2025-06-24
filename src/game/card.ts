@@ -8,6 +8,10 @@ export class Rank {
     toStringShort(): string {
         return this.name[0];
     }
+
+    static rankEquals(r1: Rank, r2: Rank): boolean {
+        return r1.name == r2.name;
+    }
 }
 export class Suit {
     constructor(public name: string, public rankForTrumpPreference: number) { }
@@ -18,6 +22,10 @@ export class Suit {
 
     toStringShort(): string {
         return this.name[0];
+    }
+
+    static suitEquals(s1: Suit, s2: Suit): boolean {
+        return s1.name == s2.name;
     }
 }
 
@@ -30,6 +38,10 @@ export class Card {
 
     toStringShort(): string {
         return `${this.rank.toStringShort()}${this.suit.toStringShort()}`;
+    }
+
+    static cardEquals(c1: Card, c2: Card): boolean {
+        return Rank.rankEquals(c1.rank, c2.rank) && Suit.suitEquals(c1.suit, c2.suit);
     }
 }
 

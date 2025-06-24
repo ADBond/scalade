@@ -8,16 +8,17 @@ export class Game {
 
   constructor(playerNames: string[]) {
     this.state = new GameState(playerNames);
-    this.dealInitialCards();
+    this.dealCards();
   }
 
-  private dealInitialCards(count: number = 12) {
+  private dealCards(count: number = 12) {
+    const pack = this.pack.filterOut(this.state.ladder_cards);
+    Pack.shuffle(pack);
     for (let i = 0; i < count; i++) {
       // for (const player of this.state.players) {
         // TODO: loop this properly!
       for (let playerIndex = 0; playerIndex < 3; playerIndex++) {
-        const card = this.pack.draw();
-        console.log(card)
+        const card = pack.pop();
         if (card) this.state.giveCardToPlayer(playerIndex, card);
       }
     }
