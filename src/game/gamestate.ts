@@ -1,6 +1,7 @@
 import { Card } from './card';
 import { Pack } from './pack';
 import { LadderPosition, Player, PlayerName } from './player';
+import { randomAgent } from './agent/random';
 
 export class GameState {
   public players: Player[] = [];
@@ -11,7 +12,7 @@ export class GameState {
 
   constructor(public playerNames: string[]) {
     for (const name of playerNames) {
-      this.players.push(new Player(name, 'player', [], 0));
+      this.players.push(new Player(name, 'player', [], 0, randomAgent));
     }
     this.dealerIndex = 0;
     this.currentPlayerIndex = 0;
