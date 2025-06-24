@@ -1,6 +1,6 @@
 import { Card } from './card';
 import { Pack } from './pack';
-import { Player, PlayerName } from './player';
+import { LadderPosition, Player, PlayerName } from './player';
 
 export class GameState {
   public players: Player[] = [];
@@ -55,19 +55,19 @@ export class GameState {
   getStateForUI(): GameStateForUI {
     return {
       // TODO: probably only need one hand, don't fix index
-      hands: {comp1: this.getPlayerHand(1), player: this.getPlayerHand(0), comp2: this.getPlayerHand(2), neutral: []},
+      hands: {comp1: this.getPlayerHand(1), player: this.getPlayerHand(0), comp2: this.getPlayerHand(2)},
       // TODO: placeholders:
-      played: {comp1: null, player: null, comp2: null, neutral: null},
-      previous: {comp1: null, player: null, comp2: null, neutral: null},
+      played: {comp1: null, player: null, comp2: null},
+      previous: {comp1: null, player: null, comp2: null},
       ladder: {
         comp1: [], player: [], comp2: [],
         // TODO: something similar for the players
         neutral: this.ladders.filter(([_card, player]) => player === null).map(([card, _player]) => card)
       },
-      scores: {comp1: 0, player: 0, comp2: 0, neutral: 0},
-      scores_previous: {comp1: 0, player: 0, comp2: 0, neutral: 0},
+      scores: {comp1: 0, player: 0, comp2: 0},
+      scores_previous: {comp1: 0, player: 0, comp2: 0},
       score_details: {},
-      holding_bonus: {comp1: {}, player: {}, comp2: {}, neutral: {}},
+      holding_bonus: {comp1: {}, player: {}, comp2: {}},
       dead: [],
       penultimate: [],
       escalations: -1,
@@ -93,7 +93,7 @@ export interface GameStateForUI {
   played: Record<PlayerName, Card | null>;
   previous: Record<PlayerName, Card | null>;
   holding_bonus: Record<PlayerName, Record<string, number>>;
-  ladder: Record<PlayerName, Card[]>;
+  ladder: Record<LadderPosition, Card[]>;
   penultimate: Card[];
   dead: Card[];
   scores: Record<PlayerName, number>;
