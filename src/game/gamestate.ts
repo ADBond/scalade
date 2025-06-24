@@ -59,7 +59,11 @@ export class GameState {
       // TODO: placeholders:
       played: {comp1: null, player: null, comp2: null, neutral: null},
       previous: {comp1: null, player: null, comp2: null, neutral: null},
-      ladder: {comp1: [], player: [], comp2: [], neutral: []},
+      ladder: {
+        comp1: [], player: [], comp2: [],
+        // TODO: something similar for the players
+        neutral: this.ladders.filter(([_card, player]) => player === null).map(([card, _player]) => card)
+      },
       scores: {comp1: 0, player: 0, comp2: 0, neutral: 0},
       scores_previous: {comp1: 0, player: 0, comp2: 0, neutral: 0},
       score_details: {},
