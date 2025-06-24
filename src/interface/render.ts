@@ -26,8 +26,16 @@ export function renderState(state: GameStateForUI): void {
   console.log(state);
 
   const handEl = document.getElementById('player-hand')!;
+  const playerHand = state.hands.player;
+  playerHand.sort(
+    (c1, c2) => (
+      // 100 big enough to ensure we always sort by suit first
+      100*(c1.suit.rankForTrumpPreference - c2.suit.rankForTrumpPreference) +
+      (c1.rank.trickTakingRank - c2.rank.trickTakingRank)
+    )
+  );
   handEl.innerHTML = '';
-  state.hands.player.forEach(card => {
+  playerHand.forEach(card => {
     handEl.appendChild(createCardElement(card.toStringShort(), playCard));
   });
 

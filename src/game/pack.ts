@@ -12,6 +12,9 @@ export class Pack {
     this.cards = [];
     for (const suit of SUITS) {
       for (const rank of RANKS) {
+        if (rank.trickTakingRank < this.minRank) {
+          continue;
+        }
         let card = new Card(suit, rank)
         if (rank.name == "A") {
             card.rank.ttRankAbove = this.minRank;
