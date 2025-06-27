@@ -8,7 +8,27 @@ export class Game {
 
   constructor(playerNames: string[]) {
     this.state = new GameState(playerNames);
-    this.dealCards();
+    this.increment();
+  }
+
+  public increment() {
+    switch (this.state.currentState) {
+      case 'initialiseGame':
+        this.dealCards();
+        this.state.currentState = 'playCard';
+        break;
+      case 'playCard':
+        break;
+      case 'trickComplete':
+        break;
+      case 'handComplete':
+        break;
+      case 'gameComplete':
+        break;
+      default:
+        // error!
+    }
+    
   }
 
   private dealCards(count: number = 12) {

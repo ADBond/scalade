@@ -1,7 +1,10 @@
 import { Card, Suit } from './card';
 import { Pack } from './pack';
 import { LadderPosition, Player, PlayerName } from './player';
+import { Agent } from './agent/agent';
 import { randomAgent } from './agent/random';
+
+type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
 
 export class GameState {
   public players: Player[] = [];
@@ -10,10 +13,17 @@ export class GameState {
   public currentPlayerIndex: number;
   public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit | null = null;
+  public currentState: state = 'initialiseGame';
 
   constructor(public playerNames: string[]) {
+    // TODO: more / flexi ??
+    const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
+    const agents: Agent[] = ['human', randomAgent, randomAgent]
+    this.players = playerNames.map(
+      (name, i) => new Player(name, playerConfig[i], [], 0, agents[i])
+    )
     for (const name of playerNames) {
-      this.players.push(new Player(name, 'player', [], 0, randomAgent));
+      this.players.push();
     }
     this.dealerIndex = 0;
     this.currentPlayerIndex = 0;
