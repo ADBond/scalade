@@ -30,7 +30,7 @@ export class Suit {
 }
 
 export class Card {
-    constructor(public suit: Suit, public rank: Rank) { }
+    constructor(public suit: Suit, public rank: Rank, public index: number) { }
 
     toString(): string {
         return `${this.rank.toString()} of ${this.suit.toString()}`;

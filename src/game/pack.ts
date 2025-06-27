@@ -9,16 +9,18 @@ export class Pack {
 
   getFullPack(): Card[] {
     const cards = [];
-    for (const suit of SUITS) {
-      for (const rank of RANKS) {
-        if (rank.trickTakingRank < this.minRank) {
-          continue;
-        }
-        let card = new Card(suit, rank)
-        if (rank.name == "A") {
-            card.rank.ttRankAbove = this.minRank;
-        }
+    let index = 0;
+    for (const rank of RANKS) {
+      if (rank.trickTakingRank < this.minRank) {
+        continue;
+      }
+      if (rank.name == "A") {
+          rank.ttRankAbove = this.minRank;
+      }
+      for (const suit of SUITS) {
+        let card = new Card(suit, rank, index)
         cards.push(card);
+        index++;
       }
     }
     return cards;

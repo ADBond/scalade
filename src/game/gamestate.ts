@@ -39,12 +39,14 @@ export class GameState {
   }
 
   public increment() {
-    switch (this.currentState) {
+    const state = this.currentState;
+    switch (state) {
       case 'initialiseGame':
         this.dealCards(this.pack);
         this.currentState = 'playCard';
         break;
       case 'playCard':
+        this.computerMove();
         break;
       case 'trickComplete':
         this.resetTrick();
@@ -64,6 +66,32 @@ export class GameState {
     );
   }
 
+  get currentLedSuit(): Suit | null {
+    const trickInProgressCards = this.trickInProgressCards;
+    if (trickInProgressCards.length == 0){
+      return null;
+    }
+    return trickInProgressCards[0].suit;
+  }
+
+  get legalMoveIndices(): number[] {
+    let legalCards: Card[];
+    const hand = this.currentPlayerHand;
+    const ledSuit = this.currentLedSuit;
+    if (ledSuit === null) {
+      // if there is no card led, anything is legal
+      legalCards = hand;
+    } else {
+      // must follow suit if we can
+      legalCards = hand.filter(card => Suit.suitEquals(card.suit, ledSuit));
+      if (legalCards.length == 0) {
+        // if we have no cards of led suit, anything is legal
+        legalCards = hand;
+      }
+    }
+    return legalCards.map(card => card.index);
+  }
+
   private getPlayedCard(name: PlayerName): Card | null {
     const playerPlayedCards = this.trickInProgress.filter(
       ([_card, player]) => player.name == name
@@ -76,6 +104,14 @@ export class GameState {
       console.log(`getPlayedCard error: ${playerPlayedCards}`);
     }
     return null;
+  }
+
+  get currentPlayer(): Player {
+    return this.players[this.currentPlayerIndex];
+  }
+
+  get currentPlayerHand(): Card[] {
+    return this.currentPlayer.hand;
   }
 
   getStartingLadders(): [Card, number | null][] {
@@ -170,6 +206,22 @@ export class GameState {
     );
   }
 
+  private computerMove() {
+    const agent = this.currentPlayer.agent
+    if (agent == 'human') {
+      // TODO: error
+      console.log("Trying to move for a human")
+      return
+    }
+
+    const currentLegalMoves = this.legalMoveIndices;
+    const cardToPlayIndex = agent.chooseMove(this, currentLegalMoves);
+
+    // TODO: fix playCard
+    // this.playCard(cardToPlayIndex);
+    return cardToPlayIndex;
+  }
+
   private resetTrick() {
     // set trick winner as new current player
     const winnerPlayerIndex = this.trickWinnerPlayerIndex;
@@ -220,6 +272,7 @@ export class GameState {
   }
 
   playCard(playerIndex: number, card: Card): boolean {
+    // TODO: align with what we want to do here
     const hand = this.getPlayerHand(playerIndex);
     if (!hand) return false;
 

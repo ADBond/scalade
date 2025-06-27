@@ -10,8 +10,8 @@ export class Player {
         public displayName: string,
         public name: PlayerName,
         public hand: Card[],
-        score: number,
+        public score: number,
         // TODO: best way to handle humans?
-        agent: Agent,
+        public agent: Agent,
     ) { }
 }
