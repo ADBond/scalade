@@ -1,6 +1,6 @@
 import { Card, Suit } from './card';
 import { Pack } from './pack';
-import { LadderPosition, Player, PlayerName } from './player';
+import { LadderPosition, Player, PlayerName, playerNameArr } from './player';
 import { Agent } from './agent/agent';
 import { randomAgent } from './agent/random';
 
@@ -15,7 +15,7 @@ export class GameState {
   public finalTrickWinnerIndex: number;
   public cardsPerHand: number = 12;  // TODO: dynamic
   public trickIndex: number;
-  public trickInProgress: Card[] = [];
+  public trickInProgress: [Card, Player][] = [];
   public penultimateCards: Card[] = [];
   public ladders: [Card, number | null][] = this.getStartingLadders();
   public trumpSuit: Suit | null = null;
@@ -58,6 +58,26 @@ export class GameState {
     }
   }
 
+  get trickInProgressCards(): Card[] {
+    return this.trickInProgress.map(
+      ([card, _player]) => card
+    );
+  }
+
+  private getPlayedCard(name: PlayerName): Card | null {
+    const playerPlayedCards = this.trickInProgress.filter(
+      ([_card, player]) => player.name == name
+    );
+    const numCards = playerPlayedCards.length;
+    if (numCards == 1){
+      return playerPlayedCards[0][0];
+    }
+    if (numCards > 1) {
+      console.log(`getPlayedCard error: ${playerPlayedCards}`);
+    }
+    return null;
+  }
+
   getStartingLadders(): [Card, number | null][] {
     return ["5D", "6H", "7S", "8C"].map(
       (card_str => [this.pack.getCard(card_str), null])
@@ -95,7 +115,7 @@ export class GameState {
   }
 
   private updateLadders(winnerIndex: number) {
-    let cardsToUpdateLaddersFrom = this.trickInProgress;
+    let cardsToUpdateLaddersFrom = this.trickInProgressCards;
     // penultimate trick - we get the spoils:
     if (this.isPenultimateTrick) {
       cardsToUpdateLaddersFrom = cardsToUpdateLaddersFrom.concat(this.penultimateCards);
@@ -216,11 +236,13 @@ export class GameState {
 
   getStateForUI(): GameStateForUI {
     return {
-      // TODO: probably only need one hand, don't fix index
-      hands: {comp1: this.getPlayerHand(1), player: this.getPlayerHand(0), comp2: this.getPlayerHand(2)},
+      // TODO: don't fix index of human player, maybe?
+      hands: {comp1: [], player: this.getPlayerHand(0), comp2: []},
       trumps: this.trumpSuit,
+      played: Object.fromEntries(
+        playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name)])
+      ) as Record<PlayerName, Card | null>,
       // TODO: placeholders:
-      played: {comp1: null, player: null, comp2: null},
       previous: {comp1: null, player: null, comp2: null},
       ladder: {
         comp1: [], player: [], comp2: [],

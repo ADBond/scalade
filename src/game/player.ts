@@ -1,7 +1,8 @@
 import { Card } from "./card";
 import { Agent } from "./agent/agent";
 
-export type PlayerName = 'player' | 'comp1' | 'comp2';
+export const playerNameArr = ['player', 'comp1', 'comp2'] as const;
+export type PlayerName = typeof playerNameArr[number];
 export type LadderPosition = PlayerName | 'neutral';
 
 export class Player {
