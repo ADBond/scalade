@@ -8,41 +8,7 @@ export class Game {
 
   constructor(playerNames: string[]) {
     this.state = new GameState(playerNames);
-    this.increment();
-  }
-
-  public increment() {
-    switch (this.state.currentState) {
-      case 'initialiseGame':
-        this.dealCards();
-        this.state.currentState = 'playCard';
-        break;
-      case 'playCard':
-        break;
-      case 'trickComplete':
-        break;
-      case 'handComplete':
-        break;
-      case 'gameComplete':
-        break;
-      default:
-        // error!
-    }
-    
-  }
-
-  private dealCards(count: number = 12) {
-    const pack = this.pack.filterOut(this.state.ladderCards);
-    Pack.shuffle(pack);
-    for (let i = 0; i < count; i++) {
-      // for (const player of this.state.players) {
-        // TODO: loop this properly!
-      for (let playerIndex = 0; playerIndex < 3; playerIndex++) {
-        const card = pack.pop();
-        if (card) this.state.giveCardToPlayer(playerIndex, card);
-      }
-    }
-    this.state.trumpSuit = this.state.trumpSuitFromLadders();
+    this.state.increment();
   }
 
   getGameState(): GameState {

@@ -11,6 +11,11 @@ export class GameState {
   public pack: Pack = new Pack();
   public dealerIndex: number;
   public currentPlayerIndex: number;
+  public trickWinnerPlayerIndex: number;
+  public finalTrickWinnerIndex: number;
+  public cardsPerHand: number = 12;  // TODO: dynamic
+  public trickIndex: number;
+  public trickInProgress: Card[] = [];  // TODO: more info?
   public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit | null = null;
   public currentState: state = 'initialiseGame';
@@ -27,6 +32,29 @@ export class GameState {
     }
     this.dealerIndex = 0;
     this.currentPlayerIndex = 0;
+    this.trickIndex = 0;
+    this.trickWinnerPlayerIndex = -1;
+    this.finalTrickWinnerIndex = -1;
+  }
+
+  public increment() {
+    switch (this.currentState) {
+      case 'initialiseGame':
+        this.dealCards(this.pack);
+        this.currentState = 'playCard';
+        break;
+      case 'playCard':
+        break;
+      case 'trickComplete':
+        this.resetTrick();
+        break;
+      case 'handComplete':
+        break;
+      case 'gameComplete':
+        break;
+      default:
+        // error!
+    }
   }
 
   getStartingLadders(): [Card, Player | null][] {
@@ -61,6 +89,56 @@ export class GameState {
     throw new Error("Error determining trump suit");
   }
 
+  private updateLadders() {
+    // TODO: stub
+  }
+
+  get isPenultimateTrick(): boolean {
+    return this.trickIndex == (this.cardsPerHand - 2);
+  }
+
+  get isFinalTrick(): boolean {
+    return this.trickIndex == (this.cardsPerHand - 1);
+  }
+
+  private resetTrick() {
+    // set trick winner as new current player
+    const winnerPlayerIndex = this.trickWinnerPlayerIndex;
+    this.currentPlayerIndex = winnerPlayerIndex;
+    this.updateLadders();
+    //if this was the final trick, we need to record the winner, for scoring
+    if (this.isFinalTrick) {
+      this.finalTrickWinnerIndex = winnerPlayerIndex;
+    }
+    // current trick info -> previous trick
+    // if self.game_state_for_ui is not None:
+    //     self.game_state_for_ui.prev_trick = self.trick_in_progress
+    //     if self.leader_index is None:
+    //         raise ValueError("Should have a leader")
+    //     self.game_state_for_ui.prev_trick_leader_index = self.leader_index
+    // # empty the trick, and increment the counter!
+    this.trickInProgress = [];
+    this.trickIndex++;
+    // if self.hand_not_finished:
+    //     self.current_state = "play_card"
+    // else:
+    //     self.current_state = "hand_complete"
+    // return
+  }
+
+  private dealCards(pack: Pack, count: number = 12) {
+    const remainingPack = this.pack.filterOut(this.ladderCards);
+    Pack.shuffle(remainingPack);
+    for (let i = 0; i < count; i++) {
+      // for (const player of this.state.players) {
+        // TODO: loop this properly!
+      for (let playerIndex = 0; playerIndex < 3; playerIndex++) {
+        const card = remainingPack.pop();
+        if (card) this.giveCardToPlayer(playerIndex, card);
+      }
+    }
+    this.trumpSuit = this.trumpSuitFromLadders();
+  }
 
   giveCardToPlayer(playerIndex: number, card: Card) {
     this.players[playerIndex].hand.push(card);
