@@ -40,6 +40,21 @@ export class Card {
         return `${this.rank.toStringShort()}${this.suit.toStringShort()}`;
     }
 
+    public nextCardUp(pack: Card[]): Card {
+        /*
+        From a given pack, return the next card up from the current one
+        */
+        const ttrRank = this.rank.ttRankAbove;
+        const suit = this.suit;
+        const matchingCards = pack.filter(
+            card => Suit.suitEquals(card.suit, suit) && (card.rank.trickTakingRank == ttrRank)
+        )
+        if (matchingCards.length != 1) {
+            console.log(`Error in nextCardUp: ${matchingCards}`);
+        }
+        return matchingCards[0];
+    }
+
     static cardEquals(c1: Card, c2: Card): boolean {
         return Rank.rankEquals(c1.rank, c2.rank) && Suit.suitEquals(c1.suit, c2.suit);
     }

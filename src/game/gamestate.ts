@@ -15,8 +15,9 @@ export class GameState {
   public finalTrickWinnerIndex: number;
   public cardsPerHand: number = 12;  // TODO: dynamic
   public trickIndex: number;
-  public trickInProgress: Card[] = [];  // TODO: more info?
-  public ladders: [Card, Player | null][] = this.getStartingLadders();
+  public trickInProgress: Card[] = [];
+  public penultimateCards: Card[] = [];
+  public ladders: [Card, number | null][] = this.getStartingLadders();
   public trumpSuit: Suit | null = null;
   public currentState: state = 'initialiseGame';
 
@@ -57,7 +58,7 @@ export class GameState {
     }
   }
 
-  getStartingLadders(): [Card, Player | null][] {
+  getStartingLadders(): [Card, number | null][] {
     return ["5D", "6H", "7S", "8C"].map(
       (card_str => [this.pack.getCard(card_str), null])
     );
@@ -89,8 +90,48 @@ export class GameState {
     throw new Error("Error determining trump suit");
   }
 
-  private updateLadders() {
-    // TODO: stub
+  private incrementRungCount(suit: Suit) {
+    // TODO: implement logic here, which ultimately triggers game end
+  }
+
+  private updateLadders(winnerIndex: number) {
+    let cardsToUpdateLaddersFrom = this.trickInProgress;
+    // penultimate trick - we get the spoils:
+    if (this.isPenultimateTrick) {
+      cardsToUpdateLaddersFrom = cardsToUpdateLaddersFrom.concat(this.penultimateCards);
+    }
+
+    // only these ladder cards will be affected
+    // this can be 0-(number of players)
+    // we process a single increment at a time, so that if we e.g. have 5,6,7
+    // this will loop through rather than updating 5->7 in one go
+    let affectedLadderCards: Card[];
+    // TODO: think I've lost readability a bit here!
+    while (
+      (affectedLadderCards = this.ladderCards.filter(
+            ladderCard => cardsToUpdateLaddersFrom.filter(
+              updateCard => Card.cardEquals(updateCard, ladderCard.nextCardUp(this.pack.getFullPack()))
+            )
+          )
+        ).length > 0
+      ) {
+        // update the first ladder card, and then repeat
+        let currentLadderCard = affectedLadderCards[0];
+        // new ladder card is in trick_in_progress, if logic is consistent
+        let newLadderCard = currentLadderCard.nextCardUp(this.pack.getFullPack());
+        // remove old card from ladder, add new card
+        this.ladders = this.ladders.filter(
+          ([card, _player]) => !Card.cardEquals(card, currentLadderCard)
+        );
+        this.ladders.push([newLadderCard, winnerIndex]);
+        // remove new card from trick-in-progress, add old card
+        cardsToUpdateLaddersFrom = cardsToUpdateLaddersFrom.filter(
+          (card) => Card.cardEquals(card, newLadderCard)
+        );
+        cardsToUpdateLaddersFrom.push(currentLadderCard);
+        this.incrementRungCount(currentLadderCard.suit);
+    }
+    return cardsToUpdateLaddersFrom;
   }
 
   get isPenultimateTrick(): boolean {
@@ -101,29 +142,39 @@ export class GameState {
     return this.trickIndex == (this.cardsPerHand - 1);
   }
 
+  get handNotFinished(): boolean {
+    return this.players.map(
+      (player) => player.hand
+    ).some(
+      (hand) => hand.length > 0
+    );
+  }
+
   private resetTrick() {
     // set trick winner as new current player
     const winnerPlayerIndex = this.trickWinnerPlayerIndex;
     this.currentPlayerIndex = winnerPlayerIndex;
-    this.updateLadders();
+    this.updateLadders(winnerPlayerIndex);
     //if this was the final trick, we need to record the winner, for scoring
     if (this.isFinalTrick) {
       this.finalTrickWinnerIndex = winnerPlayerIndex;
     }
     // current trick info -> previous trick
+    // TODO: fill in prev trick stuff, for ui
     // if self.game_state_for_ui is not None:
     //     self.game_state_for_ui.prev_trick = self.trick_in_progress
     //     if self.leader_index is None:
     //         raise ValueError("Should have a leader")
     //     self.game_state_for_ui.prev_trick_leader_index = self.leader_index
-    // # empty the trick, and increment the counter!
+  
+    // empty the trick, and increment the counter!
     this.trickInProgress = [];
     this.trickIndex++;
-    // if self.hand_not_finished:
-    //     self.current_state = "play_card"
-    // else:
-    //     self.current_state = "hand_complete"
-    // return
+    if (this.handNotFinished) {
+      this.currentState = "playCard";
+    } else {
+      this.currentState = "handComplete";
+    }
   }
 
   private dealCards(pack: Pack, count: number = 12) {
