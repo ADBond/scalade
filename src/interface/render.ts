@@ -37,8 +37,7 @@ export function renderState(state: GameStateForUI): void {
   handEl.innerHTML = '';
   playerHand.forEach(card => {
     handEl.appendChild(
-      // TODO: this is not a nice way to get card from string, here. Need clearer API boundaries
-      createCardElement(card.toStringShort(), (card => state.playCard(state._state.pack.getCard(card))))
+      createCardElement(card.toStringShort(), (card => state.playCard(state.getCard(card))))
     )
   });
 
@@ -112,39 +111,26 @@ export function renderState(state: GameStateForUI): void {
   advanceEl.appendChild(createSuitElement(state.advance));
 
   switch (state.game_state) {
-    case "play_card":
-      if (state.whose_turn === "human") break;
+    case "playCard":
+      if (state.whose_turn === "player") break;
       waitAndContinue(700);
+      state.increment();
       break;
-    case "trick_complete":
+    case "trickComplete":
       waitAndContinue(1700);
+      state.increment();
       break;
-    case "hand_complete":
+    case "handComplete":
       waitAndContinue(3000);
+      state.increment();
       break;
   }
 }
 
 async function waitAndContinue(ms: number): Promise<void> {
   await sleep(ms);
-  incrementState();
 }
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-export async function fetchState(game: Game): Promise<void> {
-  // TODO: just for something to look at for time being:
-  const handEl = document.getElementById('player-hand')!;
-  handEl.appendChild(createCardElement("4D"));
-  const state: GameStateForUI = game.getGameStateForUI();
-  renderState(state);
-}
-
-
-export async function incrementState(): Promise<void> {
-  const res = await fetch('/increment_state', { method: 'POST' });
-  const state: GameStateForUI = await res.json();
-  renderState(state);
 }

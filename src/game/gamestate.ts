@@ -297,10 +297,18 @@ export class GameState {
       played: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name)])
       ) as Record<PlayerName, Card | null>,
-      _state: this,
-      playCard(card: Card) {
-        this._state.playCard(card);
+      game_state: this.currentState,
+      whose_turn: this.currentPlayer.name,
+      getCard: (card_str: string): Card => {
+        return this.pack.getCard(card_str);
       },
+      playCard: (card: Card) => {
+        return this.playCard(card);
+      },
+      increment: () => {
+        this.increment();
+      },
+      // game_state: t
       // TODO: placeholders:
       previous: {comp1: null, player: null, comp2: null},
       ladder: {
@@ -317,8 +325,6 @@ export class GameState {
       escalations: -1,
       hand_number: -1,
       advance: "C",
-      game_state: "play_card",
-      whose_turn: "human",
     }
   }
 }
@@ -347,9 +353,10 @@ export interface GameStateForUI {
   // TODO: suits:
   trumps: Suit | null;
   advance: string;
-  game_state: 'play_card' | 'trick_complete' | 'hand_complete';
-  whose_turn: 'human' | 'comp1' | 'comp2';
+  game_state: state;
+  whose_turn: PlayerName;
 
-  _state: GameState;
+  getCard(card_str: string): Card;
   playCard(card: Card): void;
+  increment(): void;
 }
