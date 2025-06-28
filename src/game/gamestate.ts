@@ -216,9 +216,11 @@ export class GameState {
 
     const currentLegalMoves = this.legalMoveIndices;
     const cardToPlayIndex = agent.chooseMove(this, currentLegalMoves);
+    const cardToPlay = Card.cardFromIndex(cardToPlayIndex, this.pack.getFullPack())
 
-    // TODO: fix playCard
-    // this.playCard(cardToPlayIndex);
+    if (!this.playCard(this.currentPlayerIndex, cardToPlay)) {
+      console.log("Error playing card");
+    }
     return cardToPlayIndex;
   }
 
@@ -272,7 +274,7 @@ export class GameState {
   }
 
   playCard(playerIndex: number, card: Card): boolean {
-    // TODO: align with what we want to do here
+    const player = this.players[playerIndex];
     const hand = this.getPlayerHand(playerIndex);
     if (!hand) return false;
 
@@ -281,7 +283,7 @@ export class GameState {
     );
     if (index >= 0) {
       const [playedCard] = hand.splice(index, 1);
-    //   this.pile.push(playedCard);
+      this.trickInProgress.push([playedCard, player]);
       return true;
     }
     return false;

@@ -11,7 +11,6 @@ export class Player {
         public name: PlayerName,
         public hand: Card[],
         public score: number,
-        // TODO: best way to handle humans?
         public agent: Agent,
     ) { }
 }

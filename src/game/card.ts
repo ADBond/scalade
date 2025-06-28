@@ -58,6 +58,14 @@ export class Card {
     static cardEquals(c1: Card, c2: Card): boolean {
         return Rank.rankEquals(c1.rank, c2.rank) && Suit.suitEquals(c1.suit, c2.suit);
     }
+
+    static cardFromIndex(index: number, pack: Card[]): Card {
+        const cards = pack.filter(card => card.index == index);
+        if (cards.length != 1) {
+            console.log(`Error in cardFromIndex: ${cards}`);
+        }
+        return cards[0];
+    }
 }
 
 export const RANKS: Rank[] = [
