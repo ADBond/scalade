@@ -19,8 +19,8 @@ export class Game {
     return this.state.getStateForUI();
   }
 
-  playCard(player: string, card: Card): boolean {
-    // return this.state.playCard(player, card);
-    return true;
-  }
+  // playCard(player: string, card: Card): boolean {
+  //   // return this.state.playCard(player, card);
+  //   return true;
+  // }
 }

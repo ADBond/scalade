@@ -36,7 +36,10 @@ export function renderState(state: GameStateForUI): void {
   );
   handEl.innerHTML = '';
   playerHand.forEach(card => {
-    handEl.appendChild(createCardElement(card.toStringShort(), playCard));
+    handEl.appendChild(
+      // TODO: this is not a nice way to get card from string, here. Need clearer API boundaries
+      createCardElement(card.toStringShort(), (card => state.playCard(state._state.pack.getCard(card))))
+    )
   });
 
   ['player', 'comp1', 'comp2'].forEach(p => {
@@ -139,15 +142,6 @@ export async function fetchState(game: Game): Promise<void> {
   renderState(state);
 }
 
-export async function playCard(card: string): Promise<void> {
-  const res = await fetch('/play_card', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ card })
-  });
-  const state: GameStateForUI = await res.json();
-  renderState(state);
-}
 
 export async function incrementState(): Promise<void> {
   const res = await fetch('/increment_state', { method: 'POST' });

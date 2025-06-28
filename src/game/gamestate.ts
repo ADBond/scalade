@@ -218,7 +218,7 @@ export class GameState {
     const cardToPlayIndex = agent.chooseMove(this, currentLegalMoves);
     const cardToPlay = Card.cardFromIndex(cardToPlayIndex, this.pack.getFullPack())
 
-    if (!this.playCard(this.currentPlayerIndex, cardToPlay)) {
+    if (!this.playCard(cardToPlay)) {
       console.log("Error playing card");
     }
     return cardToPlayIndex;
@@ -273,9 +273,9 @@ export class GameState {
     return this.players[playerIndex].hand ?? [];
   }
 
-  playCard(playerIndex: number, card: Card): boolean {
-    const player = this.players[playerIndex];
-    const hand = this.getPlayerHand(playerIndex);
+  playCard(card: Card): boolean {
+    const player = this.currentPlayer;
+    const hand = player.hand;
     if (!hand) return false;
 
     const index = hand.findIndex(
@@ -297,6 +297,10 @@ export class GameState {
       played: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name)])
       ) as Record<PlayerName, Card | null>,
+      _state: this,
+      playCard(card: Card) {
+        this._state.playCard(card);
+      },
       // TODO: placeholders:
       previous: {comp1: null, player: null, comp2: null},
       ladder: {
@@ -345,4 +349,7 @@ export interface GameStateForUI {
   advance: string;
   game_state: 'play_card' | 'trick_complete' | 'hand_complete';
   whose_turn: 'human' | 'comp1' | 'comp2';
+
+  _state: GameState;
+  playCard(card: Card): void;
 }
