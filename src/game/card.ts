@@ -10,7 +10,7 @@ export class Rank {
     }
 
     static rankEquals(r1: Rank, r2: Rank): boolean {
-        return r1.name == r2.name;
+        return r1.name === r2.name;
     }
 }
 export class Suit {
@@ -25,7 +25,7 @@ export class Suit {
     }
 
     static suitEquals(s1: Suit, s2: Suit): boolean {
-        return s1.name == s2.name;
+        return s1.name === s2.name;
     }
 }
 
@@ -47,9 +47,9 @@ export class Card {
         const ttrRank = this.rank.ttRankAbove;
         const suit = this.suit;
         const matchingCards = pack.filter(
-            card => Suit.suitEquals(card.suit, suit) && (card.rank.trickTakingRank == ttrRank)
+            card => Suit.suitEquals(card.suit, suit) && (card.rank.trickTakingRank === ttrRank)
         )
-        if (matchingCards.length != 1) {
+        if (matchingCards.length !== 1) {
             console.log(`Error in nextCardUp: ${matchingCards}`);
         }
         return matchingCards[0];
@@ -60,8 +60,8 @@ export class Card {
     }
 
     static cardFromIndex(index: number, pack: Card[]): Card {
-        const cards = pack.filter(card => card.index == index);
-        if (cards.length != 1) {
+        const cards = pack.filter(card => card.index === index);
+        if (cards.length !== 1) {
             console.log(`Error in cardFromIndex: ${cards}`);
         }
         return cards[0];

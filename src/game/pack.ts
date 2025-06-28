@@ -14,7 +14,7 @@ export class Pack {
       if (rank.trickTakingRank < this.minRank) {
         continue;
       }
-      if (rank.name == "A") {
+      if (rank.name === "A") {
           rank.ttRankAbove = this.minRank;
       }
       for (const suit of SUITS) {
@@ -29,7 +29,7 @@ export class Pack {
   getCard(card_string: string): Card {
     // define it here so we definitely have correct ttRankAbove
     for (const card of this.getFullPack()) {
-      if (card.toStringShort() == card_string) {
+      if (card.toStringShort() === card_string) {
         return card;
       }
     }

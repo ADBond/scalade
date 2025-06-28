@@ -68,7 +68,7 @@ export class GameState {
 
   get currentLedSuit(): Suit | null {
     const trickInProgressCards = this.trickInProgressCards;
-    if (trickInProgressCards.length == 0){
+    if (trickInProgressCards.length === 0){
       return null;
     }
     return trickInProgressCards[0].suit;
@@ -84,7 +84,7 @@ export class GameState {
     } else {
       // must follow suit if we can
       legalCards = hand.filter(card => Suit.suitEquals(card.suit, ledSuit));
-      if (legalCards.length == 0) {
+      if (legalCards.length === 0) {
         // if we have no cards of led suit, anything is legal
         legalCards = hand;
       }
@@ -94,10 +94,10 @@ export class GameState {
 
   private getPlayedCard(name: PlayerName): Card | null {
     const playerPlayedCards = this.trickInProgress.filter(
-      ([_card, player]) => player.name == name
+      ([_card, player]) => player.name === name
     );
     const numCards = playerPlayedCards.length;
-    if (numCards == 1){
+    if (numCards === 1){
       return playerPlayedCards[0][0];
     }
     if (numCards > 1) {
@@ -130,16 +130,16 @@ export class GameState {
     // find the lowest-ranked cards, as relates to trick-taking power
     const ladderCards = this.ladderCards;
     const lowestRung = Math.min(...ladderCards.map(card => card.rank.trickTakingRank));
-    const minRungs = ladderCards.filter(card => card.rank.trickTakingRank == lowestRung);
+    const minRungs = ladderCards.filter(card => card.rank.trickTakingRank === lowestRung);
     // if there's only one, that sets trumps
-    if (minRungs.length == 1) {
+    if (minRungs.length === 1) {
       return minRungs[0].suit;
     }
     // if there's more than one, find their suit-ranking for setting trumps
     const maxSuit = Math.max(...ladderCards.map(card => card.suit.rankForTrumpPreference));
-    const maxSuitCards = ladderCards.filter(card => card.suit.rankForTrumpPreference == maxSuit);
+    const maxSuitCards = ladderCards.filter(card => card.suit.rankForTrumpPreference === maxSuit);
     // these should be distinct, so we only have one that is maximal, for a given rank
-    if (maxSuitCards.length == 1){
+    if (maxSuitCards.length === 1){
       return maxSuitCards[0].suit;
     }
     // this would indicate an illegal pack, or error in filtering, or something
@@ -191,11 +191,11 @@ export class GameState {
   }
 
   get isPenultimateTrick(): boolean {
-    return this.trickIndex == (this.cardsPerHand - 2);
+    return this.trickIndex === (this.cardsPerHand - 2);
   }
 
   get isFinalTrick(): boolean {
-    return this.trickIndex == (this.cardsPerHand - 1);
+    return this.trickIndex === (this.cardsPerHand - 1);
   }
 
   get handNotFinished(): boolean {
@@ -208,7 +208,7 @@ export class GameState {
 
   private computerMove() {
     const agent = this.currentPlayer.agent
-    if (agent == 'human') {
+    if (agent === 'human') {
       // TODO: error
       console.log("Trying to move for a human")
       return
