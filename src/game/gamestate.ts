@@ -114,6 +114,14 @@ export class GameState {
     return this.currentPlayer.hand;
   }
 
+  get numPlayers(): number {
+    return this.players.length;
+  }
+
+  getNextPlayerIndex(playerIndex: number): number {
+    return ((playerIndex + 1) % this.numPlayers);
+  }
+
   getStartingLadders(): [Card, number | null][] {
     return ["5D", "6H", "7S", "8C"].map(
       (card_str => [this.pack.getCard(card_str), null])
@@ -276,17 +284,33 @@ export class GameState {
   playCard(card: Card): boolean {
     const player = this.currentPlayer;
     const hand = player.hand;
-    if (!hand) return false;
+    if (!hand) {
+      console.log("I couldn't find a hand!");
+      return false;
+    }
 
     const index = hand.findIndex(
       c => c.rank === card.rank && c.suit === card.suit
     );
-    if (index >= 0) {
-      const [playedCard] = hand.splice(index, 1);
-      this.trickInProgress.push([playedCard, player]);
+    if (index < 0) {
+      console.log(`Dear dear dear: ${index}, found looking for ${card}, in ${hand}`);
+      return false;
+    }
+    const [playedCard] = hand.splice(index, 1);
+    this.trickInProgress.push([playedCard, player]);
+    // TODO: do we need this anymore, with better player tracking?
+    // if (this.trickInProgress.length === 1) {
+    //   this.leaderIndex = this.currentPlayerIndex;
+    // }
+    if (this.trickInProgress.length === this.numPlayers) {
+      this.currentState = "trickComplete";
       return true;
     }
-    return false;
+    const newCurrentPlayerIndex = this.getNextPlayerIndex(this.currentPlayerIndex);
+    this.currentPlayerIndex = newCurrentPlayerIndex;
+    return true;
+
+
   }
 
   getStateForUI(): GameStateForUI {
@@ -303,6 +327,7 @@ export class GameState {
         return this.pack.getCard(card_str);
       },
       playCard: (card: Card) => {
+        console.log(`Playing card... ${card}`);
         return this.playCard(card);
       },
       increment: () => {
