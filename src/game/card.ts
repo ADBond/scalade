@@ -66,6 +66,19 @@ export class Card {
         }
         return cards[0];
     }
+
+    static singleHighestCard(cards: Card[]): Card {
+        const highestRank = Math.max(...cards.map(card => card.rank.trickTakingRank));
+        const highestCards = cards.filter(
+            card => card.rank.trickTakingRank === highestRank
+        )
+        if (highestCards.length > 1) {
+            // TODO: error
+            console.log(`Too many highest cards: ${highestCards}`);
+        }
+        return highestCards[0];
+        
+    }
 }
 
 export const RANKS: Rank[] = [
@@ -86,3 +99,5 @@ export const SUITS: Suit[] = [
     new Suit("Spades", 2),
     new Suit("Clubs", 3),
 ];
+
+export const arbitrarySuit = SUITS[0];

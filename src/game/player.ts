@@ -12,5 +12,6 @@ export class Player {
         public hand: Card[],
         public score: number,
         public agent: Agent,
+        public positionIndex: number,
     ) { }
 }

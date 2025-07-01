@@ -1,4 +1,4 @@
-import { Card, Suit } from './card';
+import { Card, Suit, arbitrarySuit } from './card';
 import { Pack } from './pack';
 import { LadderPosition, Player, PlayerName, playerNameArr } from './player';
 import { Agent } from './agent/agent';
@@ -11,14 +11,13 @@ export class GameState {
   public pack: Pack = new Pack();
   public dealerIndex: number;
   public currentPlayerIndex: number;
-  public trickWinnerPlayerIndex: number;
   public finalTrickWinnerIndex: number;
   public cardsPerHand: number = 12;  // TODO: dynamic
   public trickIndex: number;
   public trickInProgress: [Card, Player][] = [];
   public penultimateCards: Card[] = [];
   public ladders: [Card, number | null][] = this.getStartingLadders();
-  public trumpSuit: Suit | null = null;
+  public trumpSuit: Suit = arbitrarySuit;
   public currentState: state = 'initialiseGame';
 
   constructor(public playerNames: string[]) {
@@ -26,7 +25,7 @@ export class GameState {
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
     const agents: Agent[] = ['human', randomAgent, randomAgent]
     this.players = playerNames.map(
-      (name, i) => new Player(name, playerConfig[i], [], 0, agents[i])
+      (name, i) => new Player(name, playerConfig[i], [], 0, agents[i], i)
     )
     for (const name of playerNames) {
       this.players.push();
@@ -34,7 +33,6 @@ export class GameState {
     this.dealerIndex = 0;
     this.currentPlayerIndex = 0;
     this.trickIndex = 0;
-    this.trickWinnerPlayerIndex = -1;
     this.finalTrickWinnerIndex = -1;
   }
 
@@ -46,7 +44,7 @@ export class GameState {
         this.currentState = 'playCard';
         break;
       case 'playCard':
-        this.computerMove();
+        const moveIndex = this.computerMove();
         break;
       case 'trickComplete':
         this.resetTrick();
@@ -122,6 +120,15 @@ export class GameState {
     return ((playerIndex + 1) % this.numPlayers);
   }
 
+  get trickWinnerPlayerIndex(): number {
+    const winningCardPlay = this.trickInProgress.filter(
+      ([card, player]) => Card.cardEquals(card, this.winningCard)
+    );
+    // TODO: length check?
+    const trickWinner = winningCardPlay[0][1];
+    return trickWinner.positionIndex;
+  }
+
   getStartingLadders(): [Card, number | null][] {
     return ["5D", "6H", "7S", "8C"].map(
       (card_str => [this.pack.getCard(card_str), null])
@@ -175,7 +182,7 @@ export class GameState {
       (affectedLadderCards = this.ladderCards.filter(
             ladderCard => cardsToUpdateLaddersFrom.filter(
               updateCard => Card.cardEquals(updateCard, ladderCard.nextCardUp(this.pack.getFullPack()))
-            )
+            ).length > 0
           )
         ).length > 0
       ) {
@@ -190,12 +197,28 @@ export class GameState {
         this.ladders.push([newLadderCard, winnerIndex]);
         // remove new card from trick-in-progress, add old card
         cardsToUpdateLaddersFrom = cardsToUpdateLaddersFrom.filter(
-          (card) => Card.cardEquals(card, newLadderCard)
+          (card) => !Card.cardEquals(card, newLadderCard)
         );
         cardsToUpdateLaddersFrom.push(currentLadderCard);
         this.incrementRungCount(currentLadderCard.suit);
     }
     return cardsToUpdateLaddersFrom;
+  }
+
+  get winningCard(): Card {
+    const trumpCardsPlayed = this.trickInProgress.filter(
+      ([card, _player]) => Suit.suitEquals(card.suit, this.trumpSuit)
+    );
+    let winningCard: Card;
+    if (trumpCardsPlayed.length > 0) {
+      winningCard = Card.singleHighestCard(trumpCardsPlayed.map(([card, _player]) => card));
+    } else {
+      const ledCardsPlayed = this.trickInProgress.filter(
+        ([card, _player]) => Suit.suitEquals(card.suit, this.currentLedSuit as Suit)
+      );
+      winningCard = Card.singleHighestCard(ledCardsPlayed.map(([card, _player]) => card))
+    }
+    return winningCard;
   }
 
   get isPenultimateTrick(): boolean {
@@ -214,12 +237,12 @@ export class GameState {
     );
   }
 
-  private computerMove() {
-    const agent = this.currentPlayer.agent
+  private computerMove(): number {
+    const agent = this.currentPlayer.agent;
     if (agent === 'human') {
       // TODO: error
-      console.log("Trying to move for a human")
-      return
+      console.log("Error: trying to move for a human")
+      return -20;
     }
 
     const currentLegalMoves = this.legalMoveIndices;
@@ -285,7 +308,7 @@ export class GameState {
     const player = this.currentPlayer;
     const hand = player.hand;
     if (!hand) {
-      console.log("I couldn't find a hand!");
+      console.log("Error: I couldn't find a hand!");
       return false;
     }
 
@@ -293,7 +316,6 @@ export class GameState {
       c => c.rank === card.rank && c.suit === card.suit
     );
     if (index < 0) {
-      console.log(`Dear dear dear: ${index}, found looking for ${card}, in ${hand}`);
       return false;
     }
     const [playedCard] = hand.splice(index, 1);
@@ -309,8 +331,6 @@ export class GameState {
     const newCurrentPlayerIndex = this.getNextPlayerIndex(this.currentPlayerIndex);
     this.currentPlayerIndex = newCurrentPlayerIndex;
     return true;
-
-
   }
 
   getStateForUI(): GameStateForUI {
@@ -327,8 +347,8 @@ export class GameState {
         return this.pack.getCard(card_str);
       },
       playCard: (card: Card) => {
-        console.log(`Playing card... ${card}`);
-        return this.playCard(card);
+        this.playCard(card);
+        return this.getStateForUI();
       },
       increment: () => {
         this.increment();
@@ -382,6 +402,6 @@ export interface GameStateForUI {
   whose_turn: PlayerName;
 
   getCard(card_str: string): Card;
-  playCard(card: Card): void;
+  playCard(card: Card): GameStateForUI;
   increment(): void;
 }

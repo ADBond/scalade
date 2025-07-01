@@ -1,7 +1,7 @@
 import { createCardElement, createSuitElement } from './ui';
-import { Game } from '../game/game';
 import { GameStateForUI, ScoreDetails } from '../game/gamestate';
 import { PlayerName } from '../game/player';
+import { playCard } from './api';
 
 function constructScoreBreakdownText(scoreDetails: ScoreDetails): string {
   return ['player', 'comp1', 'comp2'].map(name => {
@@ -22,7 +22,7 @@ function constructScoreBreakdownText(scoreDetails: ScoreDetails): string {
   }).join(", ");
 }
 
-export function renderState(state: GameStateForUI): void {
+export async function renderState(state: GameStateForUI) {
   console.log(state);
 
   const handEl = document.getElementById('player-hand')!;
@@ -37,7 +37,7 @@ export function renderState(state: GameStateForUI): void {
   handEl.innerHTML = '';
   playerHand.forEach(card => {
     handEl.appendChild(
-      createCardElement(card.toStringShort(), (card => state.playCard(state.getCard(card))))
+      createCardElement(card.toStringShort(), state.whose_turn === "player" ? (() => playCard(state, card)) : undefined)
     )
   });
 
@@ -113,24 +113,31 @@ export function renderState(state: GameStateForUI): void {
   switch (state.game_state) {
     case "playCard":
       if (state.whose_turn === "player") break;
-      waitAndContinue(700);
-      state.increment();
+      await wait(700);
+      incrementState(state);
+      renderState(state);
       break;
     case "trickComplete":
-      waitAndContinue(1700);
-      state.increment();
+      await wait(1700);
+      incrementState(state);
+      renderState(state);
       break;
     case "handComplete":
-      waitAndContinue(3000);
-      state.increment();
+      await wait(3000);
+      incrementState(state);
+      renderState(state);
       break;
+    default:
+      console.log(`Error: Switching and failing: ${state.game_state}`);
+
   }
 }
 
-async function waitAndContinue(ms: number): Promise<void> {
-  await sleep(ms);
+
+function wait(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+function incrementState(state: GameStateForUI): void {
+  state.increment();
 }
