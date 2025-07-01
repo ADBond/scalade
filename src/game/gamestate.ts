@@ -16,7 +16,7 @@ export class GameState {
   public trickIndex: number;
   public trickInProgress: [Card, Player][] = [];
   public penultimateCards: Card[] = [];
-  public ladders: [Card, number | null][] = this.getStartingLadders();
+  public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit = arbitrarySuit;
   public currentState: state = 'initialiseGame';
 
@@ -120,16 +120,16 @@ export class GameState {
     return ((playerIndex + 1) % this.numPlayers);
   }
 
-  get trickWinnerPlayerIndex(): number {
+  get trickWinnerPlayer(): Player {
     const winningCardPlay = this.trickInProgress.filter(
       ([card, player]) => Card.cardEquals(card, this.winningCard)
     );
     // TODO: length check?
     const trickWinner = winningCardPlay[0][1];
-    return trickWinner.positionIndex;
+    return trickWinner;
   }
 
-  getStartingLadders(): [Card, number | null][] {
+  getStartingLadders(): [Card, Player | null][] {
     return ["5D", "6H", "7S", "8C"].map(
       (card_str => [this.pack.getCard(card_str), null])
     );
@@ -165,7 +165,7 @@ export class GameState {
     // TODO: implement logic here, which ultimately triggers game end
   }
 
-  private updateLadders(winnerIndex: number) {
+  private updateLadders(winningPlayer: Player) {
     let cardsToUpdateLaddersFrom = this.trickInProgressCards;
     // penultimate trick - we get the spoils:
     if (this.isPenultimateTrick) {
@@ -194,7 +194,7 @@ export class GameState {
         this.ladders = this.ladders.filter(
           ([card, _player]) => !Card.cardEquals(card, currentLadderCard)
         );
-        this.ladders.push([newLadderCard, winnerIndex]);
+        this.ladders.push([newLadderCard, winningPlayer]);
         // remove new card from trick-in-progress, add old card
         cardsToUpdateLaddersFrom = cardsToUpdateLaddersFrom.filter(
           (card) => !Card.cardEquals(card, newLadderCard)
@@ -257,12 +257,12 @@ export class GameState {
 
   private resetTrick() {
     // set trick winner as new current player
-    const winnerPlayerIndex = this.trickWinnerPlayerIndex;
-    this.currentPlayerIndex = winnerPlayerIndex;
-    this.updateLadders(winnerPlayerIndex);
+    const winnerPlayer = this.trickWinnerPlayer;
+    this.currentPlayerIndex = winnerPlayer.positionIndex;
+    this.updateLadders(winnerPlayer);
     //if this was the final trick, we need to record the winner, for scoring
     if (this.isFinalTrick) {
-      this.finalTrickWinnerIndex = winnerPlayerIndex;
+      this.finalTrickWinnerIndex = winnerPlayer.positionIndex;
     }
     // current trick info -> previous trick
     // TODO: fill in prev trick stuff, for ui
@@ -341,6 +341,21 @@ export class GameState {
       played: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name)])
       ) as Record<PlayerName, Card | null>,
+      ladder: {
+        ...Object.fromEntries(
+          playerNameArr.map(
+            (name): [PlayerName, Card[]] => [
+              name,
+              this.ladders.filter(
+                ([_card, player]) => (player !== null) && player.name === name
+              ).map((
+                [card, _player]) => card
+              )
+            ]
+          )
+        ) as Record<PlayerName, Card[]>,
+        neutral: this.ladders.filter(([_card, player]) => player === null).map(([card, _player]) => card)
+      },
       game_state: this.currentState,
       whose_turn: this.currentPlayer.name,
       getCard: (card_str: string): Card => {
@@ -357,11 +372,6 @@ export class GameState {
       // game_state: t
       // TODO: placeholders:
       previous: {comp1: null, player: null, comp2: null},
-      ladder: {
-        comp1: [], player: [], comp2: [],
-        // TODO: something similar for the players
-        neutral: this.ladders.filter(([_card, player]) => player === null).map(([card, _player]) => card)
-      },
       scores: {comp1: 0, player: 0, comp2: 0},
       scores_previous: {comp1: 0, player: 0, comp2: 0},
       score_details: {},
