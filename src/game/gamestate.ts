@@ -15,6 +15,7 @@ export class GameState {
   public cardsPerHand: number = 12;  // TODO: dynamic
   public trickIndex: number;
   public trickInProgress: [Card, Player][] = [];
+  public previousTrick: [Card, Player][] = [];
   public penultimateCards: Card[] = [];
   public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit = arbitrarySuit;
@@ -90,8 +91,8 @@ export class GameState {
     return legalCards.map(card => card.index);
   }
 
-  private getPlayedCard(name: PlayerName): Card | null {
-    const playerPlayedCards = this.trickInProgress.filter(
+  private getPlayedCard(name: PlayerName, trick: [Card, Player][]): Card | null {
+    const playerPlayedCards = trick.filter(
       ([_card, player]) => player.name === name
     );
     const numCards = playerPlayedCards.length;
@@ -265,13 +266,8 @@ export class GameState {
       this.finalTrickWinnerIndex = winnerPlayer.positionIndex;
     }
     // current trick info -> previous trick
-    // TODO: fill in prev trick stuff, for ui
-    // if self.game_state_for_ui is not None:
-    //     self.game_state_for_ui.prev_trick = self.trick_in_progress
-    //     if self.leader_index is None:
-    //         raise ValueError("Should have a leader")
-    //     self.game_state_for_ui.prev_trick_leader_index = self.leader_index
-  
+    this.previousTrick = this.trickInProgress
+
     // empty the trick, and increment the counter!
     this.trickInProgress = [];
     this.trickIndex++;
@@ -305,6 +301,7 @@ export class GameState {
   }
 
   playCard(card: Card): boolean {
+    // TODO: check legality of play!
     const player = this.currentPlayer;
     const hand = player.hand;
     if (!hand) {
@@ -339,7 +336,10 @@ export class GameState {
       hands: {comp1: [], player: this.getPlayerHand(0), comp2: []},
       trumps: this.trumpSuit,
       played: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name)])
+        playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.trickInProgress)])
+      ) as Record<PlayerName, Card | null>,
+      previous: Object.fromEntries(
+        playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.previousTrick)])
       ) as Record<PlayerName, Card | null>,
       ladder: {
         ...Object.fromEntries(
@@ -371,7 +371,6 @@ export class GameState {
       },
       // game_state: t
       // TODO: placeholders:
-      previous: {comp1: null, player: null, comp2: null},
       scores: {comp1: 0, player: 0, comp2: 0},
       scores_previous: {comp1: 0, player: 0, comp2: 0},
       score_details: {},
