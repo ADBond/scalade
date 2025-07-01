@@ -42,7 +42,6 @@ export class GameState {
     switch (state) {
       case 'initialiseGame':
         this.dealCards(this.pack);
-        this.currentState = 'playCard';
         break;
       case 'playCard':
         const moveIndex = this.computerMove();
@@ -51,6 +50,9 @@ export class GameState {
         this.resetTrick();
         break;
       case 'handComplete':
+        this.updateScores();
+        this.dealerIndex = this.getNextPlayerIndex(this.dealerIndex);
+        this.dealCards(this.pack);
         break;
       case 'gameComplete':
         break;
@@ -290,6 +292,8 @@ export class GameState {
       }
     }
     this.trumpSuit = this.trumpSuitFromLadders();
+    this.currentState = 'playCard';
+    this.currentPlayerIndex = this.getNextPlayerIndex(this.dealerIndex);
   }
 
   giveCardToPlayer(playerIndex: number, card: Card) {
@@ -328,6 +332,10 @@ export class GameState {
     const newCurrentPlayerIndex = this.getNextPlayerIndex(this.currentPlayerIndex);
     this.currentPlayerIndex = newCurrentPlayerIndex;
     return true;
+  }
+
+  updateScores() {
+    ;
   }
 
   getStateForUI(): GameStateForUI {
