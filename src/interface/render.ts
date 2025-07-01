@@ -45,22 +45,18 @@ export async function renderState(state: GameStateForUI) {
     const playedEl = document.getElementById(`played-${p}`)!;
     playedEl.innerHTML = '';
     const card = state.played[p as PlayerName];
-    if (card) {
-      const el = createCardElement(card.toStringShort());
-      el.classList.add('played-card');
-      playedEl.appendChild(el);
-    }
+    const el = createCardElement(card !== null ? card.toStringShort(): "");
+    el.classList.add('played-card');
+    playedEl.appendChild(el);
   });
 
   ['player', 'comp1', 'comp2'].forEach(p => {
     const prevEl = document.getElementById(`prev-${p}`)!;
     prevEl.innerHTML = '';
     const card = state.previous[p as PlayerName];
-    if (card) {
-      const el = createCardElement(card.toStringShort());
-      el.classList.add('played-card');
-      prevEl.appendChild(el);
-    }
+    const el = createCardElement(card !== null ? card.toStringShort(): "");
+    el.classList.add('played-card');
+    prevEl.appendChild(el);
   });
 
   ['player', 'comp1', 'comp2'].forEach(p => {
