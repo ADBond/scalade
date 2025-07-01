@@ -305,7 +305,10 @@ export class GameState {
   }
 
   playCard(card: Card): boolean {
-    // TODO: check legality of play!
+    if (!this.legalMoveIndices.includes(card.index)){
+      console.log(`Error: Cannot play illegal card ${card}`);
+      return false;
+    }
     const player = this.currentPlayer;
     const hand = player.hand;
     if (!hand) {
