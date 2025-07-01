@@ -352,6 +352,7 @@ export class GameState {
       },
       increment: () => {
         this.increment();
+        return this.getStateForUI();
       },
       // game_state: t
       // TODO: placeholders:
@@ -403,5 +404,5 @@ export interface GameStateForUI {
 
   getCard(card_str: string): Card;
   playCard(card: Card): GameStateForUI;
-  increment(): void;
+  increment(): GameStateForUI;
 }

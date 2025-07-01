@@ -110,22 +110,23 @@ export async function renderState(state: GameStateForUI) {
   advanceEl.innerHTML = '';
   advanceEl.appendChild(createSuitElement(state.advance));
 
+  let newState: GameStateForUI;
   switch (state.game_state) {
     case "playCard":
       if (state.whose_turn === "player") break;
       await wait(700);
-      incrementState(state);
-      renderState(state);
+      newState = incrementState(state);
+      renderState(newState);
       break;
     case "trickComplete":
       await wait(1700);
-      incrementState(state);
-      renderState(state);
+      newState = incrementState(state);
+      renderState(newState);
       break;
     case "handComplete":
       await wait(3000);
-      incrementState(state);
-      renderState(state);
+      newState = incrementState(state);
+      renderState(newState);
       break;
     default:
       console.log(`Error: Switching and failing: ${state.game_state}`);
@@ -138,6 +139,6 @@ function wait(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function incrementState(state: GameStateForUI): void {
-  state.increment();
+function incrementState(state: GameStateForUI): GameStateForUI {
+  return state.increment();
 }
