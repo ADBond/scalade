@@ -16,7 +16,9 @@ export class GameState {
   public trickIndex: number;
   public trickInProgress: [Card, Player][] = [];
   public previousTrick: [Card, Player][] = [];
-  public penultimateCards: Card[] = [];
+  public groundings: Card[] = [];
+  public spoils: Card[] = [];
+  public deadCards: Card[] = [];
   public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit = arbitrarySuit;
   public currentState: state = 'initialiseGame';
@@ -173,7 +175,7 @@ export class GameState {
     let cardsToUpdateLaddersFrom = this.trickInProgressCards;
     // penultimate trick - we get the spoils:
     if (this.isPenultimateTrick) {
-      cardsToUpdateLaddersFrom = cardsToUpdateLaddersFrom.concat(this.penultimateCards);
+      cardsToUpdateLaddersFrom = cardsToUpdateLaddersFrom.concat(this.spoils);
     }
 
     // only these ladder cards will be affected
@@ -282,8 +284,17 @@ export class GameState {
   }
 
   private dealCards(pack: Pack, count: number = 12) {
+    const halfHandSizeRoundedUp = Math.ceil(count / 2);
     const remainingPack = this.pack.filterOut(this.ladderCards);
     Pack.shuffle(remainingPack);
+    // first hand we have random groundings,
+    if (this.handNumber == 0){
+      // TODO: this logic can be pulled out!
+      for (let i = 0; i < 2; i++) {
+        const card = remainingPack.pop();
+        if (card) this.groundings.push(card); else console.log("Deal error! ran out of cards before groundings");
+      }
+    }
     for (let i = 0; i < count; i++) {
       // for (const player of this.state.players) {
         // TODO: loop this properly!
@@ -291,7 +302,28 @@ export class GameState {
         const card = remainingPack.pop();
         if (card) this.giveCardToPlayer(playerIndex, card);
       }
+      // after half (rounded up) the cards have been dealt, deal the dead cards
+      if (i === halfHandSizeRoundedUp - 1) {
+        this.deadCards = [];
+        for (let j = 0; j < 2; j++) {
+          const card = remainingPack.pop();
+          if (card) this.deadCards.push(card); else console.log("Deal error! ran out of cards before deads");
+        }
+        for (let j = 0; j < 2; j++) {
+          const card = this.groundings.pop();
+          if (card) remainingPack.push(card); else console.log("Deal error! ran out of cards before shuffling groundings");
+        }
+        Pack.shuffle(remainingPack);
+      }
     }
+    this.spoils = []
+    for (let i = 0; i < 2; i++) {
+      const card = remainingPack.pop();
+      if (card) this.spoils.push(card); else console.log("Deal error! ran out of cards before spoils");
+    }
+    // TODO now pack should be empty
+    console.log("Empty pack:");
+    console.log(remainingPack);
     this.trumpSuit = this.trumpSuitFromLadders();
     this.currentState = 'playCard';
     this.currentPlayerIndex = this.getNextPlayerIndex(this.dealerIndex);
