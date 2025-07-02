@@ -401,6 +401,8 @@ export class GameState {
         ) as Record<PlayerName, Card[]>,
         neutral: this.ladders.filter(([_card, player]) => player === null).map(([card, _player]) => card)
       },
+      // TODO: not quite right:
+      penultimate: this.isFinalTrick || this.isPenultimateTrick ? this.spoils : [],
       game_state: this.currentState,
       whose_turn: this.currentPlayer.name,
       getCard: (card_str: string): Card => {
@@ -421,7 +423,6 @@ export class GameState {
       score_details: {},
       holding_bonus: {comp1: {}, player: {}, comp2: {}},
       dead: [],
-      penultimate: [],
       escalations: -1,
       advance: "C",
     }
