@@ -20,6 +20,7 @@ export class GameState {
   public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit = arbitrarySuit;
   public currentState: state = 'initialiseGame';
+  public handNumber: number = 0;
 
   constructor(public playerNames: string[]) {
     // TODO: more / flexi ??
@@ -294,6 +295,7 @@ export class GameState {
     this.trumpSuit = this.trumpSuitFromLadders();
     this.currentState = 'playCard';
     this.currentPlayerIndex = this.getNextPlayerIndex(this.dealerIndex);
+    this.handNumber++;
   }
 
   giveCardToPlayer(playerIndex: number, card: Card) {
@@ -380,7 +382,7 @@ export class GameState {
         this.increment();
         return this.getStateForUI();
       },
-      // game_state: t
+      hand_number: this.handNumber,
       // TODO: placeholders:
       scores: {comp1: 0, player: 0, comp2: 0},
       scores_previous: {comp1: 0, player: 0, comp2: 0},
@@ -389,7 +391,6 @@ export class GameState {
       dead: [],
       penultimate: [],
       escalations: -1,
-      hand_number: -1,
       advance: "C",
     }
   }
