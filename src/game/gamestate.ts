@@ -18,6 +18,8 @@ export class GameState {
   public previousTrick: [Card, Player][] = [];
   public groundings: Card[] = [];
   public spoils: Card[] = [];
+  // for UI purposes, convenient for now to have spoils from last hand
+  public previousSpoils: Card[] = [];
   public deadCards: Card[] = [];
   public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit = arbitrarySuit;
@@ -54,6 +56,7 @@ export class GameState {
         break;
       case 'handComplete':
         this.updateScores();
+        this.previousSpoils = this.spoils.slice();
         this.dealerIndex = this.getNextPlayerIndex(this.dealerIndex);
         this.dealCards(this.pack);
         break;
@@ -116,6 +119,11 @@ export class GameState {
 
   get currentPlayerHand(): Card[] {
     return this.currentPlayer.hand;
+  }
+
+  get humanHand(): Card[] {
+    // TODO: don't fix index of human player, maybe?
+    return this.getPlayerHand(0);
   }
 
   get numPlayers(): number {
@@ -241,6 +249,23 @@ export class GameState {
     ).some(
       (hand) => hand.length > 0
     );
+  }
+
+  get spoilsToDisplay(): Card[] {
+    // display spoils from end of penultimate trick until after first user action in next hand
+    if (
+      (this.isPenultimateTrick && this.currentState === "trickComplete") ||
+      (this.isFinalTrick) ||
+      (this.currentState === "handComplete")
+    ) {
+      return this.spoils;
+    }
+    if (
+      (this.humanHand.length === this.cardsPerHand)
+     ) {
+      return this.previousSpoils;
+    }
+    return [];
   }
 
   private computerMove(): number {
@@ -377,8 +402,7 @@ export class GameState {
 
   getStateForUI(): GameStateForUI {
     return {
-      // TODO: don't fix index of human player, maybe?
-      hands: {comp1: [], player: this.getPlayerHand(0), comp2: []},
+      hands: {comp1: [], player: this.humanHand, comp2: []},
       trumps: this.trumpSuit,
       played: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.trickInProgress)])
@@ -401,8 +425,7 @@ export class GameState {
         ) as Record<PlayerName, Card[]>,
         neutral: this.ladders.filter(([_card, player]) => player === null).map(([card, _player]) => card)
       },
-      // TODO: not quite right:
-      penultimate: this.isFinalTrick || this.isPenultimateTrick ? this.spoils : [],
+      penultimate: this.spoilsToDisplay,
       game_state: this.currentState,
       whose_turn: this.currentPlayer.name,
       getCard: (card_str: string): Card => {
