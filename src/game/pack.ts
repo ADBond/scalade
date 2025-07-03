@@ -4,6 +4,10 @@ export class Pack {
   private cards: Card[] = [];
 
   constructor(public minRank: number = 4) {
+    this.reset();
+  }
+
+  reset() {
     this.cards = this.getFullPack();
   }
 
@@ -51,8 +55,8 @@ export class Pack {
     return this.cards.length === 0;
   }
 
-  filterOut(cards: Card[]): Card[] {
-    const filteredCards = this.cards.filter((card: Card) => !cards.some(c => Card.cardEquals(card, c)));
+  filterOut(cardsToFilterFrom: Card[], cards: Card[]): Card[] {
+    const filteredCards = cardsToFilterFrom.filter((card: Card) => !cards.some(c => Card.cardEquals(card, c)));
     return filteredCards;
   }
 

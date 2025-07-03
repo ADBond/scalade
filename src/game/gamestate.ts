@@ -310,15 +310,19 @@ export class GameState {
 
   private dealCards(pack: Pack, count: number = 12) {
     const halfHandSizeRoundedUp = Math.ceil(count / 2);
-    const remainingPack = this.pack.filterOut(this.ladderCards);
+    this.pack.reset()
+    let remainingPack = this.pack.filterOut(this.pack.getFullPack(), this.ladderCards);
     Pack.shuffle(remainingPack);
     // first hand we have random groundings,
-    if (this.handNumber == 0){
+    if (this.handNumber === 0){
       // TODO: this logic can be pulled out!
       for (let i = 0; i < 2; i++) {
         const card = remainingPack.pop();
         if (card) this.groundings.push(card); else console.log("Deal error! ran out of cards before groundings");
       }
+    } else {
+      this.groundings = [...this.deadCards];
+      remainingPack = this.pack.filterOut(remainingPack, this.groundings);
     }
     for (let i = 0; i < count; i++) {
       // for (const player of this.state.players) {
@@ -348,7 +352,7 @@ export class GameState {
     }
     // TODO now pack should be empty
     console.log("Empty pack:");
-    console.log(remainingPack);
+    console.log([...remainingPack]);
     this.trumpSuit = this.trumpSuitFromLadders();
     this.currentState = 'playCard';
     this.currentPlayerIndex = this.getNextPlayerIndex(this.dealerIndex);
