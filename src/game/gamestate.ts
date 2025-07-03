@@ -20,6 +20,8 @@ export class GameState {
   public spoils: Card[] = [];
   // for UI purposes, convenient for now to have spoils from last hand
   public previousSpoils: Card[] = [];
+  // and a copy of the groundings
+  public currentHandsGroundings: Card[] = [];
   public deadCards: Card[] = [];
   public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit = arbitrarySuit;
@@ -268,6 +270,23 @@ export class GameState {
     return [];
   }
 
+  get groundingsToDisplay(): Card[] {
+    // display groundings in first trick, up to first user action
+    // also display dead cards (-> groundings) at end of final trick
+    if (
+      (this.isFinalTrick && this.currentState === "trickComplete") ||
+      (this.currentState === "handComplete")
+    ) {
+      return this.deadCards;
+    }
+    if (
+      (this.humanHand.length === this.cardsPerHand)
+    ) {
+      return this.currentHandsGroundings;
+    }
+    return [];
+  }
+
   private computerMove(): number {
     const agent = this.currentPlayer.agent;
     if (agent === 'human') {
@@ -324,6 +343,7 @@ export class GameState {
       this.groundings = [...this.deadCards];
       remainingPack = this.pack.filterOut(remainingPack, this.groundings);
     }
+    this.currentHandsGroundings = [...this.groundings];
     for (let i = 0; i < count; i++) {
       // for (const player of this.state.players) {
         // TODO: loop this properly!
@@ -430,6 +450,7 @@ export class GameState {
         neutral: this.ladders.filter(([_card, player]) => player === null).map(([card, _player]) => card)
       },
       penultimate: this.spoilsToDisplay,
+      dead: this.groundingsToDisplay,
       game_state: this.currentState,
       whose_turn: this.currentPlayer.name,
       getCard: (card_str: string): Card => {
@@ -449,7 +470,6 @@ export class GameState {
       scores_previous: {comp1: 0, player: 0, comp2: 0},
       score_details: {},
       holding_bonus: {comp1: {}, player: {}, comp2: {}},
-      dead: [],
       escalations: -1,
       advance: "C",
     }
