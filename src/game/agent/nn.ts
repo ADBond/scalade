@@ -1,0 +1,37 @@
+import * as tf from '@tensorflow/tfjs';
+
+import { ComputerAgent } from "./agent"
+import { GameState } from "../gamestate"
+
+
+export async function loadModel() {
+  const model = await tf.loadLayersModel('static/models/model-tfjs/model.json');
+  const inputShape = model.inputs[0].shape;
+  const inputLength = inputShape[1]!;
+  console.log(inputShape);
+  const inputTensor = tf.zeros([1, inputLength]);
+  console.log(inputTensor);
+  return model;
+}
+export const nnAgent: ComputerAgent = {
+    chooseMove: async (gameState: GameState, legalMoveIndices: number[]) => {
+      const model = await loadModel();
+      const inputLength = model.inputs[0].shape[1]!;
+  
+      // TODO: actual gamestate!
+      const inputTensor = tf.zeros([1, inputLength]);
+  
+      const prediction = model.predict(inputTensor) as tf.Tensor;
+      const predictionData = await prediction.data();
+  
+      const maxIndex = predictionData.indexOf(Math.max(...predictionData));
+  
+      console.log('Prediction:', predictionData);
+      console.log('Max index:', maxIndex);
+  
+      // TODO: map maxIndex to one of the legalMoveIndices
+      // For now, just return a legal move (placeholder)
+      return legalMoveIndices[0];
+    }
+  };
+  

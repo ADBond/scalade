@@ -1,6 +1,5 @@
 import { Pack } from './pack';
 import { GameState, GameStateForUI } from './gamestate';
-import { Card } from './card';
 
 export class Game {
   private pack = new Pack();
