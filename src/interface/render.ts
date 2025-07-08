@@ -112,17 +112,17 @@ export async function renderState(state: GameStateForUI) {
       if (state.whose_turn === "player") break;
       await wait(700);
       newState = incrementState(state);
-      renderState(newState);
+      await renderState(newState);
       break;
     case "trickComplete":
       await wait(1700);
       newState = incrementState(state);
-      renderState(newState);
+      await renderState(newState);
       break;
     case "handComplete":
       await wait(3000);
       newState = incrementState(state);
-      renderState(newState);
+      await renderState(newState);
       break;
     default:
       console.log(`Error: Switching and failing: ${state.game_state}`);
