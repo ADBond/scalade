@@ -23,13 +23,16 @@ export const nnAgent: ComputerAgent = {
   
       const prediction = model.predict(inputTensor) as tf.Tensor;
       const predictionData = await prediction.data();
+      const probabilities = await tf.softmax(predictionData).data();
   
       const maxIndex = predictionData.indexOf(Math.max(...predictionData));
   
       console.log('Prediction:', predictionData);
+      console.log('Probs: ', probabilities);
       console.log('Max index:', maxIndex);
   
       // TODO: map maxIndex to one of the legalMoveIndices
+      // need to filter predictionData on legal moves
       // For now, just return a legal move (placeholder)
       return legalMoveIndices[0];
     }
