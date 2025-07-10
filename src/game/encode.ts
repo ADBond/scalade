@@ -77,7 +77,9 @@ export class ModelEncoder {
                 const encoded = this.encoderNames.map(
                     (name) => concreteEncoders[name].encode(gameState)
                 );
-                return tf.concat(encoded);
+                const fullEncoded = tf.concat(encoded);
+                // TODO: not hardcoded please
+                return fullEncoded.reshape([1, 64]);
             }
         }
         return MultiEncoder;
