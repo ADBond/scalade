@@ -14,6 +14,7 @@ function oneHotEncode(index: number | number[] | null | undefined, size: number)
             (ind) => {return [ind]}
         ),
         [indices.length, 1],
+        "int32",
     );
     const updates = tf.ones([indices.length]);
     return tf.tensorScatterUpdate(encoded, indexTensor, updates);
@@ -76,7 +77,7 @@ export class ModelEncoder {
                 const encoded = this.encoderNames.map(
                     (name) => concreteEncoders[name].encode(gameState)
                 );
-                return tf.concat(encoded, 1);
+                return tf.concat(encoded);
             }
         }
         return MultiEncoder;
