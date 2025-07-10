@@ -2,6 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 
 import { ComputerAgent } from "./agent"
 import { GameState } from "../gamestate"
+import { smallEncoder } from '../encode';
 
 
 export async function loadModel() {
@@ -18,23 +19,27 @@ export const nnAgent: ComputerAgent = {
       const model = await loadModel();
       const inputLength = model.inputs[0].shape[1]!;
   
-      // TODO: actual gamestate!
-      const inputTensor = tf.zeros([1, inputLength]);
+      // TODO: allow this to vary depending on model
+      const inputTensor = smallEncoder.encode(gameState);
   
       const prediction = model.predict(inputTensor) as tf.Tensor;
       const predictionData = await prediction.data();
-      const probabilities = await tf.softmax(predictionData).data();
+      const legalPredictions = predictionData.filter(
+        (value, index) => legalMoveIndices.includes(index)
+      );
+      // const probabilities = await tf.softmax(legalPredictions).data();
+      const maxLegalPrediction = Math.max(...legalPredictions)
   
-      const maxIndex = predictionData.indexOf(Math.max(...predictionData));
+      const maxIndex = predictionData.indexOf(maxLegalPrediction);
   
       console.log('Prediction:', predictionData);
-      console.log('Probs: ', probabilities);
+      // console.log('Probs: ', probabilities);
       console.log('Max index:', maxIndex);
   
       // TODO: map maxIndex to one of the legalMoveIndices
       // need to filter predictionData on legal moves
       // For now, just return a legal move (placeholder)
-      return legalMoveIndices[0];
+      return maxIndex;
     }
   };
   

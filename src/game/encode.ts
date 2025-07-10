@@ -82,3 +82,5 @@ export class ModelEncoder {
         return MultiEncoder;
     }
 }
+
+export const smallEncoder = new ModelEncoder(["hand", "trickNumber", "trumpSuit", "ledSuit"]).encoder;
