@@ -58,3 +58,27 @@ const TrumpSuitEncoder: Encoder = {
         return oneHotEncode(gameState.trumpSuit?.rankForTrumpPreference, N_SUITS);
     }
 }
+
+const concreteEncoders = {
+    hand: HandEncoder,
+    trickNumber: TrickNumberEncoder,
+    ledSuit: LedSuitEncoder,
+    trumpSuit: TrumpSuitEncoder,
+}
+type concreteEncoderNames = keyof typeof concreteEncoders
+
+export class ModelEncoder {
+    constructor(public encoderNames: concreteEncoderNames[]) { }
+
+    get encoder(): Encoder {
+        const MultiEncoder: Encoder = {
+            encode: (gameState: GameState) => {
+                const encoded = this.encoderNames.map(
+                    (name) => concreteEncoders[name].encode(gameState)
+                );
+                return tf.concat(encoded, 1);
+            }
+        }
+        return MultiEncoder;
+    }
+}
