@@ -2,7 +2,8 @@ import { Card, Suit, arbitrarySuit } from './card';
 import { Pack } from './pack';
 import { LadderPosition, Player, PlayerName, playerNameArr } from './player';
 import { Agent } from './agent/agent';
-import { randomAgent } from './agent/random';
+// import { randomAgent } from './agent/random';
+import { nnAgent } from './agent/nn';
 
 type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
 
@@ -31,7 +32,7 @@ export class GameState {
   constructor(public playerNames: string[]) {
     // TODO: more / flexi ??
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
-    const agents: Agent[] = ['human', randomAgent, randomAgent]
+    const agents: Agent[] = ['human', nnAgent, nnAgent]
     this.players = playerNames.map(
       (name, i) => new Player(name, playerConfig[i], [], 0, agents[i], i)
     )
@@ -287,7 +288,7 @@ export class GameState {
     return [];
   }
 
-  private computerMove(): number {
+  private async computerMove(): Promise<number> {
     const agent = this.currentPlayer.agent;
     if (agent === 'human') {
       // TODO: error
@@ -296,7 +297,7 @@ export class GameState {
     }
 
     const currentLegalMoves = this.legalMoveIndices;
-    const cardToPlayIndex = agent.chooseMove(this, currentLegalMoves);
+    const cardToPlayIndex = await agent.chooseMove(this, currentLegalMoves);
     const cardToPlay = Card.cardFromIndex(cardToPlayIndex, this.pack.getFullPack())
 
     if (!this.playCard(cardToPlay)) {

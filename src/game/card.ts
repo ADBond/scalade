@@ -101,3 +101,4 @@ export const SUITS: Suit[] = [
 ];
 
 export const arbitrarySuit = SUITS[0];
+export const N_SUITS = SUITS.length;
