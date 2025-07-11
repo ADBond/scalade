@@ -13,20 +13,23 @@ const helpClose = document.getElementById('help-close')!;
 
 let scrollTop = 0;
 
-helpButton.addEventListener('click', () => {
+const openModal = () => {
   scrollTop = window.scrollY;
   document.body.classList.add('modal-open');
   document.body.style.top = `-${scrollTop}px`;
-  helpModal.style.display = 'block';
-});
-
-const closeModal = () => {
-  helpModal.style.display = 'none';
-  document.body.classList.remove('modal-open');
-  document.body.style.top = '';
-  window.scrollTo(0, scrollTop);
+  helpModal.classList.add('show');
 };
 
+const closeModal = () => {
+  helpModal.classList.remove('show');
+  setTimeout(() => {
+    document.body.classList.remove('modal-open');
+    document.body.style.top = '';
+    window.scrollTo(0, scrollTop);
+  }, 400);
+};
+
+helpButton.addEventListener('click', openModal);
 helpClose.addEventListener('click', closeModal);
 
 window.addEventListener('click', (e: MouseEvent) => {
@@ -34,10 +37,7 @@ window.addEventListener('click', (e: MouseEvent) => {
 });
 
 document.addEventListener('keydown', (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && helpModal.style.display === 'block') {
-    helpModal.style.display = 'none';
-    document.body.classList.remove('modal-open');
-    document.body.style.top = '';
-    window.scrollTo(0, scrollTop);
+  if (e.key === 'Escape' && helpModal.classList.contains('show')) {
+    closeModal();
   }
 });

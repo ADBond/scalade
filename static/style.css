@@ -205,15 +205,22 @@ body.modal-open {
 }
 
 #help-modal {
-    display: none;
     position: fixed;
     z-index: 999;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
+
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 400ms ease, visibility 400ms ease;
+}
+
+#help-modal.show {
+    opacity: 1;
+    visibility: visible;
 }
 
 #help-content {
