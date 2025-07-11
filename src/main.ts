@@ -11,16 +11,33 @@ const helpButton = document.getElementById('help-button')!;
 const helpModal = document.getElementById('help-modal')!;
 const helpClose = document.getElementById('help-close')!;
 
+let scrollTop = 0;
+
 helpButton.addEventListener('click', () => {
+  scrollTop = window.scrollY;
+  document.body.classList.add('modal-open');
+  document.body.style.top = `-${scrollTop}px`;
   helpModal.style.display = 'block';
 });
 
-helpClose.addEventListener('click', () => {
+const closeModal = () => {
   helpModal.style.display = 'none';
-});
+  document.body.classList.remove('modal-open');
+  document.body.style.top = '';
+  window.scrollTo(0, scrollTop);
+};
+
+helpClose.addEventListener('click', closeModal);
 
 window.addEventListener('click', (e: MouseEvent) => {
-  if (e.target === helpModal) {
+  if (e.target === helpModal) closeModal();
+});
+
+document.addEventListener('keydown', (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && helpModal.style.display === 'block') {
     helpModal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    document.body.style.top = '';
+    window.scrollTo(0, scrollTop);
   }
 });
