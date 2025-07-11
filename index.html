@@ -3,10 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Scalade - in development</title>
+    <title>Play Scalade Online - in development</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="/src/main.ts" defer></script>
-
+    <meta name="description" content="Play Scalade Online is a place to play
+        the trick-taking card game Scalade against bot players
+        in-browser." />
 </head>
 
 <body>
@@ -70,6 +72,80 @@
 
     <div class="hand">
         <div id="player-hand"></div>
+    </div>
+
+    <button id="help-button">?</button>
+    <div id="help-modal">
+        <div id="help-content">
+            <span id="help-close">&times;</span>
+            <h2>Play Scalade Online</h2>
+            <p>
+                <strong>Play Scalade Online</strong> is a webpage where you can play the card
+                game
+                Scalade against bot players.
+            </p>
+            <p>
+                <a href="#help-content-game">About Scalade</a>
+            </p>
+            <p>
+                <a href="#help-content-app">About this app</a>
+            </p>
+            <h3 id="help-content-game">Game overview</h3>
+            <p>
+                <strong>Scalade</strong> is a trick-taking card game, primarily for three players, played with a traditional 52-card pack
+                of cards (usually with some cards removed).
+            </p>
+            <p>
+                Each player plays for themselves. There is a 'ladder' in each suit, represented by a card of that suit
+                on the table.
+                Players win control of ladders by winning tricks that contain the card above the current rank (the
+                'rung') in that suit,
+                with this new, higher, rank becoming the rung for that ladder.
+            </p>
+            <p>
+                Players score points by having control of ladders at the end of a deal, with additional bonuses for
+                holding onto ladders in suits that they had control of at the end of the previous hand.
+                These 'holding bonuses' can grow from deal to deal, leading to potentially very high-scoring bonuses.
+            </p>
+            <p>
+                Full rules for the game are available <a href="https://repiqued-interests.co.uk/games/scalade"
+                    target="_blank">at this Scalade web-page</a>
+            </p>
+            <h3 id="help-content-app">About the app</h3>
+            <p>
+                This app currently only supports the standard Scalade rules, with three players.
+            </p>
+            <p>
+                The game runs entirely in-browser. If you navigate away from the page, or refresh, the current game will
+                be lost.
+                There are no current facilities for saving/loading a game.
+            </p>
+            <p>
+                Bot players run using trained neural networks at their core.
+                They have access only to the same information a real player would, or less (depending on the bot).
+            </p>
+            <p>
+                There is only one bot player currently, <strong>Arundel</strong>.
+                Arundel always picks the move she thinks is best. She has access to:
+            </p>
+            <ul>
+                <li>her hand of cards,</li>
+                <li>the suit led (if any),</li>
+                <li>the trump suit,</li>
+                <li>which trick of the hand it is.</li>
+            </ul>
+            <p>
+                She has access to no further information, so cannot for instance remember which cards have been played
+                already.
+            </p>
+            <p>
+                More advanced bot players will become available in due course.
+            </p>
+            <p>
+                You can <a href="https://github.com/ADBond/scalade" target="_blank">view the source code for the app
+                    here</a>.
+            </p>
+        </div>
     </div>
 
 </body>
