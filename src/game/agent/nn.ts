@@ -28,6 +28,8 @@ export const nnAgent: ComputerAgent = {
       const legalPredictions = predictionData.filter(
         (value, index) => legalMoveIndices.includes(index)
       );
+      // might want probabilities for frontend, but this should
+      // be separate functionality
       // const probabilities = await tf.softmax(legalPredictions).data();
       const maxLegalPrediction = Math.max(...legalPredictions)
   
@@ -37,9 +39,6 @@ export const nnAgent: ComputerAgent = {
       // console.log('Probs: ', probabilities);
       console.log('Max index:', maxIndex);
   
-      // TODO: map maxIndex to one of the legalMoveIndices
-      // need to filter predictionData on legal moves
-      // For now, just return a legal move (placeholder)
       return maxIndex;
     }
   };
