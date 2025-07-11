@@ -1,0 +1,181 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+    background: #2e7d32;
+    color: white;
+}
+
+.game-board {
+    position: relative;
+    width: 900px;
+    height: 450px;
+    margin: 20px auto;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    background: #388e3c;
+}
+
+.player-area {
+    position: absolute;
+    text-align: center;
+    border: black 1px;
+}
+
+.player-area.player {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-area.comp1 {
+    top: 20px;
+    left: 30px;
+}
+
+.player-area.comp2 {
+    top: 20px;
+    right: 30px;
+}
+
+.ladder.neutral {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.played,
+.previous,
+.ladder {
+    margin: 5px 0;
+}
+
+.played,
+.ladder {
+    height: 110px;
+}
+
+.ladder {
+    width: 400px;
+}
+
+.card {
+    display: inline-block;
+    width: 72px;
+    height: 96px;
+    background-image: url('cards_four.webp');
+    background-size: calc(72px * 13) auto;
+    margin: 5px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    transition: transform 0.1s;
+}
+
+.hand .card {
+    cursor: pointer;
+}
+
+.hand .card:hover {
+    transform: scale(1.05);
+    border-color: #fff;
+}
+
+.played-card {
+    opacity: 0.9;
+}
+
+.hand {
+    margin-top: 30px;
+    height: 110px;
+}
+
+.suit-icon {
+    background-image: url('card_suits.png');
+    background-color: rgba(255, 255, 255, 0.3);
+    display: inline-block;
+    border-radius: 5px;
+    width: 32px;
+    height: 32px;
+    transform: scale(1.5);
+}
+.holding-bonus-icon {
+    transform: scale(0.8);
+    background-color: rgba(255,255,255,0.1);
+}
+
+#scores-previous {
+    font-size: 80%;
+    font-style: italic;
+    color: #ccc;
+}
+
+#score-breakdown {
+    color: #f89b9b;
+}
+
+.trump-suit {
+    position: absolute;
+    right: 250px;
+    top: 200px;
+    width: 50px;
+}
+
+.previous-trick {
+    position: absolute;
+    right: 20px;
+    top: 100px;
+    width: 200px;
+    text-align: center;
+}
+
+.prev-area {
+    position: relative;
+    width: 100%;
+    height: 200px;
+}
+
+.prev-slot {
+    position: absolute;
+    transform: scale(0.75);
+    transform-origin: center center;
+}
+
+#prev-comp1 {
+    top: 0;
+    left: 0;
+}
+
+#prev-comp2 {
+    top: 0;
+    right: 0;
+}
+
+#prev-player {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+}
+
+.prev-slot .card {
+    margin: 2px;
+}
+
+.penultimate-cards {
+    position: absolute;
+    right: 20px;
+    top: 300px;
+    width: 200px;
+    text-align: center;
+}
+
+.dead-cards {
+    position: absolute;
+    right: 20px;
+    top: 400px;
+    width: 200px;
+    text-align: center;
+}
+
+.dead-cards .card {
+    opacity: 0.6;
+}
