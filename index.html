@@ -80,7 +80,7 @@
             <span id="help-close">&times;</span>
             <h2>Play Scalade Online</h2>
             <p>
-                <span style="font-weight: bold;">Play Scalade Online</span> is a webpage where you can play the card
+                <strong>Play Scalade Online</strong> is a webpage where you can play the card
                 game
                 Scalade against bot players.
             </p>
@@ -92,8 +92,8 @@
             </p>
             <h3 id="help-content-game">Game overview</h3>
             <p>
-                Scalade is a trick-taking card game, primarily for three players, played with a traditional 52-card pack
-                of cards.
+                <strong>Scalade</strong> is a trick-taking card game, primarily for three players, played with a traditional 52-card pack
+                of cards (usually with some cards removed).
             </p>
             <p>
                 Each player plays for themselves. There is a 'ladder' in each suit, represented by a card of that suit
@@ -112,6 +112,39 @@
                     target="_blank">at this Scalade web-page</a>
             </p>
             <h3 id="help-content-app">About the app</h3>
+            <p>
+                This app currently only supports the standard Scalade rules, with three players.
+            </p>
+            <p>
+                The game runs entirely in-browser. If you navigate away from the page, or refresh, the current game will
+                be lost.
+                There are no current facilities for saving/loading a game.
+            </p>
+            <p>
+                Bot players run using trained neural networks at their core.
+                They have access only to the same information a real player would, or less (depending on the bot).
+            </p>
+            <p>
+                There is only one bot player currently, <strong>Arundel</strong>.
+                Arundel always picks the move she thinks is best. She has access to:
+            </p>
+            <ul>
+                <li>her hand of cards,</li>
+                <li>the suit led (if any),</li>
+                <li>the trump suit,</li>
+                <li>which trick of the hand it is.</li>
+            </ul>
+            <p>
+                She has access to no further information, so cannot for instance remember which cards have been played
+                already.
+            </p>
+            <p>
+                More advanced bot players will become available in due course.
+            </p>
+            <p>
+                You can <a href="https://github.com/ADBond/scalade" target="_blank">view the source code for the app
+                    here</a>.
+            </p>
         </div>
     </div>
 
