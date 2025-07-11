@@ -6,7 +6,7 @@ import { smallEncoder } from '../encode';
 
 
 export async function loadModel() {
-  const modelUrl = `${import.meta.env.BASE_URL}models/model-tfjs/model.json`;
+  const modelUrl = `${import.meta.env.BASE_URL}models/arundel/model.json`;
   const model = await tf.loadLayersModel(modelUrl);
   const inputShape = model.inputs[0].shape;
   const inputLength = inputShape[1]!;
