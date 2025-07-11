@@ -3,12 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Play Scalade online - in development</title>
+    <title>Play Scalade Online - in development</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="/src/main.ts" defer></script>
-    <meta
-        name="description"
-        content="Play Scalade online is a place to play
+    <meta name="description" content="Play Scalade Online is a place to play
         the trick-taking card game Scalade against bot players
         in-browser." />
 </head>
@@ -74,6 +72,41 @@
 
     <div class="hand">
         <div id="player-hand"></div>
+    </div>
+
+    <button id="help-button">?</button>
+    <div id="help-modal">
+        <div id="help-content">
+            <span id="help-close">&times;</span>
+            <h2>Play Scalade Online</h2>
+            <p>
+                <span style="font-weight: bold;">Play Scalade Online</span> is a webpage where you can play the card
+                game
+                Scalade against bot players.
+            </p>
+            <h3>Game overview</h3>
+            <p>
+                Scalade is a trick-taking card game, primarily for three players, played with a traditional 52-card pack
+                of cards.
+            </p>
+            <p>
+                Each player plays for themselves. There is a 'ladder' in each suit, represented by a card of that suit
+                on the table.
+                Players win control of ladders by winning tricks that contain the card above the current rank (the
+                'rung') in that suit,
+                with this new, higher, rank becoming the rung for that ladder.
+            </p>
+            <p>
+                Players score points by having control of ladders at the end of a deal, with additional bonuses for
+                holding onto ladders in suits that they had control of at the end of the previous hand.
+                These 'holding bonuses' can grow from deal to deal, leading to potentially very high-scoring bonuses.
+            </p>
+            <p>
+                Full rules for the game are available <a href="https://repiqued-interests.co.uk/games/scalade"
+                    target="_blank">at this Scalade web-page</a>
+            </p>
+            <h3>About the app</h3>
+        </div>
     </div>
 
 </body>
