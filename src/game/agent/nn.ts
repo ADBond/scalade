@@ -38,7 +38,7 @@ export const nnAgent: ComputerAgent = {
       // console.log('Prediction:', predictionData);
       // console.log('Probs: ', probabilities);
       // console.log('Max index:', maxIndex);
-      console.log(`From options ${legalMoveIndices} I picked ${maxIndex}`);
+      // console.log(`From options ${legalMoveIndices} I picked ${maxIndex}`);
 
       return maxIndex;
     }
