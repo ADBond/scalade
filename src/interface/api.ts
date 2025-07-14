@@ -12,7 +12,7 @@ export async function onHumanPlay(state: GameStateForUI, card: Card) {
     console.log("Now the human plays!");
     playCard(state, card);
     const futureStates = await playUntilHuman();
-    await renderWithDelays(futureStates, 500);
+    await renderWithDelays(futureStates);
 }
 
 export async function playUntilHuman(): Promise<GameStateForUI[]> {

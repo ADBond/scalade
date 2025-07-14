@@ -1,5 +1,5 @@
 import { createCardElement, createSuitElement } from './ui';
-import { GameStateForUI, ScoreDetails } from '../game/gamestate';
+import { GameStateForUI, ScoreDetails, state } from '../game/gamestate';
 import { PlayerName } from '../game/player';
 import { onHumanPlay } from './api';
 
@@ -133,11 +133,19 @@ export async function renderState(state: GameStateForUI) {
   // }
 }
 
-export async function renderWithDelays(states: GameStateForUI[], delayMs: number) {
+const delayMap: Record<state, number> = {
+  initialiseGame: 10,
+  playCard: 700,
+  trickComplete: 1100,
+  handComplete: 2000,
+  gameComplete: 10,
+}
+
+export async function renderWithDelays(states: GameStateForUI[]) {
   console.log(`Ready to render ${states.length} states`);
   for (const state of states) {
     await renderState(state);
-    await wait(delayMs);
+    await wait(delayMap[state.game_state]);
   }
 }
 

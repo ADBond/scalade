@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   newGame();
   const futureStates = await playUntilHuman();
   // TODO: avoid this duplication
-  await renderWithDelays(futureStates, 500);
+  await renderWithDelays(futureStates);
 });
 
 const helpButton = document.getElementById('help-button')!;
