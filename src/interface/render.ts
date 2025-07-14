@@ -126,7 +126,3 @@ export async function renderWithDelays(states: GameStateForUI[]) {
 function wait(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-// function incrementState(state: GameStateForUI): GameStateForUI {
-//   return state.increment();
-// }

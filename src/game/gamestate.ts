@@ -454,17 +454,6 @@ export class GameState {
       dead: this.groundingsToDisplay,
       game_state: this.currentState,
       whose_turn: this.currentPlayer.name,
-      // getCard: (card_str: string): Card => {
-      //   return this.pack.getCard(card_str);
-      // },
-      // playCard: (card: Card) => {
-      //   this.playCard(card);
-      //   return this.getStateForUI();
-      // },
-      // increment: () => {
-      //   this.increment();
-      //   return this.getStateForUI();
-      // },
       hand_number: this.handNumber,
       // TODO: placeholders:
       scores: {comp1: 0, player: 0, comp2: 0},
@@ -503,8 +492,4 @@ export interface GameStateForUI {
   advance: string;
   game_state: state;
   whose_turn: PlayerName;
-
-  // getCard(card_str: string): Card;
-  // playCard(card: Card): GameStateForUI;
-  // increment(): GameStateForUI;
 }
