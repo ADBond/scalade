@@ -1,10 +1,12 @@
-import { Game } from './game/game';
-
-import { renderState } from './interface/render';
+import { playUntilHuman } from './interface/api';
+import { renderWithDelays } from './interface/render';
+import { newGame } from './interface/game';
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const game = new Game(['Andy', 'Randy1', 'Randy2']);
-  await renderState(game.getGameStateForUI());
+  newGame();
+  const futureStates = await playUntilHuman();
+  // TODO: avoid this duplication
+  await renderWithDelays(futureStates);
 });
 
 const helpButton = document.getElementById('help-button')!;

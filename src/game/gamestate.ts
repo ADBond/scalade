@@ -5,7 +5,7 @@ import { Agent } from './agent/agent';
 // import { randomAgent } from './agent/random';
 import { nnAgent } from './agent/nn';
 
-type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
+export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
 
 export class GameState {
   public players: Player[] = [];
@@ -45,14 +45,14 @@ export class GameState {
     this.finalTrickWinnerIndex = -1;
   }
 
-  public increment() {
+  public async increment() {
     const state = this.currentState;
     switch (state) {
       case 'initialiseGame':
         this.dealCards(this.pack);
         break;
       case 'playCard':
-        const moveIndex = this.computerMove();
+        const moveIndex = await this.computerMove();
         break;
       case 'trickComplete':
         this.resetTrick();
@@ -372,8 +372,8 @@ export class GameState {
       if (card) this.spoils.push(card); else console.log("Deal error! ran out of cards before spoils");
     }
     // TODO now pack should be empty
-    console.log("Empty pack:");
-    console.log([...remainingPack]);
+    // console.log("Empty pack:");
+    // console.log([...remainingPack]);
     this.trumpSuit = this.trumpSuitFromLadders();
     this.currentState = 'playCard';
     this.currentPlayerIndex = this.getNextPlayerIndex(this.dealerIndex);
@@ -426,7 +426,7 @@ export class GameState {
   }
 
   getStateForUI(): GameStateForUI {
-    return {
+    return ({
       hands: {comp1: [], player: this.humanHand, comp2: []},
       trumps: this.trumpSuit,
       played: Object.fromEntries(
@@ -454,17 +454,6 @@ export class GameState {
       dead: this.groundingsToDisplay,
       game_state: this.currentState,
       whose_turn: this.currentPlayer.name,
-      getCard: (card_str: string): Card => {
-        return this.pack.getCard(card_str);
-      },
-      playCard: (card: Card) => {
-        this.playCard(card);
-        return this.getStateForUI();
-      },
-      increment: () => {
-        this.increment();
-        return this.getStateForUI();
-      },
       hand_number: this.handNumber,
       // TODO: placeholders:
       scores: {comp1: 0, player: 0, comp2: 0},
@@ -473,7 +462,7 @@ export class GameState {
       holding_bonus: {comp1: {}, player: {}, comp2: {}},
       escalations: -1,
       advance: "C",
-    }
+    })
   }
 }
 
@@ -503,8 +492,4 @@ export interface GameStateForUI {
   advance: string;
   game_state: state;
   whose_turn: PlayerName;
-
-  getCard(card_str: string): Card;
-  playCard(card: Card): GameStateForUI;
-  increment(): GameStateForUI;
 }

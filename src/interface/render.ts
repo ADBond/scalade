@@ -1,7 +1,7 @@
 import { createCardElement, createSuitElement } from './ui';
-import { GameStateForUI, ScoreDetails } from '../game/gamestate';
+import { GameStateForUI, ScoreDetails, state } from '../game/gamestate';
 import { PlayerName } from '../game/player';
-import { playCard } from './api';
+import { onHumanPlay } from './api';
 
 function constructScoreBreakdownText(scoreDetails: ScoreDetails): string {
   return ['player', 'comp1', 'comp2'].map(name => {
@@ -23,7 +23,6 @@ function constructScoreBreakdownText(scoreDetails: ScoreDetails): string {
 }
 
 export async function renderState(state: GameStateForUI) {
-  console.log(state);
 
   const handEl = document.getElementById('player-hand')!;
   const playerHand = state.hands.player;
@@ -37,7 +36,7 @@ export async function renderState(state: GameStateForUI) {
   handEl.innerHTML = '';
   playerHand.forEach(card => {
     handEl.appendChild(
-      createCardElement(card.toStringShort(), state.whose_turn === "player" ? (() => playCard(state, card)) : undefined)
+      createCardElement(card.toStringShort(), state.whose_turn === "player" ? (() => onHumanPlay(state, card)) : undefined)
     )
   });
 
@@ -106,35 +105,24 @@ export async function renderState(state: GameStateForUI) {
   advanceEl.innerHTML = '';
   advanceEl.appendChild(createSuitElement(state.advance));
 
-  let newState: GameStateForUI;
-  switch (state.game_state) {
-    case "playCard":
-      if (state.whose_turn === "player") break;
-      await wait(700);
-      newState = incrementState(state);
-      await renderState(newState);
-      break;
-    case "trickComplete":
-      await wait(1700);
-      newState = incrementState(state);
-      await renderState(newState);
-      break;
-    case "handComplete":
-      await wait(3000);
-      newState = incrementState(state);
-      await renderState(newState);
-      break;
-    default:
-      console.log(`Error: Switching and failing: ${state.game_state}`);
+}
 
+const delayMap: Record<state, number> = {
+  initialiseGame: 10,
+  playCard: 700,
+  trickComplete: 1700,
+  handComplete: 3000,
+  gameComplete: 10,
+}
+
+export async function renderWithDelays(states: GameStateForUI[]) {
+  for (const state of states) {
+    await renderState(state);
+    await wait(delayMap[state.game_state]);
   }
 }
 
 
 function wait(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function incrementState(state: GameStateForUI): GameStateForUI {
-  return state.increment();
 }
