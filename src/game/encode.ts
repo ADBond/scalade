@@ -48,6 +48,13 @@ const TrickNumberEncoder: Encoder = {
     }
 }
 
+const PlayingLastEncoder: Encoder = {
+    encode: (gameState: GameState) => {
+        const value = gameState.trickInProgress.length === gameState.numPlayers - 1 ? 1 : 0;
+        return tf.fill([1], value);
+    }
+}
+
 const LedSuitEncoder: Encoder = {
     encode: (gameState: GameState) => {
         return oneHotEncode(gameState.currentLedSuit?.rankForTrumpPreference, N_SUITS);
@@ -63,6 +70,7 @@ const TrumpSuitEncoder: Encoder = {
 const concreteEncoders = {
     hand: HandEncoder,
     trickNumber: TrickNumberEncoder,
+    playingLast: PlayingLastEncoder,
     ledSuit: LedSuitEncoder,
     trumpSuit: TrumpSuitEncoder,
 }
@@ -86,3 +94,17 @@ export class ModelEncoder {
 }
 
 export const smallEncoder = new ModelEncoder(["hand", "trickNumber", "trumpSuit", "ledSuit"]).encoder;
+export const extendedEncoder = new ModelEncoder(
+    [
+        "hand",
+        // "currentTrick",
+        "playingLast",
+        // "unseenCards",
+        // "ladders",
+        // "holdingBonus",
+        "trickNumber",
+        "trumpSuit",
+        "ledSuit",
+        // "opponentVoids",
+    ]
+).encoder;
