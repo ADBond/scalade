@@ -4,9 +4,11 @@ import { ComputerAgent } from "./agent"
 import { GameState } from "../gamestate"
 import { smallEncoder } from '../encode';
 
+// TODO: also need to align these with encoders
+type knownModel = "arundel" | "bodiam";
 
-export async function loadModel() {
-  const modelUrl = `${import.meta.env.BASE_URL}models/arundel/model.json`;
+export async function loadModel(name: knownModel) {
+  const modelUrl = `${import.meta.env.BASE_URL}models/${name}/model.json`;
   const model = await tf.loadLayersModel(modelUrl);
   const inputShape = model.inputs[0].shape;
   const inputLength = inputShape[1]!;
@@ -15,9 +17,10 @@ export async function loadModel() {
   // console.log(inputTensor);
   return model;
 }
+
 export const nnAgent: ComputerAgent = {
     chooseMove: async (gameState: GameState, legalMoveIndices: number[]) => {
-      const model = await loadModel();
+      const model = await loadModel("arundel");
       const inputLength = model.inputs[0].shape[1]!;
   
       // TODO: allow this to vary depending on model
