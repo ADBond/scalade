@@ -3,11 +3,11 @@ import { GameState, GameStateForUI } from './gamestate';
 
 export class Game {
   private pack = new Pack();
-  private state: GameState;
+  public state: GameState;
 
   constructor(playerNames: string[]) {
     this.state = new GameState(playerNames);
-    this.state.increment();
+    this.incrementState();
   }
 
   getGameState(): GameState {
@@ -16,6 +16,10 @@ export class Game {
 
   getGameStateForUI(): GameStateForUI {
     return this.state.getStateForUI();
+  }
+
+  async incrementState() {
+    await this.state.increment();
   }
 
   // playCard(player: string, card: Card): boolean {

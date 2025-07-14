@@ -10,9 +10,9 @@ export async function loadModel() {
   const model = await tf.loadLayersModel(modelUrl);
   const inputShape = model.inputs[0].shape;
   const inputLength = inputShape[1]!;
-  console.log(inputShape);
+  // console.log(inputShape);
   const inputTensor = tf.zeros([1, inputLength]);
-  console.log(inputTensor);
+  // console.log(inputTensor);
   return model;
 }
 export const nnAgent: ComputerAgent = {
@@ -35,10 +35,11 @@ export const nnAgent: ComputerAgent = {
   
       const maxIndex = predictionData.indexOf(maxLegalPrediction);
   
-      console.log('Prediction:', predictionData);
+      // console.log('Prediction:', predictionData);
       // console.log('Probs: ', probabilities);
-      console.log('Max index:', maxIndex);
-  
+      // console.log('Max index:', maxIndex);
+      console.log(`From options ${legalMoveIndices} I picked ${maxIndex}`);
+
       return maxIndex;
     }
   };
