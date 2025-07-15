@@ -2,12 +2,9 @@ import * as tf from '@tensorflow/tfjs';
 
 import { ComputerAgent } from "./agent"
 import { GameState } from "../gamestate"
-import { smallEncoder, extendedEncoder } from '../encode';
+import { modelName, modelCatalogue } from '../models';
 
-// TODO: also need to align these with encoders
-type knownModel = "arundel" | "bodiam";
-
-export async function loadModel(name: knownModel) {
+export async function loadModel(name: modelName) {
   const modelUrl = `${import.meta.env.BASE_URL}models/${name}/model.json`;
   const model = await tf.loadLayersModel(modelUrl);
   const inputShape = model.inputs[0].shape;
@@ -18,32 +15,32 @@ export async function loadModel(name: knownModel) {
   return model;
 }
 
-export const nnAgent: ComputerAgent = {
-    chooseMove: async (gameState: GameState, legalMoveIndices: number[]) => {
-      const model = await loadModel("bodiam");
-      const inputLength = model.inputs[0].shape[1]!;
-  
-      // TODO: allow this to vary depending on model
-      const inputTensor = extendedEncoder.encode(gameState);
-  
-      const prediction = model.predict(inputTensor) as tf.Tensor;
-      const predictionData = await prediction.data();
-      const legalPredictions = predictionData.filter(
-        (value, index) => legalMoveIndices.includes(index)
-      );
-      // might want probabilities for frontend, but this should
-      // be separate functionality
-      // const probabilities = await tf.softmax(legalPredictions).data();
-      const maxLegalPrediction = Math.max(...legalPredictions)
-  
-      const maxIndex = predictionData.indexOf(maxLegalPrediction);
-  
-      // console.log('Prediction:', predictionData);
-      // console.log('Probs: ', probabilities);
-      // console.log('Max index:', maxIndex);
-      // console.log(`From options ${legalMoveIndices} I picked ${maxIndex}`);
+export const nnAgent = (name: modelName): ComputerAgent => ({
+  chooseMove: async (gameState: GameState, legalMoveIndices: number[]) => {
+    const model = await loadModel(name);
+    const inputLength = model.inputs[0].shape[1]!;
 
-      return maxIndex;
-    }
-  };
-  
+    const encoder = modelCatalogue[name];
+    const inputTensor = encoder.encode(gameState);
+
+    const prediction = model.predict(inputTensor) as tf.Tensor;
+    const predictionData = await prediction.data();
+    const legalPredictions = predictionData.filter(
+      (value, index) => legalMoveIndices.includes(index)
+    );
+    // might want probabilities for frontend, but this should
+    // be separate functionality
+    // const probabilities = await tf.softmax(legalPredictions).data();
+    const maxLegalPrediction = Math.max(...legalPredictions)
+
+    const maxIndex = predictionData.indexOf(maxLegalPrediction);
+
+    // console.log('Prediction:', predictionData);
+    // console.log('Probs: ', probabilities);
+    // console.log('Max index:', maxIndex);
+    // console.log(`From options ${legalMoveIndices} I picked ${maxIndex}`);
+
+    return maxIndex;
+  }
+});
+
