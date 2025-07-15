@@ -72,10 +72,30 @@ const opponentVoidsEncoder: Encoder = {
 
 const LaddersEncoder: Encoder = {
     encode: (gameState: GameState) => {
-        // TODO: actual logic
-        return tf.fill([44*3], 0);
+        const playerIndex = gameState.currentPlayerIndex;
+        const nextPlayerIndex = gameState.getNextPlayerIndex(playerIndex);
+        const prevPlayerIndex = gameState.getNextPlayerIndex(nextPlayerIndex);
+        const ladders = gameState.ladders;
+
+        const encodedCards = [
+            playerIndex,
+            nextPlayerIndex,
+            prevPlayerIndex,
+        ].map(
+            (index) => encodeCards(
+                ladders.filter(
+                    ([_card, player]) => player?.positionIndex === index
+                ).map(
+                    ([card, _player]) => card
+                ),
+                gameState.pack.getFullPack().length
+            )
+        )
+    
+        return tf.concat(encodedCards);
     }
 }
+  
 
 const TrickNumberEncoder: Encoder = {
     encode: (gameState: GameState) => {
