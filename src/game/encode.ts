@@ -44,8 +44,15 @@ const HandEncoder: Encoder = {
 
 const CurrentTrickEncoder: Encoder = {
     encode: (gameState: GameState) => {
-        // TODO: actual logic
-        return tf.fill([44*2], 0);
+        const numPlayers = gameState.numPlayers;
+        const currentTrick = gameState.trickInProgressCards;
+        const encodedCards = Array.from({ length: numPlayers - 1 }, (_, i) => {
+            return currentTrick[i] !== undefined ? [currentTrick[i]] : [];
+        }).map(
+            (cards) => encodeCards(cards, gameState.pack.getFullPack().length)
+        );
+
+        return tf.concat(encodedCards);
     }
 }
 
@@ -145,6 +152,7 @@ export const extendedEncoder = new ModelEncoder(
         "trickNumber",
         "trumpSuit",
         "ledSuit",
+        // not all voids - only renounces. No deductions!
         "opponentVoids",
     ]
 ).encoder;
