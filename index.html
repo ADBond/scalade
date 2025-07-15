@@ -8,7 +8,7 @@
     <meta name="description" content="Play Scalade Online is a place to play
         the trick-taking card game Scalade against bot players
         in-browser." />
-  <script type="module" crossorigin src="/scalade/assets/index-CARwyi0l.js"></script>
+  <script type="module" crossorigin src="/scalade/assets/index-u9Vzt5BE.js"></script>
 </head>
 
 <body>
@@ -125,21 +125,33 @@
                 They have access only to the same information a real player would, or less (depending on the bot).
             </p>
             <p>
-                There is only one bot player currently, <strong>Arundel</strong>.
-                Arundel always picks the move she thinks is best. She has access to:
+                There are two bot players currently, <strong>Arundel</strong> (sitting on the left)
+                and <strong>Bodiam</strong> (sitting on the right).
+                They both always pick the move they think is best. They both have access to:
             </p>
             <ul>
-                <li>her hand of cards,</li>
+                <li>their hand of cards,</li>
                 <li>the suit led (if any),</li>
                 <li>the trump suit,</li>
                 <li>which trick of the hand it is.</li>
             </ul>
             <p>
-                She has access to no further information, so cannot for instance remember which cards have been played
+                Arundel has access to no further information, so cannot for instance remember which cards have been played
                 already.
             </p>
             <p>
-                More advanced bot players will become available in due course.
+                Additionally, Bodiam has access to:
+            </p>
+            <ul>
+                <li>the cards played to the current trick (if any),</li>
+                <li>cards of the pack which have not yet been seen,</li>
+                <li>current ladder cards and their holders,</li>
+                <li>the holding bonus factors of each player,</li>
+                <li>suits which each opponent has renounced in (if any),</li>
+                <li>whether or not he is playing last to the trick.</li>
+            </ul>
+            <p>
+                Other bot players may become available in due course.
             </p>
             <p>
                 You can <a href="https://github.com/ADBond/scalade" target="_blank">view the source code for the app
