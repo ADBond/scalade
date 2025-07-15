@@ -2,7 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 
 import { ComputerAgent } from "./agent"
 import { GameState } from "../gamestate"
-import { smallEncoder } from '../encode';
+import { smallEncoder, extendedEncoder } from '../encode';
 
 // TODO: also need to align these with encoders
 type knownModel = "arundel" | "bodiam";
@@ -20,11 +20,11 @@ export async function loadModel(name: knownModel) {
 
 export const nnAgent: ComputerAgent = {
     chooseMove: async (gameState: GameState, legalMoveIndices: number[]) => {
-      const model = await loadModel("arundel");
+      const model = await loadModel("bodiam");
       const inputLength = model.inputs[0].shape[1]!;
   
       // TODO: allow this to vary depending on model
-      const inputTensor = smallEncoder.encode(gameState);
+      const inputTensor = extendedEncoder.encode(gameState);
   
       const prediction = model.predict(inputTensor) as tf.Tensor;
       const predictionData = await prediction.data();
