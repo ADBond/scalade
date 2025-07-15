@@ -42,9 +42,78 @@ const HandEncoder: Encoder = {
     }
 }
 
+const CurrentTrickEncoder: Encoder = {
+    encode: (gameState: GameState) => {
+        const numPlayers = gameState.numPlayers;
+        const currentTrick = gameState.trickInProgressCards;
+        const encodedCards = Array.from({ length: numPlayers - 1 }, (_, i) => {
+            return currentTrick[i] !== undefined ? [currentTrick[i]] : [];
+        }).map(
+            (cards) => encodeCards(cards, gameState.pack.getFullPack().length)
+        );
+
+        return tf.concat(encodedCards);
+    }
+}
+
+const UnseenCardsEncoder: Encoder = {
+    encode: (gameState: GameState) => {
+        // TODO: actual logic
+        return tf.fill([44], 0);
+    }
+}
+
+const opponentVoidsEncoder: Encoder = {
+    encode: (gameState: GameState) => {
+        // TODO: actual logic
+        return tf.fill([4*2], 0);
+    }
+}
+
+const LaddersEncoder: Encoder = {
+    encode: (gameState: GameState) => {
+        const playerIndex = gameState.currentPlayerIndex;
+        const nextPlayerIndex = gameState.getNextPlayerIndex(playerIndex);
+        const prevPlayerIndex = gameState.getNextPlayerIndex(nextPlayerIndex);
+        const ladders = gameState.ladders;
+
+        const encodedCards = [
+            playerIndex,
+            nextPlayerIndex,
+            prevPlayerIndex,
+        ].map(
+            (index) => encodeCards(
+                ladders.filter(
+                    ([_card, player]) => player?.positionIndex === index
+                ).map(
+                    ([card, _player]) => card
+                ),
+                gameState.pack.getFullPack().length
+            )
+        )
+    
+        return tf.concat(encodedCards);
+    }
+}
+  
+
 const TrickNumberEncoder: Encoder = {
     encode: (gameState: GameState) => {
         return oneHotEncode(gameState.trickIndex, gameState.cardsPerHand);
+    }
+}
+
+const PlayingLastEncoder: Encoder = {
+    encode: (gameState: GameState) => {
+        const value = gameState.trickInProgress.length === gameState.numPlayers - 1 ? 1 : 0;
+        return tf.fill([1], value);
+    }
+}
+
+const HoldingBonusEncoder: Encoder = {
+    encode: (gameState: GameState) => {
+        // TODO: actual logic
+        return tf.fill([4*3], 0);
     }
 }
 
@@ -62,7 +131,13 @@ const TrumpSuitEncoder: Encoder = {
 
 const concreteEncoders = {
     hand: HandEncoder,
+    currentTrick: CurrentTrickEncoder,
+    unseenCards: UnseenCardsEncoder,
+    opponentVoids: opponentVoidsEncoder,
+    ladders: LaddersEncoder,
     trickNumber: TrickNumberEncoder,
+    playingLast: PlayingLastEncoder,
+    holdingBonus: HoldingBonusEncoder,
     ledSuit: LedSuitEncoder,
     trumpSuit: TrumpSuitEncoder,
 }
@@ -78,8 +153,7 @@ export class ModelEncoder {
                     (name) => concreteEncoders[name].encode(gameState)
                 );
                 const fullEncoded = tf.concat(encoded);
-                // TODO: not hardcoded please
-                return fullEncoded.reshape([1, 64]);
+                return fullEncoded.reshape([1, fullEncoded.shape[0]]);
             }
         }
         return MultiEncoder;
@@ -87,3 +161,18 @@ export class ModelEncoder {
 }
 
 export const smallEncoder = new ModelEncoder(["hand", "trickNumber", "trumpSuit", "ledSuit"]).encoder;
+export const extendedEncoder = new ModelEncoder(
+    [
+        "hand",
+        "currentTrick",
+        "playingLast",
+        "unseenCards",
+        "ladders",
+        "holdingBonus",
+        "trickNumber",
+        "trumpSuit",
+        "ledSuit",
+        // not all voids - only renounces. No deductions!
+        "opponentVoids",
+    ]
+).encoder;
