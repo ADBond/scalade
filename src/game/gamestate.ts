@@ -34,7 +34,12 @@ export class GameState {
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
     const agents: Agent[] = ['human', nnAgent("arundel"), nnAgent("bodiam")]
     this.players = playerNames.map(
-      (name, i) => new Player(name, playerConfig[i], [], [], agents[i], i)
+      (name, i) => new Player(
+          name,
+          playerConfig[i],
+          agents[i],
+          i,
+        )
     )
     for (const name of playerNames) {
       this.players.push();
