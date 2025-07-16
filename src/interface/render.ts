@@ -78,7 +78,7 @@ export async function renderState(state: GameStateForUI) {
   document.getElementById('scores-previous')!.innerText =
     `prev: (You: ${state.scores_previous.player}, comp 1: ${state.scores_previous.comp1}, comp 2: ${state.scores_previous.comp2})`;
 
-  document.getElementById('score-breakdown')!.innerText =
+  document.getElementById('score-breakdown')!.innerHTML =
     constructScoreBreakdownText(state.score_details);
 
   document.getElementById('escalations')!.innerText =
