@@ -1,6 +1,7 @@
-import { Card, Suit, arbitrarySuit } from './card';
+import { Card, SUITS, Suit, arbitrarySuit } from './card';
 import { Pack } from './pack';
 import { LadderPosition, Player, PlayerName, playerNameArr } from './player';
+import { ScoreBreakdown } from './scores';
 import { Agent } from './agent/agent';
 // import { randomAgent } from './agent/random';
 import { nnAgent } from './agent/nn';
@@ -34,7 +35,12 @@ export class GameState {
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
     const agents: Agent[] = ['human', nnAgent("arundel"), nnAgent("bodiam")]
     this.players = playerNames.map(
-      (name, i) => new Player(name, playerConfig[i], [], 0, agents[i], i)
+      (name, i) => new Player(
+          name,
+          playerConfig[i],
+          agents[i],
+          i,
+        )
     )
     for (const name of playerNames) {
       this.players.push();
@@ -100,6 +106,12 @@ export class GameState {
       }
     }
     return legalCards.map(card => card.index);
+  }
+
+  getPlayer(name: PlayerName): Player {
+    return this.players.filter(
+      (player) => player.name === name
+    )[0];
   }
 
   private getPlayedCard(name: PlayerName, trick: [Card, Player][]): Card | null {
@@ -422,7 +434,34 @@ export class GameState {
   }
 
   updateScores() {
-    ;
+    this.players.forEach(
+      (player) => player.scores.push(new ScoreBreakdown([], 0))
+    )
+    SUITS.forEach(
+      (suit) => {
+        // TODO: adjust for double scalade, if we ever decide to implement it
+        const [ladderCard, ladderHolder] = this.ladders.filter(
+          ([card, _player]) => Suit.suitEquals(card.suit, suit)
+        )[0];
+        if (ladderHolder !== null) {
+          const ladderBaseValue = ladderCard.rank.score;
+          const breakdown: [number, number] = [ladderBaseValue, ladderHolder.holdingMultipliers.get(suit)];
+          ladderHolder.scores[ladderHolder.scores.length - 1].ladderScores.push(breakdown);
+          ladderHolder.holdingMultipliers.increment(suit);
+        }
+        const playersNotHoldingSuit = this.players.filter(
+          (player) => player.positionIndex !== ladderHolder?.positionIndex
+        );
+        playersNotHoldingSuit.forEach(
+          (player) => player.holdingMultipliers.set(suit, 1)
+        );
+      }
+    );
+    const finalTrickWinner = this.players[this.finalTrickWinnerIndex];
+    const finalTrickBonus = Math.min(
+      ...this.ladderCards.map(card => card.rank.score)
+    );
+    finalTrickWinner.scores[finalTrickWinner.scores.length - 1].finalTrickScore = finalTrickBonus;
   }
 
   getStateForUI(): GameStateForUI {
@@ -455,24 +494,23 @@ export class GameState {
       game_state: this.currentState,
       whose_turn: this.currentPlayer.name,
       hand_number: this.handNumber,
+      // scores: {comp1: 0, player: 0, comp2: 0},
+      scores: Object.fromEntries(
+        playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).score])
+      ) as Record<PlayerName, number>,
+      scores_previous: Object.fromEntries(
+        playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).previousScore.score])
+      ) as Record<PlayerName, number>,
+      score_details: Object.fromEntries(
+        playerNameArr.map((name): [PlayerName, string] => [name, this.getPlayer(name).previousScore.display])
+      ) as Record<PlayerName, string>,
       // TODO: placeholders:
-      scores: {comp1: 0, player: 0, comp2: 0},
-      scores_previous: {comp1: 0, player: 0, comp2: 0},
-      score_details: {},
       holding_bonus: {comp1: {}, player: {}, comp2: {}},
       escalations: -1,
       advance: "C",
     })
   }
 }
-
-export interface ScoreDetails {
-  [player: string]: {
-    ladder_bonuses: Record<string, { rank_base_value: number; holding_bonus_multiplier: number }>;
-    final_trick_bonus: number;
-  };
-}
-
 
 export interface GameStateForUI {
   hands: Record<PlayerName, Card[]>;
@@ -484,7 +522,7 @@ export interface GameStateForUI {
   dead: Card[];
   scores: Record<PlayerName, number>;
   scores_previous: Record<PlayerName, number>;
-  score_details: ScoreDetails;
+  score_details: Record<PlayerName, string>;
   escalations: number;
   hand_number: number;
   // TODO: suits:
