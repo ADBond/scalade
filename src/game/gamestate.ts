@@ -1,6 +1,7 @@
-import { Card, Suit, arbitrarySuit } from './card';
+import { Card, SUITS, Suit, arbitrarySuit } from './card';
 import { Pack } from './pack';
 import { LadderPosition, Player, PlayerName, playerNameArr } from './player';
+import { ScoreBreakdown } from './scores';
 import { Agent } from './agent/agent';
 // import { randomAgent } from './agent/random';
 import { nnAgent } from './agent/nn';
@@ -427,7 +428,34 @@ export class GameState {
   }
 
   updateScores() {
-    ;
+    this.players.forEach(
+      (player) => player.scores.push(new ScoreBreakdown([], 0))
+    )
+    SUITS.forEach(
+      (suit) => {
+        // TODO: adjust for double scalade, if we ever decide to implement it
+        const [ladderCard, ladderHolder] = this.ladders.filter(
+          ([card, _player]) => Suit.suitEquals(card.suit, suit)
+        )[0];
+        if (ladderHolder !== null) {
+          const ladderBaseValue = ladderCard.rank.score;
+          const breakdown: [number, number] = [ladderBaseValue, ladderHolder.holdingMultipliers.get(suit)];
+          ladderHolder.scores[ladderHolder.scores.length - 1].ladderScores.push(breakdown);
+          ladderHolder.holdingMultipliers.increment(suit);
+        }
+        const playersNotHoldingSuit = this.players.filter(
+          (player) => player.positionIndex !== ladderHolder?.positionIndex
+        );
+        playersNotHoldingSuit.forEach(
+          (player) => player.holdingMultipliers.set(suit, 1)
+        );
+      }
+    );
+    const finalTrickWinner = this.players[this.finalTrickWinnerIndex];
+    const finalTrickBonus = Math.min(
+      ...this.ladderCards.map(card => card.rank.score)
+    );
+    finalTrickWinner.scores[finalTrickWinner.scores.length - 1].finalTrickScore = finalTrickBonus;
   }
 
   getStateForUI(): GameStateForUI {

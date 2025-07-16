@@ -7,7 +7,7 @@ export type PlayerName = typeof playerNameArr[number];
 export type LadderPosition = PlayerName | 'neutral';
 
 class HoldingMultipliers {
-    public holdingMultiplierArray: [Suit, number][]
+    private holdingMultiplierArray: [Suit, number][]
 
     constructor() {
         this.holdingMultiplierArray = SUITS.map(
@@ -53,5 +53,9 @@ export class Player {
         ).reduce(
             (total, value) => total + value
         );
+    }
+
+    get previousScore(): ScoreBreakdown {
+        return this.scores[this.scores.length - 1];
     }
 }
