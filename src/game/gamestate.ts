@@ -108,6 +108,12 @@ export class GameState {
     return legalCards.map(card => card.index);
   }
 
+  getPlayer(name: PlayerName): Player {
+    return this.players.filter(
+      (player) => player.name === name
+    )[0];
+  }
+
   private getPlayedCard(name: PlayerName, trick: [Card, Player][]): Card | null {
     const playerPlayedCards = trick.filter(
       ([_card, player]) => player.name === name
@@ -488,24 +494,23 @@ export class GameState {
       game_state: this.currentState,
       whose_turn: this.currentPlayer.name,
       hand_number: this.handNumber,
+      // scores: {comp1: 0, player: 0, comp2: 0},
+      scores: Object.fromEntries(
+        playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).score])
+      ) as Record<PlayerName, number>,
+      scores_previous: Object.fromEntries(
+        playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).previousScore.score])
+      ) as Record<PlayerName, number>,
+      score_details: Object.fromEntries(
+        playerNameArr.map((name): [PlayerName, string] => [name, this.getPlayer(name).previousScore.display])
+      ) as Record<PlayerName, string>,
       // TODO: placeholders:
-      scores: {comp1: 0, player: 0, comp2: 0},
-      scores_previous: {comp1: 0, player: 0, comp2: 0},
-      score_details: {},
       holding_bonus: {comp1: {}, player: {}, comp2: {}},
       escalations: -1,
       advance: "C",
     })
   }
 }
-
-export interface ScoreDetails {
-  [player: string]: {
-    ladder_bonuses: Record<string, { rank_base_value: number; holding_bonus_multiplier: number }>;
-    final_trick_bonus: number;
-  };
-}
-
 
 export interface GameStateForUI {
   hands: Record<PlayerName, Card[]>;
@@ -517,7 +522,7 @@ export interface GameStateForUI {
   dead: Card[];
   scores: Record<PlayerName, number>;
   scores_previous: Record<PlayerName, number>;
-  score_details: ScoreDetails;
+  score_details: Record<PlayerName, string>;
   escalations: number;
   hand_number: number;
   // TODO: suits:

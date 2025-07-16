@@ -1,25 +1,12 @@
 import { createCardElement, createSuitElement } from './ui';
-import { GameStateForUI, ScoreDetails, state } from '../game/gamestate';
+import { GameStateForUI, state } from '../game/gamestate';
 import { PlayerName } from '../game/player';
 import { onHumanPlay } from './api';
 
-function constructScoreBreakdownText(scoreDetails: ScoreDetails): string {
-  return ['player', 'comp1', 'comp2'].map(name => {
-    const deets = scoreDetails[name];
-    let detailsString = `${name}: `;
-    for (const [suit, sDetail] of Object.entries(deets.ladder_bonuses)) {
-      let suitString = `+ ${sDetail.rank_base_value} `;
-      if (sDetail.holding_bonus_multiplier > 1) {
-        suitString += `x ${sDetail.holding_bonus_multiplier} `;
-      }
-      suitString += ` (${suit}) `;
-      detailsString += suitString;
-    }
-    if (deets.final_trick_bonus !== 0) {
-      detailsString += ` + ${deets.final_trick_bonus} (FT)`;
-    }
-    return detailsString;
-  }).join(", ");
+function constructScoreBreakdownText(scoreDetails: Record<PlayerName, string>): string {
+  return Object.entries(scoreDetails).map(
+    ([playerName, scoreDetail]) => `(${playerName}): ${scoreDetail}`
+  ).join(", ");
 }
 
 export async function renderState(state: GameStateForUI) {
@@ -91,8 +78,8 @@ export async function renderState(state: GameStateForUI) {
   document.getElementById('scores-previous')!.innerText =
     `prev: (You: ${state.scores_previous.player}, comp 1: ${state.scores_previous.comp1}, comp 2: ${state.scores_previous.comp2})`;
 
-  // document.getElementById('score-breakdown')!.innerText =
-  //   constructScoreBreakdownText(state.score_details);
+  document.getElementById('score-breakdown')!.innerText =
+    constructScoreBreakdownText(state.score_details);
 
   document.getElementById('escalations')!.innerText =
     `Escalations: ${state.escalations} (hand #${state.hand_number})`;

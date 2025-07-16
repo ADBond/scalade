@@ -2,13 +2,14 @@ export class ScoreBreakdown {
     constructor(
         // [rung_value, multiplier]
         public ladderScores: [number, number][] = [],
-        public finalTrickScore: number,
+        public finalTrickScore: number = 0,
     ) { }
 
     get score(): number {
-        const laddersTotal = this.ladderScores.map(
+        const laddersValues = this.ladderScores.map(
             ([rungValue, multiplier]) => rungValue * multiplier
-        ).reduce(
+        )
+        const laddersTotal = laddersValues.length === 0 ? 0 : laddersValues.reduce(
             (total, value) => total + value
         )
         return laddersTotal + this.finalTrickScore;

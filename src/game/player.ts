@@ -48,14 +48,15 @@ export class Player {
     ) { }
 
     get score(): number {
-        return this.scores.map(
+        const scores = this.scores.map(
             (breakdown) => breakdown.score
-        ).reduce(
+        )
+        return scores.length === 0 ? 0 : scores.reduce(
             (total, value) => total + value
         );
     }
 
     get previousScore(): ScoreBreakdown {
-        return this.scores[this.scores.length - 1];
+        return this.scores.length === 0 ? new ScoreBreakdown() : this.scores[this.scores.length - 1];
     }
 }
