@@ -390,6 +390,7 @@ export class GameState {
     this.currentState = 'playCard';
     this.currentPlayerIndex = this.getNextPlayerIndex(this.dealerIndex);
     this.handNumber++;
+    this.trickIndex = 0;
   }
 
   giveCardToPlayer(playerIndex: number, card: Card) {
