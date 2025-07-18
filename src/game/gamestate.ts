@@ -467,7 +467,7 @@ export class GameState {
 
   getStateForUI(): GameStateForUI {
     return ({
-      hands: {comp1: [], player: this.currentState === "handComplete" ? [] : this.humanHand, comp2: []},
+      hands: {comp1: [], player: this.currentState === "handComplete" ? [] : this.humanHand.slice(), comp2: []},
       trumps: this.trumpSuit,
       played: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.trickInProgress)])
