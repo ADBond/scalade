@@ -505,8 +505,22 @@ export class GameState {
       score_details: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, string] => [name, this.getPlayer(name).previousScore.display])
       ) as Record<PlayerName, string>,
+      holding_bonus: Object.fromEntries(
+        playerNameArr.map(
+          (name): [PlayerName, Record<string, number>] => [
+            name,
+            Object.fromEntries(
+              SUITS.map(
+                (suit): [string, number] => [
+                  suit.toStringShort(),
+                  this.getPlayer(name).holdingMultipliers.get(suit) - 1
+                ]
+              )
+            )
+          ]
+        )
+      ) as Record<PlayerName, Record<string, number>>,
       // TODO: placeholders:
-      holding_bonus: {comp1: {}, player: {}, comp2: {}},
       escalations: -1,
       advance: "C",
     })
