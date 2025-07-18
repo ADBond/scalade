@@ -57,9 +57,17 @@ const CurrentTrickEncoder: Encoder = {
 }
 
 const UnseenCardsEncoder: Encoder = {
+    // Flawed encoder, but need it to match with trained model
+    // Should take into account hand as well explicitly
     encode: (gameState: GameState) => {
-        // TODO: actual logic
-        return tf.fill([44], 0);
+        const pack = gameState.pack.getFullPack();
+        const unseenCards = pack.filter(
+            // all cards in pack that are not in publicCards
+            (card) => gameState.publicCards.filter(
+                (publicCard) => Card.cardEquals(card, publicCard)
+            ).length === 0
+        )
+        return encodeCards(unseenCards, pack.length);
     }
 }
 

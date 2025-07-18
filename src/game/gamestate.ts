@@ -25,6 +25,7 @@ export class GameState {
   // and a copy of the groundings
   public currentHandsGroundings: Card[] = [];
   public deadCards: Card[] = [];
+  public publicCards: Card[] = [];
   public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit = arbitrarySuit;
   public currentState: state = 'initialiseGame';
@@ -391,6 +392,7 @@ export class GameState {
     this.currentPlayerIndex = this.getNextPlayerIndex(this.dealerIndex);
     this.handNumber++;
     this.trickIndex = 0;
+    this.publicCards = [];
   }
 
   giveCardToPlayer(playerIndex: number, card: Card) {
@@ -421,6 +423,7 @@ export class GameState {
     }
     const [playedCard] = hand.splice(index, 1);
     this.trickInProgress.push([playedCard, player]);
+    this.publicCards.push(playedCard);
     // TODO: do we need this anymore, with better player tracking?
     // if (this.trickInProgress.length === 1) {
     //   this.leaderIndex = this.currentPlayerIndex;
