@@ -84,6 +84,8 @@ export async function renderState(state: GameStateForUI) {
   document.getElementById('escalations')!.innerText =
     `Escalations: ${state.escalations} (hand #${state.hand_number})`;
 
+  document.getElementById('debug')!.innerText = `${state.game_state}`;
+
   const trumpEl = document.getElementById('trumps')!;
   trumpEl.innerHTML = '';
   trumpEl.appendChild(createSuitElement(state.trumps ? state.trumps.toStringShort() : ""));

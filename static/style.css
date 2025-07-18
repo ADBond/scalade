@@ -5,6 +5,11 @@ body {
     color: white;
 }
 
+/* turn off debug display with css so we can turn it back on if we need */
+#debug {
+    display: none;
+}
+
 .game-board {
     position: relative;
     width: 900px;
