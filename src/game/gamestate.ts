@@ -180,7 +180,7 @@ export class GameState {
       return minRungs[0].suit;
     }
     // if there's more than one, find their suit-ranking for setting trumps
-    const maxSuit = Math.max(...ladderCards.map(card => card.suit.rankForTrumpPreference));
+    const maxSuit = Math.max(...minRungs.map(card => card.suit.rankForTrumpPreference));
     const maxSuitCards = ladderCards.filter(card => card.suit.rankForTrumpPreference === maxSuit);
     // these should be distinct, so we only have one that is maximal, for a given rank
     if (maxSuitCards.length === 1){
