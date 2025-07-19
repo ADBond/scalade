@@ -101,9 +101,13 @@ export class GameState {
         break;
       case 'handComplete':
         this.updateScores();
-        this.previousSpoils = this.spoils.slice();
-        this.dealerIndex = this.getNextPlayerIndex(this.dealerIndex);
-        this.dealCards(this.pack);
+        if (this.escalations >= this.playTo) {
+          this.currentState = "gameComplete";
+        } else {
+          this.previousSpoils = this.spoils.slice();
+          this.dealerIndex = this.getNextPlayerIndex(this.dealerIndex);
+          this.dealCards(this.pack);
+        }
         break;
       case 'gameComplete':
         break;
