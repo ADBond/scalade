@@ -8,6 +8,37 @@ import { nnAgent } from './agent/nn';
 
 export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
 
+class advanceSuitTracker {
+  // TODO: this is basically holdingBonus structure - should we rip it out?
+  public advanceSuitArray: [Suit, number][]
+
+  constructor() {
+      this.advanceSuitArray = SUITS.map(
+          (suit) => {
+              return [suit, 0];
+          }
+      )
+  }
+
+  set(suit: Suit, increments: number) {
+      this.advanceSuitArray = this.advanceSuitArray.map(
+          ([counterSuit, currentIncrements]) => {
+              return [counterSuit, Suit.suitEquals(suit, counterSuit) ? increments: currentIncrements];
+          }
+      )
+  }
+
+  increment(suit: Suit) {
+      this.set(suit, this.get(suit) + 1);
+  }
+
+  get(suit: Suit): number {
+      return this.advanceSuitArray.filter(
+          ([counterSuit, _currentIncrements]) => Suit.suitEquals(suit, counterSuit)
+      )[0][1];
+  }
+}
+
 export class GameState {
   public players: Player[] = [];
   public pack: Pack = new Pack();
@@ -30,7 +61,10 @@ export class GameState {
   public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit = arbitrarySuit;
   public currentState: state = 'initialiseGame';
+  public suitRungsAscended: advanceSuitTracker = new advanceSuitTracker();
+  public advanceSuit: Suit | null = null;
   public handNumber: number = 0;
+  public playTo: number = 1;
 
   constructor(public playerNames: string[]) {
     // TODO: more / flexi ??
@@ -76,6 +110,14 @@ export class GameState {
       default:
         // error!
     }
+  }
+
+  get numberOfRanks(): number {
+    return this.pack.numRanks;
+  }
+
+  get escalations(): number {
+    return this.advanceSuit !== null ? Math.floor(this.suitRungsAscended.get(this.advanceSuit) / this.numberOfRanks) : 0;
   }
 
   get trickInProgressCards(): Card[] {
@@ -192,8 +234,38 @@ export class GameState {
     throw new Error("Error determining trump suit");
   }
 
-  private incrementRungCount(suit: Suit) {
+  private incrementRungCount(suit: Suit): void {
     // TODO: implement logic here, which ultimately triggers game end
+    this.suitRungsAscended.increment(suit);
+    // if we have an advance suit, we don't need further processing
+    if (this.advanceSuit !== null) {
+      return;
+    }
+    // TODO: this will need adjusting if we do double
+    // check if we are ready to do set advance suit
+    const suitsCompletedALap = this.suitRungsAscended.advanceSuitArray.filter(
+      ([suit, count]) => {
+        count >= this.pack.numRanks
+      }
+    ).map(
+      ([suit, _count]) => suit
+    );
+    if (suitsCompletedALap.length === 0) {
+      // not ready to set advance suit
+      return;
+    }
+    // some suit has gone over the top, so we can set advance suit now
+    if (suitsCompletedALap.length === 1) {
+      this.advanceSuit = suitsCompletedALap[0];
+    }
+    const maxSuitRank = Math.max(...suitsCompletedALap.map((suit) => suit.rankForTrumpPreference));
+    const singleMaximalSuit = suitsCompletedALap.filter(
+      (suit) => suit.rankForTrumpPreference === maxSuitRank
+    );
+    if (singleMaximalSuit.length !== 1){
+      console.log(`Error in advance suit logic: ${singleMaximalSuit.join(', ')}`);
+    }
+    this.advanceSuit = singleMaximalSuit[0];
   }
 
   private updateLadders(winningPlayer: Player) {
