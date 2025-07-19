@@ -92,7 +92,7 @@ export async function renderState(state: GameStateForUI) {
 
   const advanceEl = document.getElementById('advance')!;
   advanceEl.innerHTML = '';
-  advanceEl.appendChild(createSuitElement(state.advance));
+  advanceEl.appendChild(createSuitElement(state.advance ? state.advance.toStringShort() : ""));
 
 }
 

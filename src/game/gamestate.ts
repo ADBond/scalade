@@ -537,7 +537,7 @@ export class GameState {
       ) as Record<PlayerName, Record<string, number>>,
       // TODO: placeholders:
       escalations: -1,
-      advance: "C",
+      advance: SUITS[0],
     })
   }
 }
@@ -555,9 +555,8 @@ export interface GameStateForUI {
   score_details: Record<PlayerName, string>;
   escalations: number;
   hand_number: number;
-  // TODO: suits:
   trumps: Suit | null;
-  advance: string;
+  advance: Suit | null;
   game_state: state;
   whose_turn: PlayerName;
 }
