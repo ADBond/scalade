@@ -11,6 +11,10 @@ export class Pack {
     this.cards = this.getFullPack();
   }
 
+  get numRanks(): number {
+    return 13 - (this.minRank - 2);
+  }
+
   getFullPack(): Card[] {
     const cards = [];
     let index = 0;
