@@ -1,6 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
 
-import { Card, N_SUITS } from './card';
+import { Card, N_SUITS, SUITS } from './card';
 import { GameState } from "./gamestate";
 
 function oneHotEncode(index: number | number[] | null | undefined, size: number): tf.Tensor {
@@ -120,8 +120,21 @@ const PlayingLastEncoder: Encoder = {
 
 const HoldingBonusEncoder: Encoder = {
     encode: (gameState: GameState) => {
-        // TODO: actual logic
-        return tf.fill([4*3], 0);
+        const currentPlayerIndex = gameState.currentPlayerIndex;
+        const nextPlayerIndex = gameState.getNextPlayerIndex(currentPlayerIndex);
+        const prevPlayerIndex = gameState.getNextPlayerIndex(nextPlayerIndex);
+        const encodedHoldingBonuses = [currentPlayerIndex, nextPlayerIndex, prevPlayerIndex].map(
+            (playerIndex) => {
+                const player = gameState.players[playerIndex];
+                const holdingBonusArray = Array(N_SUITS).fill(0);
+                SUITS.forEach((suit) => {
+                    holdingBonusArray[suit.rankForTrumpPreference] = player.holdingMultipliers.get(suit);
+                });
+                const encodedHoldingBonus = tf.tensor1d(holdingBonusArray);
+                return encodedHoldingBonus;
+            }
+        )
+        return tf.concat(encodedHoldingBonuses);
     }
 }
 
