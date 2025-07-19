@@ -607,9 +607,8 @@ export class GameState {
           ]
         )
       ) as Record<PlayerName, Record<string, number>>,
-      // TODO: placeholders:
-      escalations: -1,
-      advance: SUITS[0],
+      escalations: this.escalations,
+      advance: this.advanceSuit,
     })
   }
 }
