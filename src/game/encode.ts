@@ -73,8 +73,15 @@ const UnseenCardsEncoder: Encoder = {
 
 const opponentVoidsEncoder: Encoder = {
     encode: (gameState: GameState) => {
-        // TODO: actual logic
-        return tf.fill([4*2], 0);
+        const currentPlayerIndex = gameState.currentPlayerIndex;
+        const nextPlayerIndex = gameState.getNextPlayerIndex(currentPlayerIndex);
+        const prevPlayerIndex = gameState.getNextPlayerIndex(nextPlayerIndex);
+        const encodedRenounces = [nextPlayerIndex, prevPlayerIndex].map(
+            (playerIndex) => {
+                return oneHotEncode([...gameState.renounces[playerIndex]], N_SUITS)
+            }
+        )
+        return tf.concat(encodedRenounces);
     }
 }
 

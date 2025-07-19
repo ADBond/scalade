@@ -26,6 +26,7 @@ export class GameState {
   public currentHandsGroundings: Card[] = [];
   public deadCards: Card[] = [];
   public publicCards: Card[] = [];
+  public renounces: Set<number>[] = [];
   public ladders: [Card, Player | null][] = this.getStartingLadders();
   public trumpSuit: Suit = arbitrarySuit;
   public currentState: state = 'initialiseGame';
@@ -393,6 +394,7 @@ export class GameState {
     this.handNumber++;
     this.trickIndex = 0;
     this.publicCards = [];
+    this.renounces = this.players.map((_player) => new Set());
   }
 
   giveCardToPlayer(playerIndex: number, card: Card) {
@@ -424,6 +426,16 @@ export class GameState {
     const [playedCard] = hand.splice(index, 1);
     this.trickInProgress.push([playedCard, player]);
     this.publicCards.push(playedCard);
+
+    // track renounces
+    // TODO: fix this!!
+    // this is not correct, at all. But it is what we had in model training
+    // so until we fix that and get new models, let's just align
+    // should be dealing with led suit, rather than trumps
+    if (!Suit.suitEquals(playedCard.suit, this.trumpSuit)) {
+      this.renounces[this.currentPlayerIndex].add(this.trumpSuit.rankForTrumpPreference)
+    }
+
     // TODO: do we need this anymore, with better player tracking?
     // if (this.trickInProgress.length === 1) {
     //   this.leaderIndex = this.currentPlayerIndex;
