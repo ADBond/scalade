@@ -64,6 +64,7 @@ export class GameState {
   public suitRungsAscended: advanceSuitTracker = new advanceSuitTracker();
   public advanceSuit: Suit | null = null;
   public handNumber: number = 0;
+  // TODO: default 4, and settable in creation
   public playTo: number = 1;
 
   constructor(public playerNames: string[]) {
