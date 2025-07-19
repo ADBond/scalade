@@ -1,6 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
 
-import { Card, N_SUITS } from './card';
+import { Card, N_SUITS, SUITS } from './card';
 import { GameState } from "./gamestate";
 
 function oneHotEncode(index: number | number[] | null | undefined, size: number): tf.Tensor {
@@ -57,16 +57,31 @@ const CurrentTrickEncoder: Encoder = {
 }
 
 const UnseenCardsEncoder: Encoder = {
+    // Flawed encoder, but need it to match with trained model
+    // Should take into account hand as well explicitly
     encode: (gameState: GameState) => {
-        // TODO: actual logic
-        return tf.fill([44], 0);
+        const pack = gameState.pack.getFullPack();
+        const unseenCards = pack.filter(
+            // all cards in pack that are not in publicCards
+            (card) => gameState.publicCards.filter(
+                (publicCard) => Card.cardEquals(card, publicCard)
+            ).length === 0
+        )
+        return encodeCards(unseenCards, pack.length);
     }
 }
 
 const opponentVoidsEncoder: Encoder = {
     encode: (gameState: GameState) => {
-        // TODO: actual logic
-        return tf.fill([4*2], 0);
+        const currentPlayerIndex = gameState.currentPlayerIndex;
+        const nextPlayerIndex = gameState.getNextPlayerIndex(currentPlayerIndex);
+        const prevPlayerIndex = gameState.getNextPlayerIndex(nextPlayerIndex);
+        const encodedRenounces = [nextPlayerIndex, prevPlayerIndex].map(
+            (playerIndex) => {
+                return oneHotEncode([...gameState.renounces[playerIndex]], N_SUITS)
+            }
+        )
+        return tf.concat(encodedRenounces);
     }
 }
 
@@ -112,8 +127,21 @@ const PlayingLastEncoder: Encoder = {
 
 const HoldingBonusEncoder: Encoder = {
     encode: (gameState: GameState) => {
-        // TODO: actual logic
-        return tf.fill([4*3], 0);
+        const currentPlayerIndex = gameState.currentPlayerIndex;
+        const nextPlayerIndex = gameState.getNextPlayerIndex(currentPlayerIndex);
+        const prevPlayerIndex = gameState.getNextPlayerIndex(nextPlayerIndex);
+        const encodedHoldingBonuses = [currentPlayerIndex, nextPlayerIndex, prevPlayerIndex].map(
+            (playerIndex) => {
+                const player = gameState.players[playerIndex];
+                const holdingBonusArray = Array(N_SUITS).fill(0);
+                SUITS.forEach((suit) => {
+                    holdingBonusArray[suit.rankForTrumpPreference] = player.holdingMultipliers.get(suit);
+                });
+                const encodedHoldingBonus = tf.tensor1d(holdingBonusArray);
+                return encodedHoldingBonus;
+            }
+        )
+        return tf.concat(encodedHoldingBonuses);
     }
 }
 
