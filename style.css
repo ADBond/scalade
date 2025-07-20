@@ -76,6 +76,11 @@ body {
     transition: transform 0.1s;
 }
 
+.card-back {
+    background-image: url("back.svg");
+    background-size: auto;
+}
+
 .hand .card {
     cursor: pointer;
 }
@@ -90,23 +95,37 @@ body {
 }
 
 .hand {
+    position: relative;
     margin-top: 30px;
     height: 110px;
 }
 
+@media (max-width: 1430px) {
+    .game-board {
+        top: 200px;
+    }
+    .hand {
+        top: 200px;
+    }
+}
+
 .suit-icon {
     background-image: url('card_suits.png');
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgb(255, 255, 255);
     display: inline-block;
     border-radius: 5px;
     width: 32px;
     height: 32px;
-    transform: scale(1.5);
+    transform: scale(1.3);
 }
 
 .holding-bonus-icon {
     transform: scale(0.8);
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.scores-area {
+    text-align: left;
 }
 
 #scores-previous {
@@ -121,9 +140,17 @@ body {
 
 .trump-suit {
     position: absolute;
-    right: 250px;
-    top: 200px;
+    left: 30px;
+    bottom: 30px;
     width: 50px;
+}
+
+#trumps {
+    transform: scale(0.8);
+}
+
+#advance .suit-icon {
+    transform: scale(0.7) translate(0px, 10px);
 }
 
 .previous-trick {
@@ -168,16 +195,16 @@ body {
 
 .penultimate-cards {
     position: absolute;
-    right: 20px;
-    top: 300px;
+    right: 0px;
+    top: 20px;
     width: 200px;
     text-align: center;
 }
 
 .dead-cards {
     position: absolute;
-    right: 20px;
-    top: 400px;
+    right: 145px;
+    top: 20px;
     width: 200px;
     text-align: center;
 }
