@@ -1,6 +1,6 @@
 import { createCardElement, createSuitElement } from './ui';
 import { GameStateForUI, state } from '../game/gamestate';
-import { PlayerName } from '../game/player';
+import { LadderPosition, PlayerName } from '../game/player';
 import { onHumanPlay } from './api';
 
 function constructScoreBreakdownText(scoreDetails: Record<PlayerName, string>): string {
@@ -60,8 +60,13 @@ export async function renderState(state: GameStateForUI) {
 
   ['neutral', 'player', 'comp1', 'comp2'].forEach(p => {
     const ladderEl = document.getElementById(`ladder-${p}`)!;
+    const ladders = state.ladder;
+    // sort ladder for consistent ordering - by suit
+    ladders[p as LadderPosition].sort(
+      (card1, card2) => card1.suit.rankForTrumpPreference - card2.suit.rankForTrumpPreference
+    )
     ladderEl.innerHTML = '';
-    state.ladder[p as PlayerName].forEach(card => {
+    ladders[p as LadderPosition].forEach(card => {
       ladderEl.appendChild(createCardElement(card.toStringShort()));
     });
   });
@@ -70,8 +75,10 @@ export async function renderState(state: GameStateForUI) {
   const deadEl = document.getElementById("dead-display")!;
   penultimateEl.innerHTML = '';
   deadEl.innerHTML = '';
-  state.penultimate.forEach(card => penultimateEl.appendChild(createCardElement(card.toStringShort())));
-  state.dead.forEach(card => deadEl.appendChild(createCardElement(card.toStringShort())));
+  const spoils = state.penultimate.length > 0 ? state.penultimate.map(card => card.toStringShort()) : ["none", "none"];
+  const deads = state.dead.length > 0 ? state.dead.map(card => card.toStringShort()) : ["none", "none"];
+  spoils.forEach(card => penultimateEl.appendChild(createCardElement(card)));
+  deads.forEach(card => deadEl.appendChild(createCardElement(card)));
 
   document.getElementById('scores')!.innerText =
     `You: ${state.scores.player}, comp 1: ${state.scores.comp1}, comp 2: ${state.scores.comp2}`;
