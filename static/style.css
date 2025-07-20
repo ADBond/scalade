@@ -185,7 +185,7 @@ body {
 
 .penultimate-cards {
     position: absolute;
-    right: 20px;
+    right: 0px;
     top: 20px;
     width: 200px;
     text-align: center;
@@ -193,7 +193,7 @@ body {
 
 .dead-cards {
     position: absolute;
-    right: 220px;
+    right: 145px;
     top: 20px;
     width: 200px;
     text-align: center;
