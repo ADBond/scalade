@@ -10,6 +10,29 @@ body {
     display: none;
 }
 
+#new-game-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+
+    padding: 6px 10px;
+    font-size: 14px;
+    background-color: #9c31ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s ease;
+}
+
+#new-game-button:hover {
+    background-color: #00ffff;
+    color: #000;
+}
+
 .game-board {
     position: relative;
     width: 900px;
@@ -104,6 +127,7 @@ body {
     .game-board {
         top: 200px;
     }
+
     .hand {
         top: 200px;
     }
