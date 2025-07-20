@@ -96,12 +96,12 @@ body {
 
 .suit-icon {
     background-image: url('card_suits.png');
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgb(255, 255, 255);
     display: inline-block;
     border-radius: 5px;
     width: 32px;
     height: 32px;
-    transform: scale(1.5);
+    transform: scale(1.3);
 }
 
 .holding-bonus-icon {
@@ -121,8 +121,8 @@ body {
 
 .trump-suit {
     position: absolute;
-    right: 250px;
-    top: 200px;
+    left: 30px;
+    bottom: 30px;
     width: 50px;
 }
 
