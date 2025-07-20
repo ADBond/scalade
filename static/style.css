@@ -95,8 +95,18 @@ body {
 }
 
 .hand {
+    position: relative;
     margin-top: 30px;
     height: 110px;
+}
+
+@media (max-width: 1430px) {
+    .game-board {
+        top: 200px;
+    }
+    .hand {
+        top: 200px;
+    }
 }
 
 .suit-icon {
