@@ -623,6 +623,7 @@ export class GameState {
       ) as Record<PlayerName, Record<string, number>>,
       escalations: this.escalations,
       advance: this.advanceSuit,
+      mode: this.gameMode,
     })
   }
 }
@@ -644,4 +645,5 @@ export interface GameStateForUI {
   advance: Suit | null;
   game_state: state;
   whose_turn: PlayerName;
+  mode: GameMode;
 }
