@@ -1,12 +1,12 @@
 import { Pack } from './pack';
-import { GameState, GameStateForUI } from './gamestate';
+import { GameState, GameStateForUI, GameMode } from './gamestate';
 
 export class Game {
   private pack = new Pack();
   public state: GameState;
 
-  constructor(playerNames: string[]) {
-    this.state = new GameState(playerNames);
+  constructor(playerNames: string[], gameMode: GameMode = 'standard') {
+    this.state = new GameState(playerNames, gameMode=gameMode);
     this.incrementState();
   }
 

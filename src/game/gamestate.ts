@@ -6,6 +6,7 @@ import { Agent } from './agent/agent';
 // import { randomAgent } from './agent/random';
 import { nnAgent } from './agent/nn';
 
+export type GameMode = 'standard' | 'mobile';
 export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
 
 class advanceSuitTracker {
@@ -59,7 +60,7 @@ export class GameState {
   public publicCards: Card[] = [];
   public renounces: Set<number>[] = [];
   public ladders: [Card, Player | null][] = this.getStartingLadders();
-  public trumpSuit: Suit = arbitrarySuit;
+  public _trumpSuit: Suit = arbitrarySuit;
   public currentState: state = 'initialiseGame';
   public suitRungsAscended: advanceSuitTracker = new advanceSuitTracker();
   public advanceSuit: Suit | null = null;
@@ -67,7 +68,7 @@ export class GameState {
   // TODO: default 4, and settable in creation
   public playTo: number = 1;
 
-  constructor(public playerNames: string[]) {
+  constructor(public playerNames: string[], public gameMode: GameMode) {
     // TODO: more / flexi ??
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
     const agents: Agent[] = ['human', nnAgent("arundel"), nnAgent("bodiam")]
@@ -217,6 +218,14 @@ export class GameState {
     return this.ladders.map(
       ([card, _player]) => card
     )
+  }
+
+  get trumpSuit(): Suit {
+    if (this.gameMode === 'standard') {
+      return this._trumpSuit;
+    }
+    // mobile
+    return this.trumpSuitFromLadders();
   }
 
   trumpSuitFromLadders(): Suit {
@@ -465,7 +474,7 @@ export class GameState {
     // TODO now pack should be empty
     // console.log("Empty pack:");
     // console.log([...remainingPack]);
-    this.trumpSuit = this.trumpSuitFromLadders();
+    this._trumpSuit = this.trumpSuitFromLadders();
     this.currentState = 'playCard';
     this.currentPlayerIndex = this.getNextPlayerIndex(this.dealerIndex);
     this.handNumber++;
