@@ -1,12 +1,39 @@
 import { playUntilHuman } from './interface/api';
 import { renderWithDelays } from './interface/render';
 import { newGame } from './interface/game';
+import { GameMode } from './game/gamestate';
 
-document.addEventListener("DOMContentLoaded", async () => {
-  newGame();
+async function loadGame(gameMode: GameMode) {
+  newGame(gameMode);
   const futureStates = await playUntilHuman();
   // TODO: avoid this duplication
   await renderWithDelays(futureStates);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadGame('standard');
+});
+
+const button = document.getElementById("new-game-button")!;
+const menu = document.getElementById("new-game-menu")!;
+
+button.addEventListener("click", () => {
+  menu.hidden = !menu.hidden;
+});
+
+menu.addEventListener("click", async (e) => {
+  const target = e.target as HTMLElement;
+  if (target.classList.contains("option")) {
+    const option = target.dataset.option! as GameMode;
+    menu.hidden = true;
+    await loadGame(option);
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (!menu.contains(e.target as Node) && e.target !== button) {
+    menu.hidden = true;
+  }
 });
 
 const helpButton = document.getElementById('help-button')!;
