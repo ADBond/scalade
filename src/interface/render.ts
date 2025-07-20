@@ -70,8 +70,10 @@ export async function renderState(state: GameStateForUI) {
   const deadEl = document.getElementById("dead-display")!;
   penultimateEl.innerHTML = '';
   deadEl.innerHTML = '';
-  state.penultimate.forEach(card => penultimateEl.appendChild(createCardElement(card.toStringShort())));
-  state.dead.forEach(card => deadEl.appendChild(createCardElement(card.toStringShort())));
+  const spoils = state.penultimate.length > 0 ? state.penultimate.map(card => card.toStringShort()) : ["none", "none"];
+  const deads = state.dead.length > 0 ? state.dead.map(card => card.toStringShort()) : ["none", "none"];
+  spoils.forEach(card => penultimateEl.appendChild(createCardElement(card)));
+  deads.forEach(card => deadEl.appendChild(createCardElement(card)));
 
   document.getElementById('scores')!.innerText =
     `You: ${state.scores.player}, comp 1: ${state.scores.comp1}, comp 2: ${state.scores.comp2}`;
