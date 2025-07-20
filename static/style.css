@@ -114,6 +114,10 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.scores-area {
+    text-align: left;
+}
+
 #scores-previous {
     font-size: 80%;
     font-style: italic;
@@ -129,6 +133,14 @@ body {
     left: 30px;
     bottom: 30px;
     width: 50px;
+}
+
+#trumps {
+    transform: scale(0.8);
+}
+
+#advance .suit-icon {
+    transform: scale(0.7) translate(0px, 10px);
 }
 
 .previous-trick {
@@ -174,15 +186,15 @@ body {
 .penultimate-cards {
     position: absolute;
     right: 20px;
-    top: 300px;
+    top: 20px;
     width: 200px;
     text-align: center;
 }
 
 .dead-cards {
     position: absolute;
-    right: 20px;
-    top: 400px;
+    right: 220px;
+    top: 20px;
     width: 200px;
     text-align: center;
 }
