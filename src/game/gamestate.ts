@@ -258,9 +258,7 @@ export class GameState {
     // TODO: this will need adjusting if we do double
     // check if we are ready to do set advance suit
     const suitsCompletedALap = this.suitRungsAscended.advanceSuitArray.filter(
-      ([suit, count]) => {
-        count >= this.pack.numRanks
-      }
+      ([_suit, count]) => (count >= this.pack.numRanks)
     ).map(
       ([suit, _count]) => suit
     );
@@ -271,6 +269,7 @@ export class GameState {
     // some suit has gone over the top, so we can set advance suit now
     if (suitsCompletedALap.length === 1) {
       this.advanceSuit = suitsCompletedALap[0];
+      return;
     }
     const maxSuitRank = Math.max(...suitsCompletedALap.map((suit) => suit.rankForTrumpPreference));
     const singleMaximalSuit = suitsCompletedALap.filter(
