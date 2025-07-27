@@ -71,7 +71,7 @@ export class GameState {
   constructor(public playerNames: string[], public gameMode: GameMode) {
     // TODO: more / flexi ??
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
-    const agents: Agent[] = ['human', nnAgent("arundel"), nnAgent("bodiam")]
+    const agents: Agent[] = ['human', nnAgent("camber"), nnAgent("camber")]
     this.players = playerNames.map(
       (name, i) => new Player(
           name,
