@@ -31,7 +31,7 @@ class HoldingMultipliers {
 
     get(suit: Suit): number {
         return this.holdingMultiplierArray.filter(
-            ([holdingSuit, holdingMultiplier]) => Suit.suitEquals(suit, holdingSuit)
+            ([holdingSuit, _holdingMultiplier]) => Suit.suitEquals(suit, holdingSuit)
         )[0][1];
     }
 }

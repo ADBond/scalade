@@ -21,8 +21,8 @@ export async function playUntilHuman(): Promise<GameStateForUI[]> {
 
     // getout for infinite loop
     let counter = 0;
-    // TODO: check game end
-    while (((current.game_state !== "playCard") || !(current.whose_turn === "player")) && counter < 50) {
+
+    while ((!['playCard', 'gameComplete'].includes(current.game_state) || !(current.whose_turn === "player")) && counter < 50) {
         game = getGame()
         await game.incrementState();
         current = game.getGameStateForUI();
