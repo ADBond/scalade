@@ -66,7 +66,7 @@ export class GameState {
   public advanceSuit: Suit | null = null;
   public handNumber: number = 0;
   // TODO: default 4, and settable in creation
-  public playTo: number = 1;
+  public playTo: number = 2;
 
   constructor(public playerNames: string[], public gameMode: GameMode) {
     // TODO: more / flexi ??
