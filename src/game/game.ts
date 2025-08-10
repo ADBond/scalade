@@ -5,7 +5,7 @@ export class Game {
   private pack = new Pack();
   public state: GameState;
 
-  constructor(playerNames: string[], gameMode: GameMode = 'standard') {
+  constructor(playerNames: string[], gameMode: GameMode = 'mobile') {
     this.state = new GameState(playerNames, gameMode=gameMode);
     this.incrementState();
   }
