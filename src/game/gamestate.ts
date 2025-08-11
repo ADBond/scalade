@@ -6,7 +6,7 @@ import { Agent } from './agent/agent';
 // import { randomAgent } from './agent/random';
 import { nnAgent } from './agent/nn';
 
-export type GameMode = 'static' | 'mobile';
+export type GameMode = 'static' | 'mobile' | 'retromobile';
 export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
 
 class advanceSuitTracker {
@@ -59,7 +59,7 @@ export class GameState {
   public deadCards: Card[] = [];
   public publicCards: Card[] = [];
   public renounces: Set<number>[] = [];
-  public ladders: [Card, Player | null][] = this.getStartingLadders();
+  public rawLadders: [Card, Player | null | 'trickwinner'][] = this.getStartingLadders();
   public _trumpSuit: Suit = arbitrarySuit;
   public currentState: state = 'initialiseGame';
   public suitRungsAscended: advanceSuitTracker = new advanceSuitTracker();
@@ -199,9 +199,9 @@ export class GameState {
     return ((playerIndex + 1) % this.numPlayers);
   }
 
-  get trickWinnerPlayer(): Player {
+  public trickWinnerPlayer(trumpSuit: Suit): Player {
     const winningCardPlay = this.trickInProgress.filter(
-      ([card, player]) => Card.cardEquals(card, this.winningCard)
+      ([card, player]) => Card.cardEquals(card, this.winningCard(trumpSuit))
     );
     // TODO: length check?
     const trickWinner = winningCardPlay[0][1];
@@ -215,9 +215,22 @@ export class GameState {
   }
 
   get ladderCards(): Card[] {
-    return this.ladders.map(
+    return this.rawLadders.map(
       ([card, _player]) => card
     )
+  }
+
+  get ladders(): [Card, Player | null][] {
+    function isResolvedLadder(
+      item: [Card, Player | null | 'trickwinner']
+    ): item is [Card, Player | null] {
+      return item[1] !== 'trickwinner';
+    }
+    const resolvedLadders = this.rawLadders.filter(isResolvedLadder);
+    if (resolvedLadders.length !== 4) {
+      console.log(`Attempting to access unresolved ladders: ${this.rawLadders}`);
+    }
+    return resolvedLadders;
   }
 
   get trumpSuit(): Suit {
@@ -281,7 +294,7 @@ export class GameState {
     this.advanceSuit = singleMaximalSuit[0];
   }
 
-  private updateLadders(winningPlayer: Player) {
+  private updateLadders() {
     let cardsToUpdateLaddersFrom = this.trickInProgressCards;
     // penultimate trick - we get the spoils:
     if (this.isPenultimateTrick) {
@@ -307,10 +320,11 @@ export class GameState {
         // new ladder card is in trick_in_progress, if logic is consistent
         let newLadderCard = currentLadderCard.nextCardUp(this.pack.getFullPack());
         // remove old card from ladder, add new card
-        this.ladders = this.ladders.filter(
+        this.rawLadders = this.rawLadders.filter(
           ([card, _player]) => !Card.cardEquals(card, currentLadderCard)
         );
-        this.ladders.push([newLadderCard, winningPlayer]);
+        // use 'trickwinner' placeholder, as we may not know, if we're playing retromobile
+        this.rawLadders.push([newLadderCard, 'trickwinner']);
         // remove new card from trick-in-progress, add old card
         cardsToUpdateLaddersFrom = cardsToUpdateLaddersFrom.filter(
           (card) => !Card.cardEquals(card, newLadderCard)
@@ -321,9 +335,9 @@ export class GameState {
     return cardsToUpdateLaddersFrom;
   }
 
-  get winningCard(): Card {
+  public winningCard(trumpSuit: Suit): Card {
     const trumpCardsPlayed = this.trickInProgress.filter(
-      ([card, _player]) => Suit.suitEquals(card.suit, this.trumpSuit)
+      ([card, _player]) => Suit.suitEquals(card.suit, trumpSuit)
     );
     let winningCard: Card;
     if (trumpCardsPlayed.length > 0) {
@@ -406,10 +420,21 @@ export class GameState {
   }
 
   private resetTrick() {
+    let trumpSuit: Suit;
+    if ((this.gameMode === 'static') || (this.gameMode === 'mobile')) {
+      trumpSuit = this.trumpSuit;
+      this.updateLadders();
+    } else {  // retromobile
+      this.updateLadders();
+      trumpSuit = this.trumpSuit;
+    }
     // set trick winner as new current player
-    const winnerPlayer = this.trickWinnerPlayer;
+    const winnerPlayer = this.trickWinnerPlayer(trumpSuit);
     this.currentPlayerIndex = winnerPlayer.positionIndex;
-    this.updateLadders(winnerPlayer);
+    // replace the placeholder 'trickwinner' with the actual winner, now we definitely know it
+    this.rawLadders = this.rawLadders.map(
+      ([card, player]) => [card, player === 'trickwinner' ? winnerPlayer : player]
+    )
     //if this was the final trick, we need to record the winner, for scoring
     if (this.isFinalTrick) {
       this.finalTrickWinnerIndex = winnerPlayer.positionIndex;
@@ -517,6 +542,7 @@ export class GameState {
     // this is not correct, at all. But it is what we had in model training
     // so until we fix that and get new models, let's just align
     // should be dealing with led suit, rather than trumps
+    // doesn't make sense for retromobile, but that's just how it is! Probably the best we can do
     if (!Suit.suitEquals(playedCard.suit, this.trumpSuit)) {
       this.renounces[this.currentPlayerIndex].add(this.trumpSuit.rankForTrumpPreference)
     }
