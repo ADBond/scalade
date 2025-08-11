@@ -6,7 +6,7 @@ import { Agent } from './agent/agent';
 // import { randomAgent } from './agent/random';
 import { nnAgent } from './agent/nn';
 
-export type GameMode = 'standard' | 'mobile';
+export type GameMode = 'static' | 'mobile';
 export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
 
 class advanceSuitTracker {
@@ -221,7 +221,7 @@ export class GameState {
   }
 
   get trumpSuit(): Suit {
-    if (this.gameMode === 'standard') {
+    if (this.gameMode === 'static') {
       return this._trumpSuit;
     }
     // mobile
