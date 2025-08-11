@@ -11,7 +11,7 @@ async function loadGame(gameMode: GameMode) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadGame('static');
+  await loadGame('mobile');
 });
 
 const button = document.getElementById("new-game-button")!;
