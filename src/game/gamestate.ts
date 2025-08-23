@@ -619,6 +619,7 @@ export class GameState {
       game_state: this.currentState,
       whose_turn: this.currentPlayer.name,
       hand_number: this.handNumber,
+      playTo: this.playTo,
       // scores: {comp1: 0, player: 0, comp2: 0},
       scores: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).score])
@@ -666,6 +667,7 @@ export interface GameStateForUI {
   hand_number: number;
   trumps: Suit | null;
   advance: Suit | null;
+  playTo: number;
   game_state: state;
   whose_turn: PlayerName;
   mode: GameMode;
