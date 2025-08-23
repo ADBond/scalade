@@ -5,8 +5,8 @@ export class Game {
   private pack = new Pack();
   public state: GameState;
 
-  constructor(playerNames: string[], gameMode: GameMode = 'mobile') {
-    this.state = new GameState(playerNames, gameMode=gameMode);
+  constructor(playerNames: string[], gameMode: GameMode = 'mobile', escalations: number = 2) {
+    this.state = new GameState(playerNames, gameMode=gameMode, escalations);
     this.incrementState();
   }
 

@@ -3,31 +3,54 @@ import { renderWithDelays } from './interface/render';
 import { newGame } from './interface/game';
 import { GameMode } from './game/gamestate';
 
-async function loadGame(gameMode: GameMode) {
-  newGame(gameMode);
+async function loadGame(gameMode: GameMode, escalations: number) {
+  newGame(gameMode, escalations);
   const futureStates = await playUntilHuman();
   // TODO: avoid this duplication
   await renderWithDelays(futureStates);
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadGame('mobile');
-});
+const DEFAULTS = {
+  trumprule: "mobile" as GameMode,
+  escalations: 2,
+};
+
 
 const button = document.getElementById("new-game-button")!;
 const menu = document.getElementById("new-game-menu")!;
+const form = document.getElementById("new-game-form") as HTMLFormElement;
+
+function resetValues() {
+  (form.querySelector(
+    `input[name="trumprule"][value="${DEFAULTS.trumprule}"]`
+  ) as HTMLInputElement).checked = true;
+
+  (form.querySelector(
+    `input[name="escalations"][value="${DEFAULTS.escalations}"]`
+  ) as HTMLInputElement).checked = true;
+
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  resetValues();
+  await loadGame(DEFAULTS.trumprule, DEFAULTS.escalations);
+});
 
 button.addEventListener("click", () => {
   menu.hidden = !menu.hidden;
 });
 
-menu.addEventListener("click", async (e) => {
-  const target = e.target as HTMLElement;
-  if (target.classList.contains("option")) {
-    const option = target.dataset.option! as GameMode;
-    menu.hidden = true;
-    await loadGame(option);
-  }
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData(form);
+  const trumprule = formData.get("trumprule") as GameMode;
+  const escalations = formData.get("escalations") as string;
+
+  menu.hidden = true;
+  resetValues();
+
+  await loadGame(trumprule, parseInt(escalations));
 });
 
 document.addEventListener("click", (e) => {

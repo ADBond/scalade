@@ -14,9 +14,34 @@
 <body>
     <div id="new-game-button">New game</div>
     <div id="new-game-menu" hidden>
-        <div class="option" data-option="mobile">Mobile Scalade</div>
-        <div class="option" data-option="static">Static Scalade</div>
-        <div class="option" data-option="retromobile">Retromobile Scalade</div>
+        <form id="new-game-form">
+            <fieldset>
+                <legend>Trump-setting rule</legend>
+                <input type="radio" name="trumprule" value="mobile" id="trumprule-mobile">
+                <label for="trumprule-mobile">Mobile Scalade</label>
+
+                <input type="radio" name="trumprule" value="static" id="trumprule-static">
+                <label for="trumprule-static">Static Scalade</label>
+
+                <input type="radio" name="trumprule" value="retromobile" id="trumprule-retro">
+                <label for="trumprule-retro">Retromobile Scalade</label>
+
+            </fieldset>
+
+            <fieldset>
+                <legend>Escalations</legend>
+                <input type="radio" name="escalations" value="1" id="escalations-1">
+                <label for="escalations-1">1</label>
+                <input type="radio" name="escalations" value="2" id="escalations-2">
+                <label for="escalations-2">2</label>
+                <input type="radio" name="escalations" value="3" id="escalations-3">
+                <label for="escalations-3">3</label>
+                <input type="radio" name="escalations" value="4" id="escalations-4">
+                <label for="escalations-4">4</label>
+            </fieldset>
+
+            <button type="submit" id="play-now">Play Now</button>
+        </form>
     </div>
 
     <div id="debug"></div>
@@ -137,7 +162,7 @@
                 and even less well on Retromobile.
             </p>
             <p>
-                There are three bot players currently, <strong>Arundel</strong>, 
+                There are three bot players currently, <strong>Arundel</strong>,
                 <strong>Bodiam</strong> and <strong>Camber</strong>.
                 Both computer positions are currently hard set to use 'Camber'.
                 They both always pick the move they think is best. They both have access to:

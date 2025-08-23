@@ -65,10 +65,8 @@ export class GameState {
   public suitRungsAscended: advanceSuitTracker = new advanceSuitTracker();
   public advanceSuit: Suit | null = null;
   public handNumber: number = 0;
-  // TODO: default 4, and settable in creation
-  public playTo: number = 2;
 
-  constructor(public playerNames: string[], public gameMode: GameMode) {
+  constructor(public playerNames: string[], public gameMode: GameMode, public playTo: number = 2) {
     // TODO: more / flexi ??
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
     const agents: Agent[] = ['human', nnAgent("camber"), nnAgent("camber")]
