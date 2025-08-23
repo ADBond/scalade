@@ -35,29 +35,69 @@ body {
 
 #new-game-menu {
     position: fixed;
-    top: 40px;
+    top: 50px;
     left: 10px;
     background: #333;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 1001;
-    width: 150px;
+    width: 220px;
     font-size: 14px;
-}
-
-#new-game-menu .option {
     padding: 10px;
+    color: #fff;
+}
+
+#new-game-menu fieldset {
+    border: none;
+    margin: 0 0 12px 0;
+    padding: 0;
+}
+
+#new-game-menu legend {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #bbb;
+}
+
+#new-game-menu label {
+    display: block;
+    background: #444;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 5px;
     cursor: pointer;
-    border-bottom: 1px solid #eee;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
-#new-game-menu .option:last-child {
-    border-bottom: none;
+#new-game-menu input[type="radio"] {
+    display: none;
 }
 
-#new-game-menu .option:hover {
-    background-color: #797979;
+#new-game-menu label:hover {
+    background: #555;
+}
+
+#new-game-menu input[type="radio"]:checked + label {
+    background: #9c31ff;
+    color: white;
+    font-weight: bold;
+}
+
+#play-now {
+    width: 100%;
+    padding: 10px;
+    background: #9c31ff;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#play-now:hover {
+    background: #00ffff;
 }
 
 .game-board {

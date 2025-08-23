@@ -89,7 +89,7 @@ export async function renderState(state: GameStateForUI) {
     constructScoreBreakdownText(state.score_details);
 
   document.getElementById('escalations')!.innerText =
-    `(${state.mode}) Escalations: ${state.escalations} (hand #${state.hand_number})`;
+    `(${state.mode}, to ${state.playTo} escs.) Escalations: ${state.escalations} (hand #${state.hand_number})`;
 
   document.getElementById('debug')!.innerText = `${state.game_state}`;
 

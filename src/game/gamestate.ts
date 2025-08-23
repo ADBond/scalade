@@ -65,10 +65,8 @@ export class GameState {
   public suitRungsAscended: advanceSuitTracker = new advanceSuitTracker();
   public advanceSuit: Suit | null = null;
   public handNumber: number = 0;
-  // TODO: default 4, and settable in creation
-  public playTo: number = 2;
 
-  constructor(public playerNames: string[], public gameMode: GameMode) {
+  constructor(public playerNames: string[], public gameMode: GameMode, public playTo: number = 2) {
     // TODO: more / flexi ??
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
     const agents: Agent[] = ['human', nnAgent("camber"), nnAgent("camber")]
@@ -621,6 +619,7 @@ export class GameState {
       game_state: this.currentState,
       whose_turn: this.currentPlayer.name,
       hand_number: this.handNumber,
+      playTo: this.playTo,
       // scores: {comp1: 0, player: 0, comp2: 0},
       scores: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).score])
@@ -668,6 +667,7 @@ export interface GameStateForUI {
   hand_number: number;
   trumps: Suit | null;
   advance: Suit | null;
+  playTo: number;
   game_state: state;
   whose_turn: PlayerName;
   mode: GameMode;
