@@ -7,6 +7,7 @@ import { Agent } from './agent/agent';
 import { nnAgent } from './agent/nn';
 
 export type GameMode = 'static' | 'mobile' | 'retromobile';
+export type BonusCapping = 'nobonus' | 2 | 3 | 'uncapped';
 export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
 
 class advanceSuitTracker {
@@ -66,7 +67,7 @@ export class GameState {
   public advanceSuit: Suit | null = null;
   public handNumber: number = 0;
 
-  constructor(public playerNames: string[], public gameMode: GameMode, public playTo: number = 2) {
+  constructor(public playerNames: string[], public gameMode: GameMode, public playTo: number = 2, public capping: BonusCapping) {
     // TODO: more / flexi ??
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
     const agents: Agent[] = ['human', nnAgent("camber"), nnAgent("camber")]
@@ -122,6 +123,17 @@ export class GameState {
 
   get escalations(): number {
     return this.advanceSuit !== null ? Math.floor(this.suitRungsAscended.get(this.advanceSuit) / this.numberOfRanks) : 0;
+  }
+
+  get maxHoldingMultiplier(): number {
+    if (this.capping === 'nobonus') {
+      return 1;
+    }
+    if (this.capping === 'uncapped') {
+      // easier to just return a number higher than any possible multiplier
+      return 10000;
+    }
+    return this.capping;
   }
 
   get trickInProgressCards(): Card[] {
@@ -570,9 +582,12 @@ export class GameState {
         )[0];
         if (ladderHolder !== null) {
           const ladderBaseValue = ladderCard.rank.score;
-          const breakdown: [number, number] = [ladderBaseValue, ladderHolder.holdingMultipliers.get(suit)];
+          const currentMultiplier = ladderHolder.holdingMultipliers.get(suit);
+          const breakdown: [number, number] = [ladderBaseValue, currentMultiplier];
           ladderHolder.scores[ladderHolder.scores.length - 1].ladderScores.push(breakdown);
-          ladderHolder.holdingMultipliers.increment(suit);
+          if (currentMultiplier < this.maxHoldingMultiplier) {
+            ladderHolder.holdingMultipliers.increment(suit);
+          }
         }
         const playersNotHoldingSuit = this.players.filter(
           (player) => player.positionIndex !== ladderHolder?.positionIndex
