@@ -635,6 +635,7 @@ export class GameState {
       whose_turn: this.currentPlayer.name,
       hand_number: this.handNumber,
       playTo: this.playTo,
+      capping: this.capping,
       // scores: {comp1: 0, player: 0, comp2: 0},
       scores: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).score])
@@ -685,5 +686,6 @@ export interface GameStateForUI {
   playTo: number;
   game_state: state;
   whose_turn: PlayerName;
+  capping: BonusCapping;
   mode: GameMode;
 }
