@@ -1,12 +1,12 @@
 import { Pack } from './pack';
-import { GameState, GameStateForUI, GameMode } from './gamestate';
+import { GameState, GameStateForUI, GameMode, BonusCapping } from './gamestate';
 
 export class Game {
   private pack = new Pack();
   public state: GameState;
 
-  constructor(playerNames: string[], gameMode: GameMode = 'mobile', escalations: number = 2) {
-    this.state = new GameState(playerNames, gameMode=gameMode, escalations);
+  constructor(playerNames: string[], gameMode: GameMode = 'mobile', escalations: number = 2, capping: BonusCapping = 'uncapped') {
+    this.state = new GameState(playerNames, gameMode=gameMode, escalations, capping);
     this.incrementState();
   }
 
@@ -22,8 +22,4 @@ export class Game {
     await this.state.increment();
   }
 
-  // playCard(player: string, card: Card): boolean {
-  //   // return this.state.playCard(player, card);
-  //   return true;
-  // }
 }

@@ -1,10 +1,10 @@
 import { playUntilHuman } from './interface/api';
 import { renderWithDelays } from './interface/render';
 import { newGame } from './interface/game';
-import { GameMode } from './game/gamestate';
+import { GameMode, BonusCapping } from './game/gamestate';
 
-async function loadGame(gameMode: GameMode, escalations: number) {
-  newGame(gameMode, escalations);
+async function loadGame(gameMode: GameMode, escalations: number, capping: BonusCapping) {
+  newGame(gameMode, escalations, capping);
   const futureStates = await playUntilHuman();
   // TODO: avoid this duplication
   await renderWithDelays(futureStates);
@@ -13,6 +13,7 @@ async function loadGame(gameMode: GameMode, escalations: number) {
 const DEFAULTS = {
   trumprule: "mobile" as GameMode,
   escalations: 2,
+  capping: 'uncapped' as BonusCapping,
 };
 
 
@@ -29,11 +30,14 @@ function resetValues() {
     `input[name="escalations"][value="${DEFAULTS.escalations}"]`
   ) as HTMLInputElement).checked = true;
 
+  (form.querySelector(
+    `input[name="capping"][value="${DEFAULTS.capping}"]`
+  ) as HTMLInputElement).checked = true;
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
   resetValues();
-  await loadGame(DEFAULTS.trumprule, DEFAULTS.escalations);
+  await loadGame(DEFAULTS.trumprule, DEFAULTS.escalations, DEFAULTS.capping);
 });
 
 button.addEventListener("click", () => {
@@ -46,11 +50,12 @@ form.addEventListener("submit", async (e) => {
   const formData = new FormData(form);
   const trumprule = formData.get("trumprule") as GameMode;
   const escalations = formData.get("escalations") as string;
+  const capping = formData.get("capping") as BonusCapping;
 
   menu.hidden = true;
   resetValues();
 
-  await loadGame(trumprule, parseInt(escalations));
+  await loadGame(trumprule, parseInt(escalations), capping);
 });
 
 document.addEventListener("click", (e) => {
