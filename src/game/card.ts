@@ -14,7 +14,7 @@ export class Rank {
     }
 }
 export class Suit {
-    constructor(public name: string, public rankForTrumpPreference: number) { }
+    constructor(public name: string, public rankForTrumpPreference: number, public html: string) { }
 
     toString(): string {
         return this.name;
@@ -38,6 +38,10 @@ export class Card {
 
     toStringShort(): string {
         return `${this.rank.toStringShort()}${this.suit.toStringShort()}`;
+    }
+
+    get html(): string {
+        return `${this.rank.toStringShort()}${this.suit.html}`;
     }
 
     public nextCardUp(pack: Card[]): Card {
@@ -94,10 +98,10 @@ export const RANKS: Rank[] = [
 ];
 
 export const SUITS: Suit[] = [
-    new Suit("Diamonds", 0),
-    new Suit("Hearts", 1),
-    new Suit("Spades", 2),
-    new Suit("Clubs", 3),
+    new Suit("Diamonds", 0, "&diams;"),
+    new Suit("Hearts", 1, "&hearts;"),
+    new Suit("Spades", 2, "&spades;"),
+    new Suit("Clubs", 3, "&clubs;"),
 ];
 
 export const arbitrarySuit = SUITS[0];
