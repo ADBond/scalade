@@ -1,13 +1,14 @@
 import { Card, Suit } from "./card";
 import { Player } from "./player";
 
+declare const __COMMIT_HASH__: string;
+
 export class GameLog {
     // snapshots of all ladders, from before first trick to after last
     // number is player index 0-2, fixed
     // 0 is human player
     // TODO: sort ladders
     private ladders: [Card, number | null][][] = [];
-    // TODO: sort hands
     private hands: Card[][] = [];
     private grounding: Card[] = [];
     private spoils: Card[] = [];
@@ -22,6 +23,7 @@ export class GameLog {
     // TODO: game configuration
     // TODO: holding bonuses
     public complete: boolean = false;
+    private version: string = __COMMIT_HASH__;
 
     constructor() {}
 
