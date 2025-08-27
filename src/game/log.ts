@@ -4,6 +4,7 @@ import { Player } from "./player";
 export class GameLog {
     // snapshots of all ladders, from before first trick to after last
     // number is player index 0-2, fixed
+    // 0 is human player
     private ladders: [Card, number | null][][] = [];
     public hands: Card[][] = [];
     public grounding: Card[] = [];
@@ -13,8 +14,8 @@ export class GameLog {
     private playerCount: number = 3;
     // this allows us to translate player index to position in hand
     public dealerIndex: number = -1;
-    // each trick is array of [card, playerIndex], along with trump suit
-    private tricks: [Suit, [Card, number][]][] = [];
+    // each trick is array of [card, playerIndex], along with trump suit + winner index
+    private tricks: [Suit, [Card, number][], number][] = [];
     // TODO: scores
     // TODO: game configuration
     // TODO: holding bonuses
@@ -28,11 +29,12 @@ export class GameLog {
         );
     }
 
-    captureTrick(trumpSuit: Suit, trick: [Card, Player][]) {
+    captureTrick(trumpSuit: Suit, trick: [Card, Player][], winnerIndex: number) {
         this.tricks.push(
             [
                 trumpSuit,
-                trick.map(([card, player]) => [card, player.positionIndex])
+                trick.map(([card, player]) => [card, player.positionIndex]),
+                winnerIndex,
             ]
         );
     }

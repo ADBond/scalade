@@ -455,7 +455,7 @@ export class GameState {
     // current trick info -> previous trick
     this.previousTrick = this.trickInProgress
 
-    log.captureTrick(trumpSuit, this.trickInProgress);
+    log.captureTrick(trumpSuit, this.trickInProgress, winnerPlayer.positionIndex);
     log.captureLadders(this.ladders);
 
     // empty the trick, and increment the counter!
