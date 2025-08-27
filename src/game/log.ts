@@ -15,6 +15,9 @@ export class GameLog {
     public dealerIndex: number = -1;
     // each trick is array of [card, playerIndex], along with trump suit
     private tricks: [Suit, [Card, number][]][] = [];
+    // TODO: scores
+    // TODO: game configuration
+    // TODO: holding bonuses
     public complete: boolean = false;
 
     constructor() {}

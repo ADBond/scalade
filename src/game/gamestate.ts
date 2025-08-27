@@ -102,7 +102,7 @@ export class GameState {
         this.resetTrick(log);
         break;
       case 'handComplete':
-        this.updateScores();
+        this.updateScores(log);
         if (this.escalations >= this.playTo) {
           this.currentState = "gameComplete";
         } else {
@@ -581,7 +581,7 @@ export class GameState {
     return true;
   }
 
-  updateScores() {
+  updateScores(log: GameLog) {
     this.players.forEach(
       (player) => player.scores.push(new ScoreBreakdown([], 0))
     )
@@ -613,6 +613,7 @@ export class GameState {
       ...this.ladderCards.map(card => card.rank.score)
     );
     finalTrickWinner.scores[finalTrickWinner.scores.length - 1].finalTrickScore = finalTrickBonus;
+    log.complete = true;
   }
 
   getStateForUI(): GameStateForUI {
