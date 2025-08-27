@@ -1,9 +1,12 @@
 import { Pack } from './pack';
 import { GameState, GameStateForUI, GameMode, BonusCapping } from './gamestate';
+import { GameLog } from './log';
 
 export class Game {
   private pack = new Pack();
   public state: GameState;
+  public logs: GameLog[] = [];
+  private currentLog: GameLog = new GameLog();
 
   constructor(playerNames: string[], gameMode: GameMode = 'mobile', escalations: number = 2, capping: BonusCapping = 'uncapped') {
     this.state = new GameState(playerNames, gameMode=gameMode, escalations, capping);
@@ -18,8 +21,20 @@ export class Game {
     return this.state.getStateForUI();
   }
 
+  get jsonLogs(): string {
+    return JSON.stringify(this.logs);
+  }
+
   async incrementState() {
-    await this.state.increment();
+    await this.state.increment(this.currentLog);
+    // console.log(this.currentLog.json);
+    if (this.currentLog.complete) {
+      this.logs.push(this.currentLog);
+      // console.log(this.currentLog);
+      // console.log(this.currentLog.json);
+      this.currentLog = new GameLog();
+    }
+    console.log(this.jsonLogs);
   }
 
 }

@@ -2,13 +2,14 @@ import { Card, SUITS, Suit, arbitrarySuit } from './card';
 import { Pack } from './pack';
 import { LadderPosition, Player, PlayerName, playerNameArr } from './player';
 import { ScoreBreakdown } from './scores';
+import { GameLog } from './log';
 import { Agent } from './agent/agent';
 // import { randomAgent } from './agent/random';
 import { nnAgent } from './agent/nn';
 
 export type GameMode = 'static' | 'mobile' | 'retromobile';
 export type BonusCapping = 'nobonus' | 2 | 3 | 'uncapped';
-export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
+export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'newHand' | 'gameComplete';
 
 class advanceSuitTracker {
   // TODO: this is basically holdingBonus structure - should we rip it out?
@@ -88,26 +89,28 @@ export class GameState {
     this.finalTrickWinnerIndex = -1;
   }
 
-  public async increment() {
+  public async increment(log: GameLog) {
     const state = this.currentState;
     switch (state) {
       case 'initialiseGame':
-        this.dealCards(this.pack);
+        this.dealCards(this.pack, log);
         break;
       case 'playCard':
         const moveIndex = await this.computerMove();
         break;
       case 'trickComplete':
-        this.resetTrick();
+        this.resetTrick(log);
         break;
       case 'handComplete':
-        this.updateScores();
+        this.updateScores(log);
+        break;
+      case 'newHand':
         if (this.escalations >= this.playTo) {
           this.currentState = "gameComplete";
         } else {
           this.previousSpoils = this.spoils.slice();
           this.dealerIndex = this.getNextPlayerIndex(this.dealerIndex);
-          this.dealCards(this.pack);
+          this.dealCards(this.pack, log);
         }
         break;
       case 'gameComplete':
@@ -429,7 +432,7 @@ export class GameState {
     return cardToPlayIndex;
   }
 
-  private resetTrick() {
+  private resetTrick(log: GameLog) {
     let trumpSuit: Suit;
     if ((this.gameMode === 'static') || (this.gameMode === 'mobile')) {
       trumpSuit = this.trumpSuit;
@@ -452,6 +455,9 @@ export class GameState {
     // current trick info -> previous trick
     this.previousTrick = this.trickInProgress
 
+    log.captureTrick(trumpSuit, this.trickInProgress, winnerPlayer.positionIndex);
+    log.captureLadders(this.ladders);
+
     // empty the trick, and increment the counter!
     this.trickInProgress = [];
     this.trickIndex++;
@@ -462,7 +468,7 @@ export class GameState {
     }
   }
 
-  private dealCards(pack: Pack, count: number = 12) {
+  private dealCards(pack: Pack, log: GameLog, count: number = 12) {
     const halfHandSizeRoundedUp = Math.ceil(count / 2);
     this.pack.reset()
     let remainingPack = this.pack.filterOut(this.pack.getFullPack(), this.ladderCards);
@@ -508,6 +514,9 @@ export class GameState {
     // TODO now pack should be empty
     // console.log("Empty pack:");
     // console.log([...remainingPack]);
+    // console.log([...this.getPlayerHand(0)]);
+    // console.log([...this.getPlayerHand(1)]);
+    // console.log([...this.getPlayerHand(2)]);
     this._trumpSuit = this.trumpSuitFromLadders();
     this.currentState = 'playCard';
     this.currentPlayerIndex = this.getNextPlayerIndex(this.dealerIndex);
@@ -515,6 +524,13 @@ export class GameState {
     this.trickIndex = 0;
     this.publicCards = [];
     this.renounces = this.players.map((_player) => new Set());
+    // update game log
+    log.dealerIndex = this.dealerIndex;
+    log.captureCrossCards("spoils", this.spoils);
+    log.captureCrossCards("deads", this.deadCards);
+    log.captureCrossCards("grounding", this.currentHandsGroundings);
+    log.captureHands(this.players.map((player) => [...this.getPlayerHand(player.positionIndex)]));
+    log.captureLadders(this.ladders);
   }
 
   giveCardToPlayer(playerIndex: number, card: Card) {
@@ -570,7 +586,7 @@ export class GameState {
     return true;
   }
 
-  updateScores() {
+  updateScores(log: GameLog) {
     this.players.forEach(
       (player) => player.scores.push(new ScoreBreakdown([], 0))
     )
@@ -602,6 +618,8 @@ export class GameState {
       ...this.ladderCards.map(card => card.rank.score)
     );
     finalTrickWinner.scores[finalTrickWinner.scores.length - 1].finalTrickScore = finalTrickBonus;
+    log.complete = true;
+    this.currentState = 'newHand';
   }
 
   getStateForUI(): GameStateForUI {

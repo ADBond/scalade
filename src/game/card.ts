@@ -9,12 +9,16 @@ export class Rank {
         return this.name[0];
     }
 
+    toJSON() {
+        return this.toStringShort();
+    }
+
     static rankEquals(r1: Rank, r2: Rank): boolean {
         return r1.name === r2.name;
     }
 }
 export class Suit {
-    constructor(public name: string, public rankForTrumpPreference: number) { }
+    constructor(public name: string, public rankForTrumpPreference: number, public html: string) { }
 
     toString(): string {
         return this.name;
@@ -22,6 +26,10 @@ export class Suit {
 
     toStringShort(): string {
         return this.name[0];
+    }
+
+    toJSON() {
+        return this.toStringShort();
     }
 
     static suitEquals(s1: Suit, s2: Suit): boolean {
@@ -38,6 +46,14 @@ export class Card {
 
     toStringShort(): string {
         return `${this.rank.toStringShort()}${this.suit.toStringShort()}`;
+    }
+
+    toJSON() {
+        return this.toStringShort();
+    }
+
+    get html(): string {
+        return `${this.rank.toStringShort()}${this.suit.html}`;
     }
 
     public nextCardUp(pack: Card[]): Card {
@@ -94,10 +110,10 @@ export const RANKS: Rank[] = [
 ];
 
 export const SUITS: Suit[] = [
-    new Suit("Diamonds", 0),
-    new Suit("Hearts", 1),
-    new Suit("Spades", 2),
-    new Suit("Clubs", 3),
+    new Suit("Diamonds", 0, "&diams;"),
+    new Suit("Hearts", 1, "&hearts;"),
+    new Suit("Spades", 2, "&spades;"),
+    new Suit("Clubs", 3, "&clubs;"),
 ];
 
 export const arbitrarySuit = SUITS[0];
