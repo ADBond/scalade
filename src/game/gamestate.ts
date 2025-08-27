@@ -99,7 +99,7 @@ export class GameState {
         const moveIndex = await this.computerMove();
         break;
       case 'trickComplete':
-        this.resetTrick();
+        this.resetTrick(log);
         break;
       case 'handComplete':
         this.updateScores();
@@ -430,7 +430,7 @@ export class GameState {
     return cardToPlayIndex;
   }
 
-  private resetTrick() {
+  private resetTrick(log: GameLog) {
     let trumpSuit: Suit;
     if ((this.gameMode === 'static') || (this.gameMode === 'mobile')) {
       trumpSuit = this.trumpSuit;
@@ -452,6 +452,9 @@ export class GameState {
     }
     // current trick info -> previous trick
     this.previousTrick = this.trickInProgress
+
+    log.captureTrick(trumpSuit, this.trickInProgress);
+    log.captureLadders(this.ladders);
 
     // empty the trick, and increment the counter!
     this.trickInProgress = [];

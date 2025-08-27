@@ -1,4 +1,4 @@
-import { Card } from "./card";
+import { Card, Suit } from "./card";
 import { Player } from "./player";
 
 export class GameLog {
@@ -13,8 +13,8 @@ export class GameLog {
     private playerCount: number = 3;
     // this allows us to translate player index to position in hand
     public dealerIndex: number = -1;
-    // each trick is array of [card, playerIndex]
-    public tricks: [Card, number][][] = [];
+    // each trick is array of [card, playerIndex], along with trump suit
+    private tricks: [Suit, [Card, number][]][] = [];
     public complete: boolean = false;
 
     constructor() {}
@@ -22,6 +22,15 @@ export class GameLog {
     captureLadders(ladders: [Card, Player | null][]) {
         this.ladders.push(
             ladders.map(([card, player]) => [card, player?.positionIndex ?? null])
+        );
+    }
+
+    captureTrick(trumpSuit: Suit, trick: [Card, Player][]) {
+        this.tricks.push(
+            [
+                trumpSuit,
+                trick.map(([card, player]) => [card, player.positionIndex])
+            ]
         );
     }
 
