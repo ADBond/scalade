@@ -2,6 +2,7 @@ import { Card, SUITS, Suit, arbitrarySuit } from './card';
 import { Pack } from './pack';
 import { LadderPosition, Player, PlayerName, playerNameArr } from './player';
 import { ScoreBreakdown } from './scores';
+import { GameLog } from './log';
 import { Agent } from './agent/agent';
 // import { randomAgent } from './agent/random';
 import { nnAgent } from './agent/nn';
@@ -88,7 +89,7 @@ export class GameState {
     this.finalTrickWinnerIndex = -1;
   }
 
-  public async increment() {
+  public async increment(log: GameLog) {
     const state = this.currentState;
     switch (state) {
       case 'initialiseGame':

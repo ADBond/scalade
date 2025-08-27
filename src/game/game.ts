@@ -6,6 +6,7 @@ export class Game {
   private pack = new Pack();
   public state: GameState;
   public logs: GameLog[] = [];
+  private currentLog: GameLog = new GameLog();
 
   constructor(playerNames: string[], gameMode: GameMode = 'mobile', escalations: number = 2, capping: BonusCapping = 'uncapped') {
     this.state = new GameState(playerNames, gameMode=gameMode, escalations, capping);
@@ -25,7 +26,11 @@ export class Game {
   }
 
   async incrementState() {
-    await this.state.increment();
+    await this.state.increment(this.currentLog);
+    if (this.currentLog.complete) {
+      this.logs.push(this.currentLog);
+      this.currentLog = new GameLog();
+    }
   }
 
 }
