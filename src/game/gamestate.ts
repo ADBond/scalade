@@ -9,7 +9,7 @@ import { nnAgent } from './agent/nn';
 
 export type GameMode = 'static' | 'mobile' | 'retromobile';
 export type BonusCapping = 'nobonus' | 2 | 3 | 'uncapped';
-export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'gameComplete';
+export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'newHand' | 'gameComplete';
 
 class advanceSuitTracker {
   // TODO: this is basically holdingBonus structure - should we rip it out?
@@ -103,6 +103,8 @@ export class GameState {
         break;
       case 'handComplete':
         this.updateScores(log);
+        break;
+      case 'newHand':
         if (this.escalations >= this.playTo) {
           this.currentState = "gameComplete";
         } else {
@@ -614,6 +616,7 @@ export class GameState {
     );
     finalTrickWinner.scores[finalTrickWinner.scores.length - 1].finalTrickScore = finalTrickBonus;
     log.complete = true;
+    this.currentState = 'newHand';
   }
 
   getStateForUI(): GameStateForUI {

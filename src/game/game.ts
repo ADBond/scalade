@@ -29,6 +29,7 @@ export class Game {
     await this.state.increment(this.currentLog);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
+      console.log(this.currentLog);
       this.currentLog = new GameLog();
     }
   }
