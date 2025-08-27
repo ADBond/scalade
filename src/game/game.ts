@@ -27,10 +27,11 @@ export class Game {
 
   async incrementState() {
     await this.state.increment(this.currentLog);
+    // console.log(this.currentLog.json);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
-      console.log(this.currentLog);
-      console.log(this.currentLog.json);
+      // console.log(this.currentLog);
+      // console.log(this.currentLog.json);
       this.currentLog = new GameLog();
     }
     console.log(this.jsonLogs);

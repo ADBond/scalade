@@ -74,7 +74,7 @@ export class GameLog {
                     (c1.rank.trickTakingRank - c2.rank.trickTakingRank)
                 )
             )
-        )
+        );
     }
 
     get json(): string {

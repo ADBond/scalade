@@ -514,6 +514,9 @@ export class GameState {
     // TODO now pack should be empty
     // console.log("Empty pack:");
     // console.log([...remainingPack]);
+    // console.log([...this.getPlayerHand(0)]);
+    // console.log([...this.getPlayerHand(1)]);
+    // console.log([...this.getPlayerHand(2)]);
     this._trumpSuit = this.trumpSuitFromLadders();
     this.currentState = 'playCard';
     this.currentPlayerIndex = this.getNextPlayerIndex(this.dealerIndex);
@@ -526,7 +529,7 @@ export class GameState {
     log.captureCrossCards("spoils", this.spoils);
     log.captureCrossCards("deads", this.deadCards);
     log.captureCrossCards("grounding", this.currentHandsGroundings);
-    log.captureHands(this.players.map((player) => this.getPlayerHand(player.positionIndex)));
+    log.captureHands(this.players.map((player) => [...this.getPlayerHand(player.positionIndex)]));
     log.captureLadders(this.ladders);
   }
 
