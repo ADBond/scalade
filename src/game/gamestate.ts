@@ -93,7 +93,7 @@ export class GameState {
     const state = this.currentState;
     switch (state) {
       case 'initialiseGame':
-        this.dealCards(this.pack);
+        this.dealCards(this.pack, log);
         break;
       case 'playCard':
         const moveIndex = await this.computerMove();
@@ -108,7 +108,7 @@ export class GameState {
         } else {
           this.previousSpoils = this.spoils.slice();
           this.dealerIndex = this.getNextPlayerIndex(this.dealerIndex);
-          this.dealCards(this.pack);
+          this.dealCards(this.pack, log);
         }
         break;
       case 'gameComplete':
@@ -463,7 +463,7 @@ export class GameState {
     }
   }
 
-  private dealCards(pack: Pack, count: number = 12) {
+  private dealCards(pack: Pack, log: GameLog, count: number = 12) {
     const halfHandSizeRoundedUp = Math.ceil(count / 2);
     this.pack.reset()
     let remainingPack = this.pack.filterOut(this.pack.getFullPack(), this.ladderCards);
@@ -516,6 +516,13 @@ export class GameState {
     this.trickIndex = 0;
     this.publicCards = [];
     this.renounces = this.players.map((_player) => new Set());
+    // update game log
+    log.dealerIndex = this.dealerIndex;
+    log.spoils = [...this.spoils];
+    log.deads = [...this.deadCards];
+    log.grounding = [...this.currentHandsGroundings];
+    log.hands = this.players.map((player) => this.getPlayerHand(player.positionIndex));
+    log.captureLadders(this.ladders);
   }
 
   giveCardToPlayer(playerIndex: number, card: Card) {
