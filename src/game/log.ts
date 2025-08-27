@@ -5,7 +5,9 @@ export class GameLog {
     // snapshots of all ladders, from before first trick to after last
     // number is player index 0-2, fixed
     // 0 is human player
+    // TODO: sort ladders
     private ladders: [Card, number | null][][] = [];
+    // TODO: sort hands
     public hands: Card[][] = [];
     public grounding: Card[] = [];
     public spoils: Card[] = [];
@@ -25,7 +27,8 @@ export class GameLog {
 
     captureLadders(ladders: [Card, Player | null][]) {
         this.ladders.push(
-            ladders.map(([card, player]) => [card, player?.positionIndex ?? null])
+            ladders
+                .map(([card, player]) => [card, player?.positionIndex ?? null])
         );
     }
 

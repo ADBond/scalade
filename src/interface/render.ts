@@ -108,6 +108,7 @@ const delayMap: Record<state, number> = {
   playCard: 700,
   trickComplete: 1700,
   handComplete: 3000,
+  newHand: 10,
   gameComplete: 10,
 }
 
