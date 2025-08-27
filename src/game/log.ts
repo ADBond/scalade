@@ -8,10 +8,10 @@ export class GameLog {
     // TODO: sort ladders
     private ladders: [Card, number | null][][] = [];
     // TODO: sort hands
-    public hands: Card[][] = [];
-    public grounding: Card[] = [];
-    public spoils: Card[] = [];
-    public deads: Card[] = [];
+    private hands: Card[][] = [];
+    private grounding: Card[] = [];
+    private spoils: Card[] = [];
+    private deads: Card[] = [];
     // TODO: generalise this if we ever generalise count in app
     private playerCount: number = 3;
     // this allows us to translate player index to position in hand
@@ -42,7 +42,30 @@ export class GameLog {
         );
     }
 
-    // TODO: to json
+    captureCrossCards(prop: 'grounding' | 'spoils' | 'deads', cards: Card[]) {
+        this[prop] = [...cards].sort(
+            (c1, c2) => (
+              // 100 big enough to ensure we always sort by suit first
+              // TODO: farm this out
+              100*(c1.suit.rankForTrumpPreference - c2.suit.rankForTrumpPreference) +
+              (c1.rank.trickTakingRank - c2.rank.trickTakingRank)
+            )
+          );
+    }
+
+    captureHands(hands: Card[][]) {
+        this.hands = hands.map(
+            (hand) => hand.sort(
+                (c1, c2) => (
+                    // 100 big enough to ensure we always sort by suit first
+                    // TODO: farm this out
+                    100*(c1.suit.rankForTrumpPreference - c2.suit.rankForTrumpPreference) +
+                    (c1.rank.trickTakingRank - c2.rank.trickTakingRank)
+                )
+            )
+        )
+    }
+
     get json(): string {
         return JSON.stringify(this);
     }

@@ -523,10 +523,10 @@ export class GameState {
     this.renounces = this.players.map((_player) => new Set());
     // update game log
     log.dealerIndex = this.dealerIndex;
-    log.spoils = [...this.spoils];
-    log.deads = [...this.deadCards];
-    log.grounding = [...this.currentHandsGroundings];
-    log.hands = this.players.map((player) => this.getPlayerHand(player.positionIndex));
+    log.captureCrossCards("spoils", this.spoils);
+    log.captureCrossCards("deads", this.deadCards);
+    log.captureCrossCards("grounding", this.currentHandsGroundings);
+    log.captureHands(this.players.map((player) => this.getPlayerHand(player.positionIndex)));
     log.captureLadders(this.ladders);
   }
 
