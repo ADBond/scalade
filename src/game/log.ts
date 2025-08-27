@@ -40,6 +40,9 @@ export class GameLog {
     }
 
     // TODO: to json
+    get json(): string {
+        return JSON.stringify(this);
+    }
     // TODO: to html (for display)
     // TODO: to bgg (for pretty copy/paste)
 }

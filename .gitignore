@@ -9,3 +9,4 @@ build/
 
 # data stuff &sim.
 *.txt
+*.json

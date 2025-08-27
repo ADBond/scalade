@@ -9,6 +9,10 @@ export class Rank {
         return this.name[0];
     }
 
+    toJSON() {
+        return this.toStringShort();
+    }
+
     static rankEquals(r1: Rank, r2: Rank): boolean {
         return r1.name === r2.name;
     }
@@ -22,6 +26,10 @@ export class Suit {
 
     toStringShort(): string {
         return this.name[0];
+    }
+
+    toJSON() {
+        return this.toStringShort();
     }
 
     static suitEquals(s1: Suit, s2: Suit): boolean {
@@ -38,6 +46,10 @@ export class Card {
 
     toStringShort(): string {
         return `${this.rank.toStringShort()}${this.suit.toStringShort()}`;
+    }
+
+    toJSON() {
+        return this.toStringShort();
     }
 
     get html(): string {

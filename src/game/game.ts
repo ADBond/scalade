@@ -22,7 +22,7 @@ export class Game {
   }
 
   get jsonLogs(): string {
-    return "";
+    return JSON.stringify(this.logs);
   }
 
   async incrementState() {
@@ -30,8 +30,10 @@ export class Game {
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
       console.log(this.currentLog);
+      console.log(this.currentLog.json);
       this.currentLog = new GameLog();
     }
+    console.log(this.jsonLogs);
   }
 
 }
