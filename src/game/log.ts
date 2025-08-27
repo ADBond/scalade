@@ -28,10 +28,19 @@ export class GameLog {
     constructor() {}
 
     captureLadders(ladders: [Card, Player | null][]) {
-        this.ladders.push(
-            ladders
-                .map(([card, player]) => [card, player?.positionIndex ?? null])
+        const sortedLadders: [Card, number | null][] = ladders.map(
+            ([card, player]) => {
+                return [card, player?.positionIndex ?? null]
+            }
         );
+        sortedLadders.sort(
+            (a, b) => {
+                const [c1, c2] = [a[0], b[0]];
+                return 100*(c1.suit.rankForTrumpPreference - c2.suit.rankForTrumpPreference) +
+                    (c1.rank.trickTakingRank - c2.rank.trickTakingRank)
+            }
+        );
+        this.ladders.push(sortedLadders);
     }
 
     captureTrick(trumpSuit: Suit, trick: [Card, Player][], winnerIndex: number) {
