@@ -6,3 +6,6 @@ build/
 *.tsbuildinfo
 
 .vite/
+
+# data stuff &sim.
+*.txt
