@@ -7,7 +7,6 @@ export class GameLog {
     // snapshots of all ladders, from before first trick to after last
     // number is player index 0-2, fixed
     // 0 is human player
-    // TODO: sort ladders
     private ladders: [Card, number | null][][] = [];
     private hands: Card[][] = [];
     private grounding: Card[] = [];
