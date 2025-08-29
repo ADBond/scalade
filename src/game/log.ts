@@ -82,3 +82,24 @@ export class GameLog {
     // TODO: to html (for display)
     // TODO: to bgg (for pretty copy/paste)
 }
+
+// send game log to storage
+export async function sendGameLog(log: GameLog) {
+  try {
+    const res = await fetch("https://guileless-gingersnap-2d9f68.netlify.app/.netlify/functions/saveGameLog", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(log),
+    });
+
+    if (!res.ok) {
+      console.warn("Game log upload failed:", res.status, await res.text());
+      return;
+    }
+
+    const json = await res.json();
+    console.log("Log saved:", json);
+  } catch (err) {
+    console.warn("Could not send game log (offline?):", err);
+  }
+}
