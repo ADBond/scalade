@@ -1,6 +1,6 @@
 import { Pack } from './pack';
 import { GameState, GameStateForUI, GameMode, BonusCapping } from './gamestate';
-import { GameLog } from './log';
+import { GameLog, sendGameLog } from './log';
 
 export class Game {
   private pack = new Pack();
@@ -27,11 +27,9 @@ export class Game {
 
   async incrementState() {
     await this.state.increment(this.currentLog);
-    // console.log(this.currentLog.json);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
-      // console.log(this.currentLog);
-      // console.log(this.currentLog.json);
+      sendGameLog(this.currentLog);
       this.currentLog = new GameLog();
     }
     console.log(this.jsonLogs);
