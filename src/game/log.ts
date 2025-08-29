@@ -16,6 +16,7 @@ export class GameLog {
     private playerCount: number = 3;
     // this allows us to translate player index to position in hand
     public dealerIndex: number = -1;
+    public handNumber: number = -1;
     // each trick is array of [card, playerIndex], along with trump suit + winner index
     private tricks: [Suit, [Card, number][], number][] = [];
     // TODO: scores
@@ -24,7 +25,7 @@ export class GameLog {
     public complete: boolean = false;
     private version: string = __COMMIT_HASH__;
 
-    constructor() {}
+    constructor(private gameID: number) {}
 
     captureLadders(ladders: [Card, Player | null][]) {
         const sortedLadders: [Card, number | null][] = ladders.map(

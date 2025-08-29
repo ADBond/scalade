@@ -526,6 +526,7 @@ export class GameState {
     this.renounces = this.players.map((_player) => new Set());
     // update game log
     log.dealerIndex = this.dealerIndex;
+    log.handNumber = this.handNumber;
     log.captureCrossCards("spoils", this.spoils);
     log.captureCrossCards("deads", this.deadCards);
     log.captureCrossCards("grounding", this.currentHandsGroundings);
