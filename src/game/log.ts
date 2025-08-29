@@ -16,6 +16,7 @@ export class GameLog {
     private playerCount: number = 3;
     // this allows us to translate player index to position in hand
     public dealerIndex: number = -1;
+    public handNumber: number = -1;
     // each trick is array of [card, playerIndex], along with trump suit + winner index
     private tricks: [Suit, [Card, number][], number][] = [];
     // TODO: scores
@@ -24,7 +25,7 @@ export class GameLog {
     public complete: boolean = false;
     private version: string = __COMMIT_HASH__;
 
-    constructor() {}
+    constructor(private gameID: number) {}
 
     captureLadders(ladders: [Card, Player | null][]) {
         const sortedLadders: [Card, number | null][] = ladders.map(
@@ -81,4 +82,25 @@ export class GameLog {
     }
     // TODO: to html (for display)
     // TODO: to bgg (for pretty copy/paste)
+}
+
+// send game log to storage
+export async function sendGameLog(log: GameLog) {
+  try {
+    const res = await fetch("https://guileless-gingersnap-2d9f68.netlify.app/.netlify/functions/saveGameLog", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(log),
+    });
+
+    if (!res.ok) {
+      console.warn("Game log upload failed:", res.status, await res.text());
+      return;
+    }
+
+    const json = await res.json();
+    console.log("Log saved:", json);
+  } catch (err) {
+    console.warn("Could not send game log (offline?):", err);
+  }
 }
