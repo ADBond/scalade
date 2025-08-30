@@ -546,6 +546,8 @@ export class GameState {
     // update game log
     log.dealerIndex = this.dealerIndex;
     log.handNumber = this.handNumber;
+    log.escalations = this.escalations;
+    log.advanceSuit = this.advanceSuit;
     log.captureCrossCards("spoils", this.spoils);
     log.captureCrossCards("deads", this.deadCards);
     log.captureCrossCards("grounding", this.currentHandsGroundings);
