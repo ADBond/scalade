@@ -12,8 +12,11 @@ export class GameLog {
     private grounding: Card[] = [];
     private spoils: Card[] = [];
     private deads: Card[] = [];
+    private holdingMultipliers: [Suit, number][][] = [];
     // TODO: generalise this if we ever generalise count in app
     private playerCount: number = 3;
+    // TODO: dynamic, better
+    private bot: string = "camber";
     // this allows us to translate player index to position in hand
     public dealerIndex: number = -1;
     public handNumber: number = -1;
@@ -21,7 +24,6 @@ export class GameLog {
     private tricks: [Suit, [Card, number][], number][] = [];
     // TODO: scores
     // TODO: game configuration
-    // TODO: holding bonuses
     public complete: boolean = false;
     private version: string = __COMMIT_HASH__;
 
@@ -75,6 +77,10 @@ export class GameLog {
                 )
             )
         );
+    }
+
+    captureHoldingMultipliers(playerMultipliers: [Suit, number][][]) {
+        this.holdingMultipliers = playerMultipliers;
     }
 
     get json(): string {

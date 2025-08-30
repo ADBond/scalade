@@ -34,6 +34,14 @@ class HoldingMultipliers {
             ([holdingSuit, _holdingMultiplier]) => Suit.suitEquals(suit, holdingSuit)
         )[0][1];
     }
+
+    getAll(): [Suit, number][] {
+        const holdingMultipliers = this.holdingMultiplierArray;
+        holdingMultipliers.sort(
+            (a, b) => a[0].rankForTrumpPreference - b[0].rankForTrumpPreference
+        );
+        return holdingMultipliers;
+    }
 }
 
 export class Player {
