@@ -550,6 +550,7 @@ export class GameState {
     log.captureCrossCards("deads", this.deadCards);
     log.captureCrossCards("grounding", this.currentHandsGroundings);
     log.captureHands(this.players.map((player) => [...this.getPlayerHand(player.positionIndex)]));
+    log.staringScores = this.players.map((player) => player.score);
     log.captureLadders(this.ladders);
     log.captureHoldingMultipliers(this.players.map((player) => player.holdingMultipliers.getAll()));
   }

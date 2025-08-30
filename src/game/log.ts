@@ -1,6 +1,7 @@
 import { Card, Suit } from "./card";
 import { Player } from "./player";
 import { GameConfig } from "./gamestate";
+import { ScoreBreakdown } from "./scores";
 
 declare const __COMMIT_HASH__: string;
 
@@ -23,7 +24,10 @@ export class GameLog {
     public handNumber: number = -1;
     // each trick is array of [card, playerIndex], along with trump suit + winner index
     private tricks: [Suit, [Card, number][], number][] = [];
-    // TODO: scores
+
+    public staringScores: number[] = [];
+    private handScores: [number, ScoreBreakdown][] = [];
+
     public complete: boolean = false;
     private version: string = __COMMIT_HASH__;
 
