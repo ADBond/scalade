@@ -1,11 +1,11 @@
 import { Game } from "../game/game";
-import { GameMode, BonusCapping } from "../game/gamestate";
+import { GameConfig } from "../game/gamestate";
 
 let game: Game;
 
-export function newGame(gameMode: GameMode, escalations: number, capping: BonusCapping): void {
+export function newGame(config: GameConfig): void {
     // TODO: use names for display, overriding comp1 comp2 etc which should be internal
-    game = new Game(['Andy', 'Randy1', 'Randy2'], gameMode, escalations, capping);
+    game = new Game(['Andy', 'Randy1', 'Randy2'], config);
 }
 
 export function getGame(): Game {

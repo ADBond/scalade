@@ -1,19 +1,19 @@
 import { playUntilHuman } from './interface/api';
 import { renderWithDelays } from './interface/render';
 import { newGame } from './interface/game';
-import { GameMode, BonusCapping } from './game/gamestate';
+import { GameConfig, GameMode, BonusCapping } from './game/gamestate';
 
-async function loadGame(gameMode: GameMode, escalations: number, capping: BonusCapping) {
-  newGame(gameMode, escalations, capping);
+async function loadGame(config: GameConfig) {
+  newGame(config);
   const futureStates = await playUntilHuman();
   // TODO: avoid this duplication
   await renderWithDelays(futureStates);
 }
 
-const DEFAULTS = {
-  trumprule: "mobile" as GameMode,
+const DEFAULTS: GameConfig = {
+  trumpRule: "mobile",
   escalations: 2,
-  capping: 'uncapped' as BonusCapping,
+  capping: "uncapped",
 };
 
 
@@ -23,7 +23,7 @@ const form = document.getElementById("new-game-form") as HTMLFormElement;
 
 function resetValues() {
   (form.querySelector(
-    `input[name="trumprule"][value="${DEFAULTS.trumprule}"]`
+    `input[name="trumprule"][value="${DEFAULTS.trumpRule}"]`
   ) as HTMLInputElement).checked = true;
 
   (form.querySelector(
@@ -37,7 +37,7 @@ function resetValues() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   resetValues();
-  await loadGame(DEFAULTS.trumprule, DEFAULTS.escalations, DEFAULTS.capping);
+  await loadGame(DEFAULTS);
 });
 
 button.addEventListener("click", () => {
@@ -51,11 +51,16 @@ form.addEventListener("submit", async (e) => {
   const trumprule = formData.get("trumprule") as GameMode;
   const escalations = formData.get("escalations") as string;
   const capping = formData.get("capping") as BonusCapping;
+  const config: GameConfig = {
+    trumpRule: trumprule,
+    escalations: parseInt(escalations),
+    capping: capping,
+  }
 
   menu.hidden = true;
   resetValues();
 
-  await loadGame(trumprule, parseInt(escalations), capping);
+  await loadGame(config);
 });
 
 document.addEventListener("click", (e) => {

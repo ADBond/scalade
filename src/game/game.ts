@@ -1,10 +1,16 @@
 import { Pack } from './pack';
-import { GameState, GameStateForUI, GameMode, BonusCapping } from './gamestate';
+import { GameState, GameStateForUI, GameConfig } from './gamestate';
 import { GameLog, sendGameLog } from './log';
 
 // TODO: this is just a placeholder for temp scaffolding
 function randomID(): number {
   return Math.floor((Math.random() * 1000000) + 1);
+}
+
+const defaultConfig: GameConfig = {
+  trumpRule: 'mobile',
+  escalations: 2,
+  capping: 'uncapped',
 }
 
 export class Game {
@@ -16,13 +22,11 @@ export class Game {
 
   constructor(
       playerNames: string[],
-      gameMode: GameMode = 'mobile',
-      escalations: number = 2,
-      capping: BonusCapping = 'uncapped',
+      config: GameConfig = defaultConfig,
     ) {
     this.gameID = randomID();
-    this.state = new GameState(playerNames, gameMode=gameMode, escalations, capping);
-    this.currentLog = new GameLog(this.gameID);
+    this.state = new GameState(playerNames, config);
+    this.currentLog = new GameLog(this.gameID, config);
     this.incrementState();
   }
 
@@ -40,12 +44,13 @@ export class Game {
 
   async incrementState() {
     await this.state.increment(this.currentLog);
+    // console.log(this.currentLog);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
       sendGameLog(this.currentLog);
-      this.currentLog = new GameLog(this.gameID);
+      this.currentLog = new GameLog(this.gameID, this.state.config);
     }
-    console.log(this.jsonLogs);
+    // console.log(this.jsonLogs);
   }
 
 }

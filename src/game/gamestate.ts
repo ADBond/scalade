@@ -11,6 +11,12 @@ export type GameMode = 'static' | 'mobile' | 'retromobile';
 export type BonusCapping = 'nobonus' | 2 | 3 | 'uncapped';
 export type state = 'initialiseGame' | 'playCard' | 'trickComplete' | 'handComplete' | 'newHand' | 'gameComplete';
 
+export type GameConfig = {
+  trumpRule: GameMode,
+  capping: BonusCapping,
+  escalations: number,
+}
+
 class advanceSuitTracker {
   // TODO: this is basically holdingBonus structure - should we rip it out?
   public advanceSuitArray: [Suit, number][]
@@ -68,7 +74,7 @@ export class GameState {
   public advanceSuit: Suit | null = null;
   public handNumber: number = 0;
 
-  constructor(public playerNames: string[], public gameMode: GameMode, public playTo: number = 2, public capping: BonusCapping) {
+  constructor(public playerNames: string[], public config: GameConfig) {
     // TODO: more / flexi ??
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
     const agents: Agent[] = ['human', nnAgent("camber"), nnAgent("camber")]
@@ -87,6 +93,19 @@ export class GameState {
     this.currentPlayerIndex = 0;
     this.trickIndex = 0;
     this.finalTrickWinnerIndex = -1;
+  }
+
+  // config stuff
+  get gameMode(): GameMode {
+    return this.config.trumpRule;
+  }
+
+  get playTo(): number {
+    return this.config.escalations;
+  }
+
+  get capping(): BonusCapping {
+    return this.config.capping
   }
 
   public async increment(log: GameLog) {
@@ -531,6 +550,7 @@ export class GameState {
     log.captureCrossCards("deads", this.deadCards);
     log.captureCrossCards("grounding", this.currentHandsGroundings);
     log.captureHands(this.players.map((player) => [...this.getPlayerHand(player.positionIndex)]));
+    log.staringScores = this.players.map((player) => player.score);
     log.captureLadders(this.ladders);
     log.captureHoldingMultipliers(this.players.map((player) => player.holdingMultipliers.getAll()));
   }
@@ -620,6 +640,12 @@ export class GameState {
       ...this.ladderCards.map(card => card.rank.score)
     );
     finalTrickWinner.scores[finalTrickWinner.scores.length - 1].finalTrickScore = finalTrickBonus;
+    const breakdowns: ScoreBreakdown[] = this.players.map(
+      (player) => player.scores.slice(-1).pop()
+    ) as ScoreBreakdown[];
+    log.handScores = breakdowns.map(
+      (breakdown) => [breakdown.score, breakdown]
+    );
     log.complete = true;
     this.currentState = 'newHand';
   }
