@@ -26,7 +26,7 @@ export class Game {
     ) {
     this.gameID = randomID();
     this.state = new GameState(playerNames, config);
-    this.currentLog = new GameLog(this.gameID);
+    this.currentLog = new GameLog(this.gameID, config);
     this.incrementState();
   }
 
@@ -44,10 +44,11 @@ export class Game {
 
   async incrementState() {
     await this.state.increment(this.currentLog);
+    console.log(this.currentLog);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
       sendGameLog(this.currentLog);
-      this.currentLog = new GameLog(this.gameID);
+      this.currentLog = new GameLog(this.gameID, this.state.config);
     }
     console.log(this.jsonLogs);
   }

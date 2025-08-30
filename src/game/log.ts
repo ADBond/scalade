@@ -1,5 +1,6 @@
 import { Card, Suit } from "./card";
 import { Player } from "./player";
+import { GameConfig } from "./gamestate";
 
 declare const __COMMIT_HASH__: string;
 
@@ -23,11 +24,10 @@ export class GameLog {
     // each trick is array of [card, playerIndex], along with trump suit + winner index
     private tricks: [Suit, [Card, number][], number][] = [];
     // TODO: scores
-    // TODO: game configuration
     public complete: boolean = false;
     private version: string = __COMMIT_HASH__;
 
-    constructor(private gameID: number) {}
+    constructor(private gameID: number, private config: GameConfig) {}
 
     captureLadders(ladders: [Card, Player | null][]) {
         const sortedLadders: [Card, number | null][] = ladders.map(
