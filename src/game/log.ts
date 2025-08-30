@@ -23,6 +23,7 @@ export class GameLog {
     public dealerIndex: number = -1;
     public handNumber: number = -1;
     public escalations: number = -1;
+    public escalationsFinal: number = -1;
     public advanceSuit: Suit | null = null;
     // each trick is array of [card, playerIndex], along with trump suit + winner index
     private tricks: [Suit, [Card, number][], number][] = [];

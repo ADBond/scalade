@@ -648,6 +648,7 @@ export class GameState {
     log.handScores = breakdowns.map(
       (breakdown) => [breakdown.score, breakdown]
     );
+    log.escalationsFinal = this.escalations;
     log.complete = true;
     this.currentState = 'newHand';
   }
