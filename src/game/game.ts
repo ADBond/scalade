@@ -44,13 +44,13 @@ export class Game {
 
   async incrementState() {
     await this.state.increment(this.currentLog);
-    console.log(this.currentLog);
+    // console.log(this.currentLog);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
       sendGameLog(this.currentLog);
       this.currentLog = new GameLog(this.gameID, this.state.config);
     }
-    console.log(this.jsonLogs);
+    // console.log(this.jsonLogs);
   }
 
 }
