@@ -26,7 +26,7 @@ export class GameLog {
     private tricks: [Suit, [Card, number][], number][] = [];
 
     public staringScores: number[] = [];
-    private handScores: [number, ScoreBreakdown][] = [];
+    public handScores: [number, ScoreBreakdown][] = [];
 
     public complete: boolean = false;
     private version: string = __COMMIT_HASH__;

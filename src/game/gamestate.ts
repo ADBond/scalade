@@ -640,6 +640,12 @@ export class GameState {
       ...this.ladderCards.map(card => card.rank.score)
     );
     finalTrickWinner.scores[finalTrickWinner.scores.length - 1].finalTrickScore = finalTrickBonus;
+    const breakdowns: ScoreBreakdown[] = this.players.map(
+      (player) => player.scores.slice(-1).pop()
+    ) as ScoreBreakdown[];
+    log.handScores = breakdowns.map(
+      (breakdown) => [breakdown.score, breakdown]
+    );
     log.complete = true;
     this.currentState = 'newHand';
   }
