@@ -89,9 +89,11 @@ export class GameState {
     for (const name of playerNames) {
       this.players.push();
     }
-    this.dealerIndex = 0;
-    this.currentPlayerIndex = 0;
-    this.trickIndex = 0;
+    // choose a random initial dealer
+    this.dealerIndex = Math.floor(Math.random() * playerNames.length);
+    // dummy values:
+    this.currentPlayerIndex = -1;
+    this.trickIndex = -1;
     this.finalTrickWinnerIndex = -1;
   }
 
