@@ -25,6 +25,8 @@ export class GameLog {
     public escalations: number = -1;
     public escalationsFinal: number = -1;
     public advanceSuit: Suit | null = null;
+    // useful to note final advance suit, for single-escalation games
+    public finalAdvanceSuit: Suit | null = null;
     // each trick is array of [card, playerIndex], along with trump suit + winner index
     private tricks: [Suit, [Card, number][], number][] = [];
 

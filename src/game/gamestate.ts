@@ -651,6 +651,7 @@ export class GameState {
       (breakdown) => [breakdown.score, breakdown]
     );
     log.escalationsFinal = this.escalations;
+    log.finalAdvanceSuit = this.advanceSuit;
     log.complete = true;
     this.currentState = 'newHand';
   }
