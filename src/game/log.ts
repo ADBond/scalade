@@ -33,6 +33,7 @@ export class GameLog {
 
     public complete: boolean = false;
     private version: string = __COMMIT_HASH__;
+    private logVersion: number = 2;
 
     constructor(private gameID: number, private config: GameConfig) {}
 
