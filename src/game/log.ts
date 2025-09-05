@@ -37,7 +37,7 @@ export class GameLog {
     private version: string = __COMMIT_HASH__;
     private logVersion: number = 3;
 
-    constructor(private gameID: number, private config: GameConfig) {}
+    constructor(private gameID: string, private config: GameConfig) {}
 
     captureLadders(ladders: [Card, Player | null][]) {
         const sortedLadders: [Card, number | null][] = ladders.map(
