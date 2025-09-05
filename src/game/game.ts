@@ -2,9 +2,16 @@ import { Pack } from './pack';
 import { GameState, GameStateForUI, GameConfig } from './gamestate';
 import { GameLog, sendGameLog } from './log';
 
-// TODO: this is just a placeholder for temp scaffolding
-function randomID(): number {
-  return Math.floor((Math.random() * 1000000) + 1);
+function randomID(): string {
+  const theDate = new Date();
+  const dateString = [
+    theDate.getFullYear(),
+    String(theDate.getMonth() + 1).padStart(2, "0"),
+    String(theDate.getDate()).padStart(2, "0"),
+  ].join("_");
+  const randomFromTime = (Date.now() % 100_000).toString(36);
+  const randomNumber = Math.random().toString(36).slice(2, 8);
+  return `${dateString}_${randomFromTime}_${randomNumber}`;
 }
 
 const defaultConfig: GameConfig = {
@@ -18,7 +25,7 @@ export class Game {
   public state: GameState;
   public logs: GameLog[] = [];
   private currentLog: GameLog;
-  private gameID: number;
+  private gameID: string;
 
   constructor(
       playerNames: string[],
@@ -44,7 +51,7 @@ export class Game {
 
   async incrementState() {
     await this.state.increment(this.currentLog);
-    // console.log(this.currentLog);
+    console.log(this.currentLog);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
       sendGameLog(this.currentLog);
