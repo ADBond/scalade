@@ -80,26 +80,31 @@ export async function renderState(state: GameStateForUI) {
   spoils.forEach(card => penultimateEl.appendChild(createCardElement(card)));
   deads.forEach(card => deadEl.appendChild(createCardElement(card)));
 
-  document.getElementById('scores')!.innerText =
-    `You: ${state.scores.player}, comp 1: ${state.scores.comp1}, comp 2: ${state.scores.comp2}`;
-  document.getElementById('scores-previous')!.innerText =
-    `prev: (You: ${state.scores_previous.player}, comp 1: ${state.scores_previous.comp1}, comp 2: ${state.scores_previous.comp2})`;
+  // populate the scores in the UI
+  document.getElementById('score-player')!.innerText = `${state.scores.player}`;
+  document.getElementById('score-comp1')!.innerText = `${state.scores.comp1}`;
+  document.getElementById('score-comp2')!.innerText = `${state.scores.comp2}`;
+
+  document.getElementById('score-player-prev')!.innerText = `(${state.scores_previous.player})`;
+  document.getElementById('score-comp1-prev')!.innerText = `(${state.scores_previous.comp1})`;
+  document.getElementById('score-comp2-prev')!.innerText = `(${state.scores_previous.comp2})`;
 
   document.getElementById('score-breakdown')!.innerHTML =
     constructScoreBreakdownText(state.score_details);
 
+  // and game status
   document.getElementById('escalations')!.innerText =
     `(${state.mode}, to ${state.playTo} escs. (capping: ${state.capping})) Escalations: ${state.escalations} (hand #${state.hand_number})`;
 
-  document.getElementById('debug')!.innerText = `${state.game_state}`;
+  const advanceEl = document.getElementById('advance')!;
+  advanceEl.innerHTML = '';
+  advanceEl.appendChild(createSuitElement(state.advance ? state.advance.toStringShort() : ""));
 
   const trumpEl = document.getElementById('trumps')!;
   trumpEl.innerHTML = '';
   trumpEl.appendChild(createSuitElement(state.trumps ? state.trumps.toStringShort() : ""));
 
-  const advanceEl = document.getElementById('advance')!;
-  advanceEl.innerHTML = '';
-  advanceEl.appendChild(createSuitElement(state.advance ? state.advance.toStringShort() : ""));
+  // document.getElementById('debug')!.innerText = `${state.game_state}`;
 
 }
 

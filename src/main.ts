@@ -86,6 +86,11 @@ const modals: ModalElements[] = [
     modal: document.getElementById("privacy-modal")!,
     close: document.getElementById("privacy-close")!,
   },
+  {
+    button: document.getElementById("score-button")!,
+    modal: document.getElementById("score-modal")!,
+    close: document.getElementById("score-close")!,
+  },
 ];
 
 let scrollTop = 0;

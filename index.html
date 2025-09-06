@@ -63,11 +63,37 @@
         <span id="advance"></span>
     </div>
 
+    <div class="scores-panel">
+        <table id="scores-table">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Comp 1</th>
+                    <th>Comp 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="scores-current">
+                    <td id="score-player"></td>
+                    <td id="score-comp1"></td>
+                    <td id="score-comp2"></td>
+                </tr>
+                <tr id="scores-previous">
+                    <td id="score-player-prev"></td>
+                    <td id="score-comp1-prev"></td>
+                    <td id="score-comp2-prev"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button id="score-button">Show Breakdown</button>
+    </div>
 
-    <div class="scores-area">
-        <div id="scores"></div>
-        <div id="scores-previous"></div>
-        <div id="score-breakdown"></div>
+    <div id="score-modal" class="modal">
+        <div id="score-content" class="content">
+            <span id="score-close" class="modal-close">&times;</span>
+            <h2>Last hand score breakdown</h2>
+            <div id="score-breakdown"></div>
+        </div>
     </div>
 
     <div class="cross-cards">
@@ -120,9 +146,9 @@
     </div>
 
     <button id="help-button">?</button>
-    <div id="help-modal">
-        <div id="help-content">
-            <span id="help-close">&times;</span>
+    <div id="help-modal" class="modal">
+        <div id="help-content" class="content">
+            <span id="help-close" class="modal-close">&times;</span>
             <h2>Play Scalade Online</h2>
             <p>
                 <strong>Play Scalade Online</strong> is a webpage where you can play the card
@@ -214,9 +240,9 @@
 
     <button id="privacy-button">ℹ️</button>
 
-    <div id="privacy-modal">
-        <div id="privacy-content">
-            <span id="privacy-close">&times;</span>
+    <div id="privacy-modal" class="modal">
+        <div id="privacy-content" class="content">
+            <span id="privacy-close" class="modal-close">&times;</span>
             <h2>Privacy Notice</h2>
             <p>
                 This site saves anonymised game records (deal and full play) to improve bot players,
