@@ -4,8 +4,14 @@ import { LadderPosition, PlayerName } from '../game/player';
 import { onHumanPlay } from './api';
 
 function constructScoreBreakdownText(scoreDetails: Record<PlayerName, string>): string {
-  return Object.entries(scoreDetails).map(
-    ([playerName, scoreDetail]) => `(${playerName}): ${scoreDetail}`
+  // TODO: can i put this more central, as we use it elsewhere
+  const displayNameLookup: Record<PlayerName, string> = {
+    player: 'Player',
+    comp1: 'Left',
+    comp2: 'Right',
+  }
+  return (Object.entries(scoreDetails) as [PlayerName, string][]).map(
+    ([playerName, scoreDetail]) => `(${displayNameLookup[playerName]}): ${scoreDetail}`
   ).join(", ");
 }
 
