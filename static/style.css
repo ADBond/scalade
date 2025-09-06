@@ -192,11 +192,11 @@ body {
 
 @media (max-width: 1460px) {
     .game-board {
-        top: 150px;
+        top: 300px;
     }
 
     .hand {
-        top: 150px;
+        top: 300px;
     }
 }
 
