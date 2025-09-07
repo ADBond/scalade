@@ -78,7 +78,7 @@ body {
     background: #555;
 }
 
-#new-game-menu input[type="radio"]:checked + label {
+#new-game-menu input[type="radio"]:checked+label {
     background: #9c31ff;
     color: white;
     font-weight: bold;
@@ -102,8 +102,9 @@ body {
 
 .game-board {
     position: relative;
-    width: 900px;
+    width: 800px;
     height: 450px;
+    top: 30px;
     margin: 20px auto;
     border: 2px solid #fff;
     border-radius: 10px;
@@ -186,17 +187,18 @@ body {
 
 .hand {
     position: relative;
+    top: 30px;
     margin-top: 30px;
     height: 110px;
 }
 
-@media (max-width: 1430px) {
+@media (max-width: 1480px) {
     .game-board {
-        top: 200px;
+        top: 300px;
     }
 
     .hand {
-        top: 200px;
+        top: 300px;
     }
 }
 
@@ -215,18 +217,87 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-.scores-area {
-    text-align: left;
+/* table and panel for scores */
+.scores-panel {
+    position: absolute;
+    top: 50px;
+    left: 30px;
+    width: 200px;
+    background: #cfc;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-family: sans-serif;
 }
 
-#scores-previous {
-    font-size: 80%;
+#scores-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+#scores-table th {
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 4px;
+    border-bottom: 1px solid #ddd;
+    border-radius: 5px;
+    width: 33%;
+    background: #272;
+}
+
+#scores-table td {
+    text-align: center;
+    padding: 4px;
+    color: #000;
+}
+
+#scores-previous td {
+    font-size: 0.8rem;
+    color: #777;
     font-style: italic;
-    color: #ccc;
 }
 
-#score-breakdown {
-    color: #f89b9b;
+/* button and modal for score breakdown */
+#score-button {
+    display: block;
+    width: 100%;
+    padding: 6px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    background-color: #9c31ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    transition: background-color 0.2s ease;
+}
+
+#score-button:hover {
+    background-color: #00ffff;
+    color: #000;
+}
+
+#score-content {
+    text-align: center;
+}
+
+.content {
+    background-color: white;
+    color: #333;
+    text-align: left;
+    margin: 10% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 70%;
+    overflow-y: auto;
+    border-radius: 8px;
+    position: relative;
+    scroll-behavior: smooth;
 }
 
 .trump-suit {
@@ -286,7 +357,7 @@ body {
 
 .penultimate-cards {
     position: absolute;
-    right: 0px;
+    right: -20px;
     top: 20px;
     width: 200px;
     text-align: center;
@@ -294,7 +365,7 @@ body {
 
 .dead-cards {
     position: absolute;
-    right: 145px;
+    right: 125px;
     top: 20px;
     width: 200px;
     text-align: center;
@@ -327,7 +398,7 @@ body.modal-open {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-#help-modal {
+.modal {
     position: fixed;
     z-index: 999;
     top: 0;
@@ -341,27 +412,12 @@ body.modal-open {
     transition: opacity 400ms ease, visibility 400ms ease;
 }
 
-#help-modal.show {
+.show {
     opacity: 1;
     visibility: visible;
 }
 
-#help-content {
-    background-color: white;
-    color: #333;
-    text-align: left;
-    margin: 10% auto;
-    padding: 20px;
-    width: 80%;
-    max-width: 600px;
-    max-height: 70%;
-    overflow-y: auto;
-    border-radius: 8px;
-    position: relative;
-    scroll-behavior: smooth;
-}
-
-#help-close {
+.modal-close {
     position: absolute;
     top: 10px;
     right: 20px;
@@ -371,7 +427,7 @@ body.modal-open {
     cursor: pointer;
 }
 
-#help-close:hover {
+.modal-close:hover {
     color: #000;
 }
 
@@ -391,46 +447,6 @@ body.modal-open {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-#privacy-modal {
-    position: fixed;
-    z-index: 999;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 400ms ease, visibility 400ms ease;
-}
-
-#privacy-modal.show {
-    opacity: 1;
-    visibility: visible;
-}
-
 #privacy-content {
-    background-color: white;
-    color: #333;
-    margin: 10% auto;
-    padding: 20px;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 8px;
-    position: relative;
-}
-
-#privacy-close {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    color: #aaa;
-    cursor: pointer;
-}
-
-#privacy-close:hover {
-    color: #000;
+    text-align: center;
 }
