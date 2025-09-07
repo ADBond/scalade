@@ -98,9 +98,13 @@ export async function renderState(state: GameStateForUI) {
   document.getElementById('score-breakdown')!.innerHTML =
     constructScoreBreakdownText(state.score_details);
 
-  // and game status
-  document.getElementById('escalations')!.innerText =
-    `(${state.mode}, to ${state.playTo} escs. (capping: ${state.capping})) Escalations: ${state.escalations} (hand #${state.hand_number})`;
+  // and game status - config
+  document.getElementById('trump-mode')!.innerText = `${state.mode}`;
+  document.getElementById('escalation-limit')!.innerText = `${state.playTo} escs`;
+  document.getElementById('capping')!.innerText = `capping: ${state.capping}`;
+  // and current status
+  document.getElementById('hand-number')!.innerText = `(hand #${state.hand_number})`;
+  document.getElementById('escalations')!.innerText = `Escalations: ${state.escalations}`;
 
   const advanceEl = document.getElementById('advance')!;
   advanceEl.innerHTML = '';

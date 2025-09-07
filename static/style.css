@@ -311,6 +311,24 @@ body {
     transform: scale(0.8);
 }
 
+.game-state-panel {
+    display: inline-block;
+    margin: 0.5em auto;
+    padding: 0.3em 0.8em;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.game-options,
+.game-status {
+    display: flex;
+    justify-content: center;
+    gap: 0.4em;
+    flex-wrap: wrap;
+}
+
 #advance .suit-icon {
     transform: scale(0.7) translate(0px, 10px);
 }
