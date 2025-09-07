@@ -4,8 +4,14 @@ import { LadderPosition, PlayerName } from '../game/player';
 import { onHumanPlay } from './api';
 
 function constructScoreBreakdownText(scoreDetails: Record<PlayerName, string>): string {
-  return Object.entries(scoreDetails).map(
-    ([playerName, scoreDetail]) => `(${playerName}): ${scoreDetail}`
+  // TODO: can i put this more central, as we use it elsewhere
+  const displayNameLookup: Record<PlayerName, string> = {
+    player: 'Player',
+    comp1: 'Left',
+    comp2: 'Right',
+  }
+  return (Object.entries(scoreDetails) as [PlayerName, string][]).map(
+    ([playerName, scoreDetail]) => `(${displayNameLookup[playerName]}): ${scoreDetail}`
   ).join(", ");
 }
 
@@ -80,26 +86,31 @@ export async function renderState(state: GameStateForUI) {
   spoils.forEach(card => penultimateEl.appendChild(createCardElement(card)));
   deads.forEach(card => deadEl.appendChild(createCardElement(card)));
 
-  document.getElementById('scores')!.innerText =
-    `You: ${state.scores.player}, comp 1: ${state.scores.comp1}, comp 2: ${state.scores.comp2}`;
-  document.getElementById('scores-previous')!.innerText =
-    `prev: (You: ${state.scores_previous.player}, comp 1: ${state.scores_previous.comp1}, comp 2: ${state.scores_previous.comp2})`;
+  // populate the scores in the UI
+  document.getElementById('score-player')!.innerText = `${state.scores.player}`;
+  document.getElementById('score-comp1')!.innerText = `${state.scores.comp1}`;
+  document.getElementById('score-comp2')!.innerText = `${state.scores.comp2}`;
+
+  document.getElementById('score-player-prev')!.innerText = `(${state.scores_previous.player})`;
+  document.getElementById('score-comp1-prev')!.innerText = `(${state.scores_previous.comp1})`;
+  document.getElementById('score-comp2-prev')!.innerText = `(${state.scores_previous.comp2})`;
 
   document.getElementById('score-breakdown')!.innerHTML =
     constructScoreBreakdownText(state.score_details);
 
+  // and game status
   document.getElementById('escalations')!.innerText =
     `(${state.mode}, to ${state.playTo} escs. (capping: ${state.capping})) Escalations: ${state.escalations} (hand #${state.hand_number})`;
 
-  document.getElementById('debug')!.innerText = `${state.game_state}`;
+  const advanceEl = document.getElementById('advance')!;
+  advanceEl.innerHTML = '';
+  advanceEl.appendChild(createSuitElement(state.advance ? state.advance.toStringShort() : ""));
 
   const trumpEl = document.getElementById('trumps')!;
   trumpEl.innerHTML = '';
   trumpEl.appendChild(createSuitElement(state.trumps ? state.trumps.toStringShort() : ""));
 
-  const advanceEl = document.getElementById('advance')!;
-  advanceEl.innerHTML = '';
-  advanceEl.appendChild(createSuitElement(state.advance ? state.advance.toStringShort() : ""));
+  // document.getElementById('debug')!.innerText = `${state.game_state}`;
 
 }
 
