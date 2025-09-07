@@ -360,6 +360,12 @@ body {
     color: #cc9;
 }
 
+#advance-holder {
+    position: relative;
+    top: -10px;
+    left: 50px;
+}
+
 #advance .suit-icon {
     transform: scale(0.7) translate(0px, 10px);
 }
