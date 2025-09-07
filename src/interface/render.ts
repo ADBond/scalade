@@ -1,7 +1,13 @@
 import { createCardElement, createSuitElement } from './ui';
-import { GameStateForUI, state } from '../game/gamestate';
+import { GameStateForUI, GameMode, state } from '../game/gamestate';
 import { LadderPosition, PlayerName } from '../game/player';
 import { onHumanPlay } from './api';
+
+const gameModeDisplay: Record<GameMode, string> = {
+  mobile: "Mobile Scalade",
+  static: "Static Scalade",
+  retromobile: "Retromobile Scalade",
+};
 
 function constructScoreBreakdownText(scoreDetails: Record<PlayerName, string>): string {
   // TODO: can i put this more central, as we use it elsewhere
@@ -99,7 +105,7 @@ export async function renderState(state: GameStateForUI) {
     constructScoreBreakdownText(state.score_details);
 
   // and game status - config
-  document.getElementById('trump-mode')!.innerText = `${state.mode}`;
+  document.getElementById('trump-mode')!.innerText = gameModeDisplay[state.mode];
   document.getElementById('escalation-limit')!.innerText = `${state.playTo} escs`;
   document.getElementById('capping')!.innerText = `capping: ${state.capping}`;
   // and current status

@@ -325,8 +325,20 @@ body {
 .game-status {
     display: flex;
     justify-content: center;
-    gap: 0.4em;
+    gap: 0.3em;
     flex-wrap: wrap;
+}
+
+.game-options {
+    font-weight: bold;
+}
+
+.game-options span {
+    color: #eee;
+}
+
+#escalation-limit {
+    color: #ccc;
 }
 
 #advance .suit-icon {
