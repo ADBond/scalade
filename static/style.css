@@ -102,8 +102,9 @@ body {
 
 .game-board {
     position: relative;
-    width: 900px;
+    width: 800px;
     height: 450px;
+    top: 30px;
     margin: 20px auto;
     border: 2px solid #fff;
     border-radius: 10px;
@@ -186,11 +187,12 @@ body {
 
 .hand {
     position: relative;
+    top: 30px;
     margin-top: 30px;
     height: 110px;
 }
 
-@media (max-width: 1460px) {
+@media (max-width: 1480px) {
     .game-board {
         top: 300px;
     }
@@ -219,7 +221,7 @@ body {
 .scores-panel {
     position: absolute;
     top: 50px;
-    left: 50px;
+    left: 30px;
     width: 200px;
     background: #cfc;
     border: 1px solid #ddd;
@@ -355,7 +357,7 @@ body {
 
 .penultimate-cards {
     position: absolute;
-    right: 0px;
+    right: -20px;
     top: 20px;
     width: 200px;
     text-align: center;
@@ -363,7 +365,7 @@ body {
 
 .dead-cards {
     position: absolute;
-    right: 145px;
+    right: 125px;
     top: 20px;
     width: 200px;
     text-align: center;
