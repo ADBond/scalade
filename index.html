@@ -8,7 +8,7 @@
     <meta name="description" content="Play Scalade Online is a place to play
         the trick-taking card game Scalade against bot players
         in-browser." />
-  <script type="module" crossorigin src="/scalade/assets/index-DsEnXeI_.js"></script>
+  <script type="module" crossorigin src="/scalade/assets/index-NyK7RrhM.js"></script>
 </head>
 
 <body>
@@ -58,10 +58,20 @@
 
     <div id="debug"></div>
 
-    <div class="game-state">
-        <span id="escalations"></span>
-        <span id="advance"></span>
-    </div>
+    <div class="game-state-panel">
+        <div class="game-options">
+          <div id="trump-mode"></div>
+          <div id="escalation-limit"></div>
+          <div id="capping"></div>
+        </div>
+        <div class="game-status">
+            <span id="advance">
+              <span class="suit-icon"></span>
+            </span>
+          <span id="escalations"></span>
+          <span id="hand-number"></span>
+        </div>
+      </div>      
 
     <div class="scores-panel">
         <table id="scores-table">

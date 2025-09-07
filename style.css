@@ -311,6 +311,58 @@ body {
     transform: scale(0.8);
 }
 
+.game-state-panel {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+    margin: 0.5em auto;
+    padding: 0.3em 0.8em;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.game-options,
+.game-status {
+    display: flex;
+    justify-content: center;
+    gap: 0.3em;
+    flex-wrap: wrap;
+}
+
+.game-status {
+    display: flex;
+    /* changed: was flex in a row already, but simpler */
+    align-items: center;
+    /* new */
+    gap: 0.5em;
+    /* new */
+    flex-wrap: wrap;
+    /* new */
+}
+
+.game-options {
+    font-weight: bold;
+    display: flex;
+    /* new */
+    flex-direction: column;
+    /* new */
+    align-items: flex-start;
+    /* new */
+    line-height: 1.2;
+    /* new */
+}
+
+.game-options span {
+    color: #eee;
+}
+
+#escalation-limit {
+    color: #cc9;
+}
+
 #advance .suit-icon {
     transform: scale(0.7) translate(0px, 10px);
 }
