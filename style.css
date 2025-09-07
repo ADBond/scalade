@@ -312,10 +312,7 @@ body {
 }
 
 .game-state-panel {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1em;
+    display: inline-block;
     margin: 0.5em auto;
     padding: 0.3em 0.8em;
     border-radius: 8px;
@@ -332,27 +329,8 @@ body {
     flex-wrap: wrap;
 }
 
-.game-status {
-    display: flex;
-    /* changed: was flex in a row already, but simpler */
-    align-items: center;
-    /* new */
-    gap: 0.5em;
-    /* new */
-    flex-wrap: wrap;
-    /* new */
-}
-
 .game-options {
     font-weight: bold;
-    display: flex;
-    /* new */
-    flex-direction: column;
-    /* new */
-    align-items: flex-start;
-    /* new */
-    line-height: 1.2;
-    /* new */
 }
 
 .game-options span {
@@ -360,7 +338,7 @@ body {
 }
 
 #escalation-limit {
-    color: #cc9;
+    color: #ccc;
 }
 
 #advance .suit-icon {
