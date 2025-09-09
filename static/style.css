@@ -104,7 +104,7 @@ body {
     position: relative;
     width: 800px;
     height: 450px;
-    top: 30px;
+    top: 10px;
     margin: 20px auto;
     border: 2px solid #fff;
     border-radius: 10px;
@@ -412,7 +412,7 @@ body {
 
 .penultimate-cards {
     position: absolute;
-    right: -20px;
+    right: 0px;
     top: 20px;
     width: 200px;
     text-align: center;
@@ -420,7 +420,7 @@ body {
 
 .dead-cards {
     position: absolute;
-    right: 125px;
+    right: 145px;
     top: 20px;
     width: 200px;
     text-align: center;
