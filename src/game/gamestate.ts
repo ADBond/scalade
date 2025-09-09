@@ -67,7 +67,7 @@ export class GameState {
   public deadCards: Card[] = [];
   public publicCards: Card[] = [];
   public renounces: Set<number>[] = [];
-  public rawLadders: [Card, Player | null | 'trickwinner'][] = this.getStartingLadders();
+  public rawLadders: [Card, Player | null | 'trickwinner'][];
   public _trumpSuit: Suit = arbitrarySuit;
   public currentState: state = 'initialiseGame';
   public suitRungsAscended: advanceSuitTracker = new advanceSuitTracker();
@@ -89,6 +89,7 @@ export class GameState {
     for (const name of playerNames) {
       this.players.push();
     }
+    this.rawLadders = this.getStartingLadders();
     // choose a random initial dealer
     this.dealerIndex = Math.floor(Math.random() * playerNames.length);
     // dummy values:
