@@ -125,12 +125,12 @@ body {
 
 .player-area.comp1 {
     top: 20px;
-    left: 30px;
+    left: -10px;
 }
 
 .player-area.comp2 {
     top: 20px;
-    right: 30px;
+    right: -10px;
 }
 
 .ladder.neutral {
