@@ -104,7 +104,7 @@ body {
     position: relative;
     width: 800px;
     height: 450px;
-    top: 30px;
+    top: 10px;
     margin: 20px auto;
     border: 2px solid #fff;
     border-radius: 10px;
@@ -115,6 +115,7 @@ body {
     position: absolute;
     text-align: center;
     border: black 1px;
+    width: 50%;
 }
 
 .player-area.player {
@@ -125,12 +126,12 @@ body {
 
 .player-area.comp1 {
     top: 20px;
-    left: 30px;
+    left: -10px;
 }
 
 .player-area.comp2 {
     top: 20px;
-    right: 30px;
+    right: -10px;
 }
 
 .ladder.neutral {
@@ -362,7 +363,6 @@ body {
 
 #advance-holder {
     position: relative;
-    top: -10px;
     left: 50px;
 }
 
@@ -412,7 +412,7 @@ body {
 
 .penultimate-cards {
     position: absolute;
-    right: -20px;
+    right: 0px;
     top: 20px;
     width: 200px;
     text-align: center;
@@ -420,7 +420,7 @@ body {
 
 .dead-cards {
     position: absolute;
-    right: 125px;
+    right: 145px;
     top: 20px;
     width: 200px;
     text-align: center;
