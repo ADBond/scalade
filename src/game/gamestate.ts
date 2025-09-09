@@ -626,7 +626,7 @@ export class GameState {
         if (ladderHolder !== null) {
           const ladderBaseValue = ladderCard.rank.score;
           const currentMultiplier = ladderHolder.holdingMultipliers.get(suit);
-          const breakdown: [number, number] = [ladderBaseValue, currentMultiplier];
+          const breakdown: [Suit, number, number] = [suit, ladderBaseValue, currentMultiplier];
           ladderHolder.scores[ladderHolder.scores.length - 1].ladderScores.push(breakdown);
           if (currentMultiplier < this.maxHoldingMultiplier) {
             ladderHolder.holdingMultipliers.increment(suit);
