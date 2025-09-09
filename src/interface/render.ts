@@ -2,6 +2,8 @@ import { createCardElement, createSuitElement } from './ui';
 import { GameStateForUI, GameMode, BonusCapping, state } from '../game/gamestate';
 import { LadderPosition, PlayerName } from '../game/player';
 import { onHumanPlay } from './api';
+import { ScoreBreakdown } from '../game/scores';
+import { SUITS, Suit } from '../game/card';
 
 const gameModeDisplay: Record<GameMode, string> = {
   mobile: "Mobile Scalade",
@@ -16,16 +18,71 @@ const cappingDisplay: Record<BonusCapping, string> = {
   uncapped: "Uncapped HM",
 }
 
-function constructScoreBreakdownText(scoreDetails: Record<PlayerName, string>): string {
+function scoreBreakdownHeaderRow(displayNameLookup: Record<PlayerName, string>): string{
+  const playerHeaders = Object.entries(displayNameLookup).map(
+    ([_playerName, displayName]) => `<th colspan=5>${displayName}</th>`
+  ).join("");
+  return `
+    <tr>
+      <th rowspan="2">Suit</th>
+      ${playerHeaders}
+    </tr>
+  `;
+}
+
+function scoreBreakdownSubHeaderRow(): string{
+  const numPlayers = 3;
+  const playerHeaders = `
+    <th>B</th>
+    <th></th>
+    <th>M</th>
+    <th></th>
+    <th>T</th>
+  `;
+  return `
+    <tr>
+      ${playerHeaders.repeat(numPlayers)}
+    </tr>
+  `
+}
+
+function constructSuitRow(playerNames: PlayerName[], suit: Suit){
+  // TODO: populate
+  const playerCols = playerNames.map(
+    playerName => `
+      <td id="sb-${suit.name}-${playerName}"></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    `
+  ).join("");
+
+  return `
+    <tr>
+      ${playerCols}
+    </tr>
+  `;
+}
+
+function renderScoreBreakdown(scoreDetails: Record<PlayerName, ScoreBreakdown>): void {
   // TODO: can i put this more central, as we use it elsewhere
   const displayNameLookup: Record<PlayerName, string> = {
     player: 'Player',
     comp1: 'Left',
     comp2: 'Right',
-  }
-  return (Object.entries(scoreDetails) as [PlayerName, string][]).map(
-    ([playerName, scoreDetail]) => `(${displayNameLookup[playerName]}): ${scoreDetail}`
-  ).join(", ");
+  };
+  const playerNames = Object.keys(displayNameLookup) as PlayerName[];
+  // is this the best way to construct this? not sure, but it is certainly _a_ way
+  // too tedious to build in html by hand
+  const breakdownTable = document.getElementById("sb-table")!;
+  const tableInnardsHTML = `
+    ${scoreBreakdownHeaderRow(displayNameLookup)}
+    ${scoreBreakdownSubHeaderRow()}
+    ${SUITS.map(suit => constructSuitRow(playerNames, suit)).join("")}
+  `;
+  breakdownTable.innerHTML = tableInnardsHTML;
 }
 
 export async function renderState(state: GameStateForUI) {
@@ -124,7 +181,7 @@ export async function renderState(state: GameStateForUI) {
   document.getElementById('score-comp1-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp1.score})`;
   document.getElementById('score-comp2-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp2.score})`;
 
-  // constructScoreBreakdownText(state.score_details);
+  renderScoreBreakdown(state.scoreBreakdownsPrevious);
 
   // document.getElementById('debug')!.innerText = `${state.gameState}`;
 
