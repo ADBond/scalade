@@ -46,21 +46,32 @@ function scoreBreakdownSubHeaderRow(): string{
   `
 }
 
-function constructSuitRow(playerNames: PlayerName[], suit: Suit){
+function constructSuitRow(scoreDetails: Record<PlayerName, ScoreBreakdown>, suit: Suit){
   // TODO: populate
-  const playerCols = playerNames.map(
-    playerName => `
-      <td id="sb-${suit.name}-${playerName}"></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    `
+  const playerCols = Object.entries(scoreDetails).map(
+    ([_playerName, breakdown]) => {
+      let cellContents: string[];
+      const baseAndMult = breakdown.baseAndMultiplier(suit);
+      if (baseAndMult === null) {
+        cellContents = new Array(5).fill("");
+      } else {
+        cellContents = [
+          `${baseAndMult[0]}`,
+          "&times;",
+          `${baseAndMult[1]}`,
+          "&equals;",
+          `${baseAndMult[0] * baseAndMult[1]}`,
+        ];
+      }
+      return cellContents.map(
+        cell => `<td>${cell}</td>`
+      ).join("");
+    }
   ).join("");
 
   return `
     <tr>
+      <td class=suit-${suit.name}>${suit.html}</td>
       ${playerCols}
     </tr>
   `;
@@ -80,7 +91,7 @@ function renderScoreBreakdown(scoreDetails: Record<PlayerName, ScoreBreakdown>):
   const tableInnardsHTML = `
     ${scoreBreakdownHeaderRow(displayNameLookup)}
     ${scoreBreakdownSubHeaderRow()}
-    ${SUITS.map(suit => constructSuitRow(playerNames, suit)).join("")}
+    ${SUITS.map(suit => constructSuitRow(scoreDetails, suit)).join("")}
   `;
   breakdownTable.innerHTML = tableInnardsHTML;
 }

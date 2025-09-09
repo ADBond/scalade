@@ -24,4 +24,20 @@ export class ScoreBreakdown {
         ).join(" + ");
         return `${laddersDisplay} + ${this.finalTrickScore} (FT) = ${this.score}`;
     }
+
+    baseAndMultiplier(suit: Suit): [number, number] | null {
+        const suitScores = this.ladderScores.filter(
+            ([ladderSuit, _r, _m]) => Suit.suitEquals(suit, ladderSuit)
+        );
+        if (suitScores.length > 1) {
+            // TODO: error
+            console.log(`ladderSuit logic issue: ${suitScores}`);
+        }
+        if (suitScores.length === 0) {
+            return null;
+        }
+        // single entry - return the details!
+        const suitScore = suitScores[0];
+        return [suitScore[1], suitScore[2]]
+    }
 }
