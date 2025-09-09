@@ -42,7 +42,7 @@ export async function renderState(state: GameStateForUI) {
   handEl.innerHTML = '';
   playerHand.forEach(card => {
     handEl.appendChild(
-      createCardElement(card.toStringShort(), state.whose_turn === "player" ? (() => onHumanPlay(state, card)) : undefined)
+      createCardElement(card.toStringShort(), state.whoseTurn === "player" ? (() => onHumanPlay(state, card)) : undefined)
     )
   });
 
@@ -67,7 +67,7 @@ export async function renderState(state: GameStateForUI) {
   ['player', 'comp1', 'comp2'].forEach(p => {
     const bonusEl = document.getElementById(`hb-${p}`)!;
     bonusEl.innerHTML = '';
-    const bonuses = state.holding_bonus[p as PlayerName];
+    const bonuses = state.holdingBonus[p as PlayerName];
     for (const [suit, multiplier] of Object.entries(bonuses)) {
       for (let i = 0; i < multiplier; i++) {
         const suitEl = createSuitElement(suit);
@@ -104,7 +104,7 @@ export async function renderState(state: GameStateForUI) {
   document.getElementById('escalation-limit')!.innerText = `to ${state.playTo} escalations`;
   document.getElementById('capping')!.innerText = cappingDisplay[state.capping];
   // and current status
-  document.getElementById('hand-number')!.innerText = `(hand #${state.hand_number})`;
+  document.getElementById('hand-number')!.innerText = `(hand #${state.handNumber})`;
   document.getElementById('escalations')!.innerText = `Escalations: ${state.escalations}`;
 
   const advanceEl = document.getElementById('advance')!;
@@ -126,7 +126,7 @@ export async function renderState(state: GameStateForUI) {
 
   // constructScoreBreakdownText(state.score_details);
 
-  // document.getElementById('debug')!.innerText = `${state.game_state}`;
+  // document.getElementById('debug')!.innerText = `${state.gameState}`;
 
 }
 
@@ -142,7 +142,7 @@ const delayMap: Record<state, number> = {
 export async function renderWithDelays(states: GameStateForUI[]) {
   for (const state of states) {
     await renderState(state);
-    await wait(delayMap[state.game_state]);
+    await wait(delayMap[state.gameState]);
   }
 }
 
