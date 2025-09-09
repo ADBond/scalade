@@ -115,6 +115,7 @@ body {
     position: absolute;
     text-align: center;
     border: black 1px;
+    width: 50%;
 }
 
 .player-area.player {
@@ -362,7 +363,6 @@ body {
 
 #advance-holder {
     position: relative;
-    top: -10px;
     left: 50px;
 }
 
