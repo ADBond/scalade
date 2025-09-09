@@ -693,12 +693,9 @@ export class GameState {
       scores: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).score])
       ) as Record<PlayerName, number>,
-      scores_previous: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).previousScore.score])
-      ) as Record<PlayerName, number>,
-      score_details: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, string] => [name, this.getPlayer(name).previousScore.display])
-      ) as Record<PlayerName, string>,
+      scoreBreakdownsPrevious: Object.fromEntries(
+        playerNameArr.map((name): [PlayerName, ScoreBreakdown] => [name, this.getPlayer(name).previousScore])
+      ) as Record<PlayerName, ScoreBreakdown>,
       holding_bonus: Object.fromEntries(
         playerNameArr.map(
           (name): [PlayerName, Record<string, number>] => [
@@ -730,8 +727,7 @@ export interface GameStateForUI {
   penultimate: Card[];
   dead: Card[];
   scores: Record<PlayerName, number>;
-  scores_previous: Record<PlayerName, number>;
-  score_details: Record<PlayerName, string>;
+  scoreBreakdownsPrevious: Record<PlayerName, ScoreBreakdown>;
   escalations: number;
   hand_number: number;
   trumps: Suit | null;

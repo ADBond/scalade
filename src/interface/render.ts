@@ -99,19 +99,7 @@ export async function renderState(state: GameStateForUI) {
   spoils.forEach(card => penultimateEl.appendChild(createCardElement(card)));
   deads.forEach(card => deadEl.appendChild(createCardElement(card)));
 
-  // populate the scores in the UI
-  document.getElementById('score-player')!.innerText = `${state.scores.player}`;
-  document.getElementById('score-comp1')!.innerText = `${state.scores.comp1}`;
-  document.getElementById('score-comp2')!.innerText = `${state.scores.comp2}`;
-
-  document.getElementById('score-player-prev')!.innerText = `(${state.scores_previous.player})`;
-  document.getElementById('score-comp1-prev')!.innerText = `(${state.scores_previous.comp1})`;
-  document.getElementById('score-comp2-prev')!.innerText = `(${state.scores_previous.comp2})`;
-
-  document.getElementById('score-breakdown')!.innerHTML =
-    constructScoreBreakdownText(state.score_details);
-
-  // and game status - config
+  // game status - config
   document.getElementById('trump-mode')!.innerText = gameModeDisplay[state.mode];
   document.getElementById('escalation-limit')!.innerText = `to ${state.playTo} escalations`;
   document.getElementById('capping')!.innerText = cappingDisplay[state.capping];
@@ -126,6 +114,17 @@ export async function renderState(state: GameStateForUI) {
   const trumpEl = document.getElementById('trumps')!;
   trumpEl.innerHTML = '';
   trumpEl.appendChild(createSuitElement(state.trumps ? state.trumps.toStringShort() : ""));
+
+  // populate the scores in the UI
+  document.getElementById('score-player')!.innerText = `${state.scores.player}`;
+  document.getElementById('score-comp1')!.innerText = `${state.scores.comp1}`;
+  document.getElementById('score-comp2')!.innerText = `${state.scores.comp2}`;
+
+  document.getElementById('score-player-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp1.score})`;
+  document.getElementById('score-comp1-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp1.score})`;
+  document.getElementById('score-comp2-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp2.score})`;
+
+  // constructScoreBreakdownText(state.score_details);
 
   // document.getElementById('debug')!.innerText = `${state.game_state}`;
 
