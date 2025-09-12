@@ -286,6 +286,28 @@ body {
     text-align: center;
 }
 
+/* score breakdown table styling */
+.suit-symbol {
+    font-size: 1.6em;
+}
+
+/* 4-colour colouring in table */
+.suit-diamonds {
+    color: rgb(19, 108, 251);
+}
+
+.suit-hearts {
+    color: #e00;
+}
+
+.suit-spades {
+    color: #000;
+}
+
+.suit-clubs {
+    color: rgb(4, 195, 4);
+}
+
 .content {
     background-color: white;
     color: #333;
