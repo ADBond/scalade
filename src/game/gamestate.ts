@@ -85,10 +85,7 @@ export class GameState {
           agents[i],
           i,
         )
-    )
-    for (const name of playerNames) {
-      this.players.push();
-    }
+    );
     this.rawLadders = this.getStartingLadders();
     // choose a random initial dealer
     this.dealerIndex = Math.floor(Math.random() * playerNames.length);
@@ -616,7 +613,7 @@ export class GameState {
   updateScores(log: GameLog) {
     this.players.forEach(
       (player) => player.scores.push(new ScoreBreakdown([], 0))
-    )
+    );
     SUITS.forEach(
       (suit) => {
         // TODO: adjust for double scalade, if we ever decide to implement it
