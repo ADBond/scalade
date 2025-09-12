@@ -308,7 +308,7 @@ body {
 #sb-table .suit-symbol {
     font-size: 1.6em;
     font-weight: bold;
-    background: #c2c2c2;
+    background: #f2f2c2;
 }
 
 #sb-table .sb-wide {
@@ -320,13 +320,12 @@ body {
 }
 
 #sb-table tbody td:nth-child(7),
-#sb-table tbody td:nth-child(12) {
-    border-left: 2px solid #f00;
-    padding-left: 0.6em;
+#sb-table tbody td:nth-child(13) {
+    background-color: #eee;
 }
 
 #sb-table th {
-    background: #c2c2c2;
+    background: #c2c2f2;
     font-weight: bold;
 }
 

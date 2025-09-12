@@ -19,7 +19,7 @@ const cappingDisplay: Record<BonusCapping, string> = {
 }
 
 function scoreColgroups(): string {
-  const playerColgroups = playerNameArr.map(
+  const playerColgroupsArr = playerNameArr.map(
     (playerName) => {
       return `
         <col class="sb-${playerName} sb-wide">
@@ -29,7 +29,10 @@ function scoreColgroups(): string {
         <col class="sb-${playerName} sb-wide">
       `;
     }
-  ).join("");
+  );
+  playerColgroupsArr[0] += `<col class="sb-player sb-dummy">`;
+  playerColgroupsArr[1] += `<col class="sb-comp1 sb-dummy">`;
+  const playerColgroups = playerColgroupsArr.join("");
   return `
   <colgroup>
     <col class="sb-suit-col">
@@ -40,7 +43,7 @@ function scoreColgroups(): string {
 
 function scoreBreakdownHeaderRow(displayNameLookup: Record<PlayerName, string>): string{
   const playerHeaders = Object.entries(displayNameLookup).map(
-    ([_playerName, displayName]) => `<th colspan=5>${displayName}</th>`
+    ([_playerName, displayName]) => `<th colspan=6>${displayName}</th>`
   ).join("");
   return `
     <tr>
@@ -58,6 +61,7 @@ function scoreBreakdownSubHeaderRow(): string{
     <th>M</th>
     <th></th>
     <th>T</th>
+    <th></th>
   `;
   return `
     <tr>
@@ -79,6 +83,7 @@ function constructSuitRow(scoreDetails: Record<PlayerName, ScoreBreakdown>, suit
           "-",
           "",
           "-",
+          ""
         ]
       } else {
         cellContents = [
@@ -87,6 +92,7 @@ function constructSuitRow(scoreDetails: Record<PlayerName, ScoreBreakdown>, suit
           `${baseAndMult[1]}`,
           "&equals;",
           `${baseAndMult[0] * baseAndMult[1]}`,
+          ""
         ];
       }
       return cellContents.map(
