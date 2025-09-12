@@ -147,6 +147,45 @@ function constructFTRow(scoreDetails: Record<PlayerName, ScoreBreakdown>){
   `;
 }
 
+function constructTotalRow(scoreDetails: Record<PlayerName, ScoreBreakdown>){
+  // TODO: bit awkward to keep this, and total, in sync with suitRow
+  const playerCols = Object.entries(scoreDetails).map(
+    ([_playerName, breakdown]) => {
+      let cellContents: string[];
+      const totalScore = breakdown.score;
+      if (totalScore === 0) {
+        cellContents = [
+          "",
+          "",
+          "",
+          "",
+          "-",
+          ""
+        ];
+      } else {
+        cellContents = [
+          "",
+          "",
+          "",
+          "",
+          `${totalScore}`,
+          ""
+        ];
+      }
+      return cellContents.map(
+        cell => `<td class="sb-final-row">${cell}</td>`
+      ).join("");
+    }
+  ).join("");
+
+  return `
+    <tr>
+      <td class="sb-row-head sb-final-row">Tot.</td>
+      ${playerCols}
+    </tr>
+  `;
+}
+
 function renderScoreBreakdown(scoreDetails: Record<PlayerName, ScoreBreakdown>): void {
   // TODO: can i put this more central, as we use it elsewhere
   const displayNameLookup: Record<PlayerName, string> = {
@@ -167,6 +206,7 @@ function renderScoreBreakdown(scoreDetails: Record<PlayerName, ScoreBreakdown>):
     <tbody>
     ${SUITS.map(suit => constructSuitRow(scoreDetails, suit)).join("")}
     ${constructFTRow(scoreDetails)}
+    ${constructTotalRow(scoreDetails)}
     </tbody>
   `;
   breakdownTable.innerHTML = tableInnardsHTML;

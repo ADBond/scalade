@@ -314,6 +314,10 @@ body {
     background: #f2f2c2;
 }
 
+#sb-table .sb-final-row {
+    padding-top: 1em;
+}
+
 #sb-table .sb-wide {
     width: 6%;
 }
