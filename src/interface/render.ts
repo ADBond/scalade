@@ -47,7 +47,7 @@ function scoreBreakdownHeaderRow(displayNameLookup: Record<PlayerName, string>):
   ).join("");
   return `
     <tr>
-      <th rowspan="2">Suit</th>
+      <th rowspan="2"></th>
       ${playerHeaders}
     </tr>
   `;
@@ -71,7 +71,6 @@ function scoreBreakdownSubHeaderRow(): string{
 }
 
 function constructSuitRow(scoreDetails: Record<PlayerName, ScoreBreakdown>, suit: Suit){
-  // TODO: populate
   const playerCols = Object.entries(scoreDetails).map(
     ([_playerName, breakdown]) => {
       let cellContents: string[];
@@ -103,7 +102,46 @@ function constructSuitRow(scoreDetails: Record<PlayerName, ScoreBreakdown>, suit
 
   return `
     <tr>
-      <td class="suit-${suit.name.toLowerCase()} suit-symbol">${suit.html}</td>
+      <td class="suit-${suit.name.toLowerCase()} suit-symbol sb-row-head">${suit.html}</td>
+      ${playerCols}
+    </tr>
+  `;
+}
+
+function constructFTRow(scoreDetails: Record<PlayerName, ScoreBreakdown>){
+  // TODO: bit awkward to keep this, and total, in sync with suitRow
+  const playerCols = Object.entries(scoreDetails).map(
+    ([_playerName, breakdown]) => {
+      let cellContents: string[];
+      const finalTrickScore = breakdown.finalTrickScore;
+      if (finalTrickScore === 0) {
+        cellContents = [
+          "",
+          "",
+          "",
+          "",
+          "-",
+          ""
+        ];
+      } else {
+        cellContents = [
+          "",
+          "",
+          "",
+          "",
+          `${finalTrickScore}`,
+          ""
+        ];
+      }
+      return cellContents.map(
+        cell => `<td>${cell}</td>`
+      ).join("");
+    }
+  ).join("");
+
+  return `
+    <tr>
+      <td class="sb-row-head">FT</td>
       ${playerCols}
     </tr>
   `;
@@ -128,6 +166,7 @@ function renderScoreBreakdown(scoreDetails: Record<PlayerName, ScoreBreakdown>):
     </thead>
     <tbody>
     ${SUITS.map(suit => constructSuitRow(scoreDetails, suit)).join("")}
+    ${constructFTRow(scoreDetails)}
     </tbody>
   `;
   breakdownTable.innerHTML = tableInnardsHTML;

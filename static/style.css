@@ -308,6 +308,9 @@ body {
 #sb-table .suit-symbol {
     font-size: 1.6em;
     font-weight: bold;
+}
+
+#sb-table .sb-row-head {
     background: #f2f2c2;
 }
 
