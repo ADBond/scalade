@@ -291,7 +291,7 @@ body {
     border-collapse: separate;
     border-spacing: 0 0;
     table-layout: fixed;
-    width: 60%;
+    width: 80%;
     margin: 2em auto;
 }
 
@@ -302,7 +302,7 @@ body {
 }
 
 #sb-table .sb-suit-col {
-    width: 12%;
+    width: 8%;
 }
 
 #sb-table .suit-symbol {
@@ -319,11 +319,11 @@ body {
 }
 
 #sb-table .sb-wide {
-    width: 6%;
+    width: 7%;
 }
 
 #sb-table .sb-narrow {
-    width: 3.5%;
+    width: 2%;
 }
 
 #sb-table tbody td:nth-child(7),
