@@ -53,7 +53,13 @@ function constructSuitRow(scoreDetails: Record<PlayerName, ScoreBreakdown>, suit
       let cellContents: string[];
       const baseAndMult = breakdown.baseAndMultiplier(suit);
       if (baseAndMult === null) {
-        cellContents = new Array(5).fill("");
+        cellContents = [
+          "-",
+          "",
+          "-",
+          "",
+          "-",
+        ]
       } else {
         cellContents = [
           `${baseAndMult[0]}`,
