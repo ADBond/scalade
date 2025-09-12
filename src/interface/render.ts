@@ -304,7 +304,7 @@ export async function renderState(state: GameStateForUI) {
   document.getElementById('score-comp1')!.innerText = `${state.scores.comp1}`;
   document.getElementById('score-comp2')!.innerText = `${state.scores.comp2}`;
 
-  document.getElementById('score-player-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp1.score})`;
+  document.getElementById('score-player-prev')!.innerText = `(${state.scoreBreakdownsPrevious.player.score})`;
   document.getElementById('score-comp1-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp1.score})`;
   document.getElementById('score-comp2-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp2.score})`;
 
