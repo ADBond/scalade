@@ -287,6 +287,49 @@ body {
 }
 
 /* score breakdown table styling */
+#sb-table {
+    border-collapse: separate;
+    border-spacing: 0 0;
+    table-layout: fixed;
+    width: 60%;
+    margin: 2em auto;
+}
+
+#sb-table th,
+#sb-table td {
+    text-align: center;
+    padding: 0.3em 0.4em;
+}
+
+#sb-table .sb-suit-col {
+    width: 12%;
+}
+
+#sb-table .suit-symbol {
+    font-size: 1.6em;
+    font-weight: bold;
+    background: #c2c2c2;
+}
+
+#sb-table .sb-wide {
+    width: 6%;
+}
+
+#sb-table .sb-narrow {
+    width: 3.5%;
+}
+
+#sb-table tbody td:nth-child(7),
+#sb-table tbody td:nth-child(12) {
+    border-left: 2px solid #f00;
+    padding-left: 0.6em;
+}
+
+#sb-table th {
+    background: #c2c2c2;
+    font-weight: bold;
+}
+
 .suit-symbol {
     font-size: 1.6em;
 }

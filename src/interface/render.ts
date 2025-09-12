@@ -1,6 +1,6 @@
 import { createCardElement, createSuitElement } from './ui';
 import { GameStateForUI, GameMode, BonusCapping, state } from '../game/gamestate';
-import { LadderPosition, PlayerName } from '../game/player';
+import { LadderPosition, PlayerName, playerNameArr } from '../game/player';
 import { onHumanPlay } from './api';
 import { ScoreBreakdown } from '../game/scores';
 import { SUITS, Suit } from '../game/card';
@@ -16,6 +16,26 @@ const cappingDisplay: Record<BonusCapping, string> = {
   2: "HM capped at 2",
   3: "HM capped at 3",
   uncapped: "Uncapped HM",
+}
+
+function scoreColgroups(): string {
+  const playerColgroups = playerNameArr.map(
+    (playerName) => {
+      return `
+        <col class="sb-${playerName} sb-wide">
+        <col class="sb-${playerName} sb-narrow">
+        <col class="sb-${playerName} sb-wide">
+        <col class="sb-${playerName} sb-narrow">
+        <col class="sb-${playerName} sb-wide">
+      `;
+    }
+  ).join("");
+  return `
+  <colgroup>
+    <col class="sb-suit-col">
+    ${playerColgroups}
+  </colgroup>
+  `
 }
 
 function scoreBreakdownHeaderRow(displayNameLookup: Record<PlayerName, string>): string{
@@ -95,9 +115,14 @@ function renderScoreBreakdown(scoreDetails: Record<PlayerName, ScoreBreakdown>):
   // too tedious to build in html by hand
   const breakdownTable = document.getElementById("sb-table")!;
   const tableInnardsHTML = `
+    ${scoreColgroups()}
+    <thead>
     ${scoreBreakdownHeaderRow(displayNameLookup)}
     ${scoreBreakdownSubHeaderRow()}
+    </thead>
+    <tbody>
     ${SUITS.map(suit => constructSuitRow(scoreDetails, suit)).join("")}
+    </tbody>
   `;
   breakdownTable.innerHTML = tableInnardsHTML;
 }
