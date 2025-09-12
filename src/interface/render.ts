@@ -71,7 +71,7 @@ function constructSuitRow(scoreDetails: Record<PlayerName, ScoreBreakdown>, suit
 
   return `
     <tr>
-      <td class=suit-${suit.name}>${suit.html}</td>
+      <td class="suit-${suit.name.toLowerCase()} suit-symbol">${suit.html}</td>
       ${playerCols}
     </tr>
   `;
