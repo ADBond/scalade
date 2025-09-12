@@ -626,7 +626,7 @@ export class GameState {
         if (ladderHolder !== null) {
           const ladderBaseValue = ladderCard.rank.score;
           const currentMultiplier = ladderHolder.holdingMultipliers.get(suit);
-          const breakdown: [number, number] = [ladderBaseValue, currentMultiplier];
+          const breakdown: [Suit, number, number] = [suit, ladderBaseValue, currentMultiplier];
           ladderHolder.scores[ladderHolder.scores.length - 1].ladderScores.push(breakdown);
           if (currentMultiplier < this.maxHoldingMultiplier) {
             ladderHolder.holdingMultipliers.increment(suit);
@@ -684,22 +684,19 @@ export class GameState {
       },
       penultimate: this.spoilsToDisplay,
       dead: this.groundingsToDisplay,
-      game_state: this.currentState,
-      whose_turn: this.currentPlayer.name,
-      hand_number: this.handNumber,
+      gameState: this.currentState,
+      whoseTurn: this.currentPlayer.name,
+      handNumber: this.handNumber,
       playTo: this.playTo,
       capping: this.capping,
       // scores: {comp1: 0, player: 0, comp2: 0},
       scores: Object.fromEntries(
         playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).score])
       ) as Record<PlayerName, number>,
-      scores_previous: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).previousScore.score])
-      ) as Record<PlayerName, number>,
-      score_details: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, string] => [name, this.getPlayer(name).previousScore.display])
-      ) as Record<PlayerName, string>,
-      holding_bonus: Object.fromEntries(
+      scoreBreakdownsPrevious: Object.fromEntries(
+        playerNameArr.map((name): [PlayerName, ScoreBreakdown] => [name, this.getPlayer(name).previousScore])
+      ) as Record<PlayerName, ScoreBreakdown>,
+      holdingBonus: Object.fromEntries(
         playerNameArr.map(
           (name): [PlayerName, Record<string, number>] => [
             name,
@@ -725,20 +722,19 @@ export interface GameStateForUI {
   hands: Record<PlayerName, Card[]>;
   played: Record<PlayerName, Card | null>;
   previous: Record<PlayerName, Card | null>;
-  holding_bonus: Record<PlayerName, Record<string, number>>;
+  holdingBonus: Record<PlayerName, Record<string, number>>;
   ladder: Record<LadderPosition, Card[]>;
   penultimate: Card[];
   dead: Card[];
   scores: Record<PlayerName, number>;
-  scores_previous: Record<PlayerName, number>;
-  score_details: Record<PlayerName, string>;
+  scoreBreakdownsPrevious: Record<PlayerName, ScoreBreakdown>;
   escalations: number;
-  hand_number: number;
+  handNumber: number;
   trumps: Suit | null;
   advance: Suit | null;
   playTo: number;
-  game_state: state;
-  whose_turn: PlayerName;
+  gameState: state;
+  whoseTurn: PlayerName;
   capping: BonusCapping;
   mode: GameMode;
 }

@@ -1,7 +1,9 @@
 import { createCardElement, createSuitElement } from './ui';
 import { GameStateForUI, GameMode, BonusCapping, state } from '../game/gamestate';
-import { LadderPosition, PlayerName } from '../game/player';
+import { LadderPosition, PlayerName, playerNameArr } from '../game/player';
 import { onHumanPlay } from './api';
+import { ScoreBreakdown } from '../game/scores';
+import { SUITS, Suit } from '../game/card';
 
 const gameModeDisplay: Record<GameMode, string> = {
   mobile: "Mobile Scalade",
@@ -16,16 +18,198 @@ const cappingDisplay: Record<BonusCapping, string> = {
   uncapped: "Uncapped HM",
 }
 
-function constructScoreBreakdownText(scoreDetails: Record<PlayerName, string>): string {
+function scoreColgroups(): string {
+  const playerColgroupsArr = playerNameArr.map(
+    (playerName) => {
+      return `
+        <col class="sb-${playerName} sb-wide">
+        <col class="sb-${playerName} sb-narrow">
+        <col class="sb-${playerName} sb-wide">
+        <col class="sb-${playerName} sb-narrow">
+        <col class="sb-${playerName} sb-wide">
+      `;
+    }
+  );
+  playerColgroupsArr[0] += `<col class="sb-player sb-dummy">`;
+  playerColgroupsArr[1] += `<col class="sb-comp1 sb-dummy">`;
+  const playerColgroups = playerColgroupsArr.join("");
+  return `
+  <colgroup>
+    <col class="sb-suit-col">
+    ${playerColgroups}
+  </colgroup>
+  `
+}
+
+function scoreBreakdownHeaderRow(displayNameLookup: Record<PlayerName, string>): string{
+  const playerHeaders = Object.entries(displayNameLookup).map(
+    ([_playerName, displayName]) => `<th colspan=6>${displayName}</th>`
+  ).join("");
+  return `
+    <tr>
+      <th rowspan="2"></th>
+      ${playerHeaders}
+    </tr>
+  `;
+}
+
+function scoreBreakdownSubHeaderRow(): string{
+  const numPlayers = 3;
+  const playerHeaders = `
+    <th>B</th>
+    <th></th>
+    <th>M</th>
+    <th></th>
+    <th>T</th>
+    <th></th>
+  `;
+  return `
+    <tr>
+      ${playerHeaders.repeat(numPlayers)}
+    </tr>
+  `
+}
+
+function constructSuitRow(scoreDetails: Record<PlayerName, ScoreBreakdown>, suit: Suit){
+  const playerCols = Object.entries(scoreDetails).map(
+    ([_playerName, breakdown]) => {
+      let cellContents: string[];
+      const baseAndMult = breakdown.baseAndMultiplier(suit);
+      if (baseAndMult === null) {
+        cellContents = [
+          "-",
+          "",
+          "-",
+          "",
+          "-",
+          ""
+        ]
+      } else {
+        cellContents = [
+          `${baseAndMult[0]}`,
+          "&times;",
+          `${baseAndMult[1]}`,
+          "&equals;",
+          `${baseAndMult[0] * baseAndMult[1]}`,
+          ""
+        ];
+      }
+      return cellContents.map(
+        cell => `<td>${cell}</td>`
+      ).join("");
+    }
+  ).join("");
+
+  return `
+    <tr>
+      <td class="suit-${suit.name.toLowerCase()} suit-symbol sb-row-head">${suit.html}</td>
+      ${playerCols}
+    </tr>
+  `;
+}
+
+function constructFTRow(scoreDetails: Record<PlayerName, ScoreBreakdown>){
+  // TODO: bit awkward to keep this, and total, in sync with suitRow
+  const playerCols = Object.entries(scoreDetails).map(
+    ([_playerName, breakdown]) => {
+      let cellContents: string[];
+      const finalTrickScore = breakdown.finalTrickScore;
+      if (finalTrickScore === 0) {
+        cellContents = [
+          "",
+          "",
+          "",
+          "",
+          "-",
+          ""
+        ];
+      } else {
+        cellContents = [
+          "",
+          "",
+          "",
+          "",
+          `${finalTrickScore}`,
+          ""
+        ];
+      }
+      return cellContents.map(
+        cell => `<td>${cell}</td>`
+      ).join("");
+    }
+  ).join("");
+
+  return `
+    <tr>
+      <td class="sb-row-head">FT</td>
+      ${playerCols}
+    </tr>
+  `;
+}
+
+function constructTotalRow(scoreDetails: Record<PlayerName, ScoreBreakdown>){
+  // TODO: bit awkward to keep this, and total, in sync with suitRow
+  const playerCols = Object.entries(scoreDetails).map(
+    ([_playerName, breakdown]) => {
+      let cellContents: string[];
+      const totalScore = breakdown.score;
+      if (totalScore === 0) {
+        cellContents = [
+          "",
+          "",
+          "",
+          "",
+          "-",
+          ""
+        ];
+      } else {
+        cellContents = [
+          "",
+          "",
+          "",
+          "",
+          `${totalScore}`,
+          ""
+        ];
+      }
+      return cellContents.map(
+        cell => `<td class="sb-final-row">${cell}</td>`
+      ).join("");
+    }
+  ).join("");
+
+  return `
+    <tr>
+      <td class="sb-row-head sb-final-row">Tot.</td>
+      ${playerCols}
+    </tr>
+  `;
+}
+
+function renderScoreBreakdown(scoreDetails: Record<PlayerName, ScoreBreakdown>): void {
   // TODO: can i put this more central, as we use it elsewhere
   const displayNameLookup: Record<PlayerName, string> = {
     player: 'Player',
     comp1: 'Left',
     comp2: 'Right',
-  }
-  return (Object.entries(scoreDetails) as [PlayerName, string][]).map(
-    ([playerName, scoreDetail]) => `(${displayNameLookup[playerName]}): ${scoreDetail}`
-  ).join(", ");
+  };
+  const playerNames = Object.keys(displayNameLookup) as PlayerName[];
+  // is this the best way to construct this? not sure, but it is certainly _a_ way
+  // too tedious to build in html by hand
+  const breakdownTable = document.getElementById("sb-table")!;
+  const tableInnardsHTML = `
+    ${scoreColgroups()}
+    <thead>
+    ${scoreBreakdownHeaderRow(displayNameLookup)}
+    ${scoreBreakdownSubHeaderRow()}
+    </thead>
+    <tbody>
+    ${SUITS.map(suit => constructSuitRow(scoreDetails, suit)).join("")}
+    ${constructFTRow(scoreDetails)}
+    ${constructTotalRow(scoreDetails)}
+    </tbody>
+  `;
+  breakdownTable.innerHTML = tableInnardsHTML;
 }
 
 export async function renderState(state: GameStateForUI) {
@@ -42,7 +226,7 @@ export async function renderState(state: GameStateForUI) {
   handEl.innerHTML = '';
   playerHand.forEach(card => {
     handEl.appendChild(
-      createCardElement(card.toStringShort(), state.whose_turn === "player" ? (() => onHumanPlay(state, card)) : undefined)
+      createCardElement(card.toStringShort(), state.whoseTurn === "player" ? (() => onHumanPlay(state, card)) : undefined)
     )
   });
 
@@ -67,7 +251,7 @@ export async function renderState(state: GameStateForUI) {
   ['player', 'comp1', 'comp2'].forEach(p => {
     const bonusEl = document.getElementById(`hb-${p}`)!;
     bonusEl.innerHTML = '';
-    const bonuses = state.holding_bonus[p as PlayerName];
+    const bonuses = state.holdingBonus[p as PlayerName];
     for (const [suit, multiplier] of Object.entries(bonuses)) {
       for (let i = 0; i < multiplier; i++) {
         const suitEl = createSuitElement(suit);
@@ -99,24 +283,12 @@ export async function renderState(state: GameStateForUI) {
   spoils.forEach(card => penultimateEl.appendChild(createCardElement(card)));
   deads.forEach(card => deadEl.appendChild(createCardElement(card)));
 
-  // populate the scores in the UI
-  document.getElementById('score-player')!.innerText = `${state.scores.player}`;
-  document.getElementById('score-comp1')!.innerText = `${state.scores.comp1}`;
-  document.getElementById('score-comp2')!.innerText = `${state.scores.comp2}`;
-
-  document.getElementById('score-player-prev')!.innerText = `(${state.scores_previous.player})`;
-  document.getElementById('score-comp1-prev')!.innerText = `(${state.scores_previous.comp1})`;
-  document.getElementById('score-comp2-prev')!.innerText = `(${state.scores_previous.comp2})`;
-
-  document.getElementById('score-breakdown')!.innerHTML =
-    constructScoreBreakdownText(state.score_details);
-
-  // and game status - config
+  // game status - config
   document.getElementById('trump-mode')!.innerText = gameModeDisplay[state.mode];
   document.getElementById('escalation-limit')!.innerText = `to ${state.playTo} escalations`;
   document.getElementById('capping')!.innerText = cappingDisplay[state.capping];
   // and current status
-  document.getElementById('hand-number')!.innerText = `(hand #${state.hand_number})`;
+  document.getElementById('hand-number')!.innerText = `(hand #${state.handNumber})`;
   document.getElementById('escalations')!.innerText = `Escalations: ${state.escalations}`;
 
   const advanceEl = document.getElementById('advance')!;
@@ -127,7 +299,18 @@ export async function renderState(state: GameStateForUI) {
   trumpEl.innerHTML = '';
   trumpEl.appendChild(createSuitElement(state.trumps ? state.trumps.toStringShort() : ""));
 
-  // document.getElementById('debug')!.innerText = `${state.game_state}`;
+  // populate the scores in the UI
+  document.getElementById('score-player')!.innerText = `${state.scores.player}`;
+  document.getElementById('score-comp1')!.innerText = `${state.scores.comp1}`;
+  document.getElementById('score-comp2')!.innerText = `${state.scores.comp2}`;
+
+  document.getElementById('score-player-prev')!.innerText = `(${state.scoreBreakdownsPrevious.player.score})`;
+  document.getElementById('score-comp1-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp1.score})`;
+  document.getElementById('score-comp2-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp2.score})`;
+
+  renderScoreBreakdown(state.scoreBreakdownsPrevious);
+
+  // document.getElementById('debug')!.innerText = `${state.gameState}`;
 
 }
 
@@ -143,7 +326,7 @@ const delayMap: Record<state, number> = {
 export async function renderWithDelays(states: GameStateForUI[]) {
   for (const state of states) {
     await renderState(state);
-    await wait(delayMap[state.game_state]);
+    await wait(delayMap[state.gameState]);
   }
 }
 
