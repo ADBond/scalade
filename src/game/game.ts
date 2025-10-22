@@ -1,5 +1,6 @@
 import { Pack } from './pack';
 import { GameState, GameStateForUI, GameConfig } from './gamestate';
+import { AgentName } from './agent/agent';
 import { GameLog, sendGameLog } from './log';
 
 function randomID(): string {
@@ -28,7 +29,7 @@ export class Game {
   private gameID: string;
 
   constructor(
-      playerNames: string[],
+      playerNames: AgentName[],
       config: GameConfig = defaultConfig,
     ) {
     this.gameID = randomID();
