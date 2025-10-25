@@ -27,6 +27,7 @@ export class Game {
   public logs: GameLog[] = [];
   private currentLog: GameLog;
   private gameID: string;
+  private playerNames: AgentName[];
 
   constructor(
       playerNames: AgentName[],
@@ -35,7 +36,8 @@ export class Game {
     ) {
     this.gameID = randomID();
     this.state = new GameState(playerNames, config);
-    this.currentLog = new GameLog(this.gameID, config, this.simulation);
+    this.currentLog = new GameLog(this.gameID, config, playerNames, this.simulation);
+    this.playerNames = playerNames;
     this.incrementState();
   }
 
@@ -59,7 +61,7 @@ export class Game {
       if (this.simulation) {
         sendGameLog(this.currentLog);
       }
-      this.currentLog = new GameLog(this.gameID, this.state.config, this.simulation);
+      this.currentLog = new GameLog(this.gameID, this.state.config, this.playerNames, this.simulation);
     }
     // console.log(this.jsonLogs);
   }

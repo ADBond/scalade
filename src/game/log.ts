@@ -2,6 +2,7 @@ import { Card, Suit } from "./card";
 import { Player } from "./player";
 import { GameConfig } from "./gamestate";
 import { ScoreBreakdown } from "./scores";
+import { AgentName } from "./agent/agent";
 
 declare const __COMMIT_HASH__: string;
 
@@ -17,8 +18,6 @@ export class GameLog {
     private holdingMultipliers: [Suit, number][][] = [];
     // TODO: generalise this if we ever generalise count in app
     private playerCount: number = 3;
-    // TODO: dynamic, better
-    private bot: string = "camber";
     // this allows us to translate player index to position in hand
     public dealerIndex: number = -1;
     public handNumber: number = -1;
@@ -37,8 +36,13 @@ export class GameLog {
     private version: string = __COMMIT_HASH__;
     private logVersion: number = 4;
 
-    // simulated - mainly to help filter if we accidentally send off simulated data
-    constructor(private gameID: string, private config: GameConfig, private simulated: boolean = false) {}
+    constructor(
+        private gameID: string,
+        private config: GameConfig,
+        private players: AgentName[],
+        // mainly to help filter if we accidentally send off simulated data
+        private simulated: boolean = false,
+    ) {}
 
     captureLadders(ladders: [Card, Player | null][]) {
         const sortedLadders: [Card, number | null][] = ladders.map(
