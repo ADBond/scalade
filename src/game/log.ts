@@ -37,7 +37,8 @@ export class GameLog {
     private version: string = __COMMIT_HASH__;
     private logVersion: number = 4;
 
-    constructor(private gameID: string, private config: GameConfig) {}
+    // simulated - mainly to help filter if we accidentally send off simulated data
+    constructor(private gameID: string, private config: GameConfig, private simulated: boolean = false) {}
 
     captureLadders(ladders: [Card, Player | null][]) {
         const sortedLadders: [Card, number | null][] = ladders.map(

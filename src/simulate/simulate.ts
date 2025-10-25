@@ -8,7 +8,7 @@ export async function simulate(): Promise<Game> {
         capping: 'uncapped',
         escalations: 4,
     };
-    let game = new Game(['camber', 'camber', 'camber'], config);
+    let game = new Game(['camber', 'camber', 'camber'], config, true);
     let current = game.getGameStateForUI();
 
     // getout for infinite loop

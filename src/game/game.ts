@@ -31,10 +31,11 @@ export class Game {
   constructor(
       playerNames: AgentName[],
       config: GameConfig = defaultConfig,
+      private simulation: boolean = false,
     ) {
     this.gameID = randomID();
     this.state = new GameState(playerNames, config);
-    this.currentLog = new GameLog(this.gameID, config);
+    this.currentLog = new GameLog(this.gameID, config, this.simulation);
     this.incrementState();
   }
 
@@ -55,8 +56,10 @@ export class Game {
     console.log(this.currentLog);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
-      sendGameLog(this.currentLog);
-      this.currentLog = new GameLog(this.gameID, this.state.config);
+      if (this.simulation) {
+        sendGameLog(this.currentLog);
+      }
+      this.currentLog = new GameLog(this.gameID, this.state.config, this.simulation);
     }
     // console.log(this.jsonLogs);
   }
