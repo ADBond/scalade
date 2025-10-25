@@ -3,6 +3,7 @@ import { Player } from "./player";
 import { GameConfig } from "./gamestate";
 import { ScoreBreakdown } from "./scores";
 import { AgentName } from "./agent/agent";
+import { getCommitHash } from "../utils/commit";
 
 declare const __COMMIT_HASH__: string;
 
@@ -33,7 +34,7 @@ export class GameLog {
     public handScores: [number, ScoreBreakdown][] = [];
 
     public complete: boolean = false;
-    private version: string = __COMMIT_HASH__;
+    private version: string = getCommitHash();
     private logVersion: number = 5;
 
     constructor(
