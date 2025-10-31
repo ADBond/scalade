@@ -3,7 +3,7 @@ import { simulateN } from "./simulate";
 async function main() {
   console.log("Simulating games");
 
-    await simulateN(1);
+    await simulateN(10);
 
   console.log("Complete");
 }

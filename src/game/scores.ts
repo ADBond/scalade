@@ -31,7 +31,7 @@ export class ScoreBreakdown {
         );
         if (suitScores.length > 1) {
             // TODO: error
-            console.log(`ladderSuit logic issue: ${suitScores}`);
+            console.log(`Error: ladderSuit logic issue: ${suitScores}`);
         }
         if (suitScores.length === 0) {
             return null;

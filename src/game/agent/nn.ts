@@ -29,7 +29,7 @@ export async function loadModel(name: modelName) {
     modelUrl = `${base}models/${name}/model.json`;
   }
 
-  console.log("Loading model from:", modelUrl);
+  // console.log("Loading model from:", modelUrl);
 
   const model = await tf.loadLayersModel(modelUrl);
   const inputShape = model.inputs[0].shape;

@@ -55,7 +55,7 @@ export class Game {
 
   async incrementState() {
     await this.state.increment(this.currentLog);
-    console.log(this.currentLog);
+    // console.log(this.currentLog);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
       if (!this.simulation) {
