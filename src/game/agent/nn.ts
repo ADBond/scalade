@@ -3,9 +3,34 @@ import * as tf from '@tensorflow/tfjs';
 import { ComputerAgent } from "./agent"
 import { GameState } from "../gamestate"
 import { modelName, modelCatalogue } from '../models';
+import { getBaseUrl } from '../../utils/base_url';
+import { isNode } from '../../utils/is_node';
 
 export async function loadModel(name: modelName) {
-  const modelUrl = `${import.meta.env.BASE_URL}models/${name}/model.json`;
+
+  let tf: typeof import("@tensorflow/tfjs");
+  if (isNode) {
+    const tfNode = await import("@tensorflow/tfjs-node");
+    tf = tfNode;
+  } else {
+    tf = await import("@tensorflow/tfjs");
+  }
+
+  // Build model URL/path
+  const base = getBaseUrl();
+
+  let modelUrl: string;
+  if (isNode) {
+    // for simulating in Node
+    const path = await import("path");
+    modelUrl = `file://${path.resolve(base, "models", name, "model.json")}`;
+  } else {
+    // running in browser
+    modelUrl = `${base}models/${name}/model.json`;
+  }
+
+  console.log("Loading model from:", modelUrl);
+
   const model = await tf.loadLayersModel(modelUrl);
   const inputShape = model.inputs[0].shape;
   const inputLength = inputShape[1]!;
@@ -14,6 +39,7 @@ export async function loadModel(name: modelName) {
   // console.log(inputTensor);
   return model;
 }
+
 
 export const nnAgent = (name: modelName): ComputerAgent => ({
   chooseMove: async (gameState: GameState, legalMoveIndices: number[]) => {

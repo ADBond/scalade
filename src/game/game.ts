@@ -58,7 +58,7 @@ export class Game {
     console.log(this.currentLog);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
-      if (this.simulation) {
+      if (!this.simulation) {
         sendGameLog(this.currentLog);
       }
       this.currentLog = new GameLog(this.gameID, this.state.config, this.playerNames, this.simulation);

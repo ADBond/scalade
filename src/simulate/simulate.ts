@@ -15,11 +15,15 @@ export async function simulate(): Promise<Game> {
     let counter = 0;
     const maxCounter = 15000;  // should be enough, i think?
 
-    while (!(current.gameState !== 'gameComplete') && counter < maxCounter) {
+    console.log(current);
+
+    while ((current.gameState !== 'gameComplete') && counter < maxCounter) {
+        console.log("state...")
         await game.incrementState();
         counter++;
     }
 
+    console.log(counter);
     return game;
 }
 
@@ -27,6 +31,5 @@ export async function simulateN(n: number): Promise<void> {
     let game: Game;
     for (let index = 0; index < n; index++) {
         game = await simulate();
-        
     }
 }
