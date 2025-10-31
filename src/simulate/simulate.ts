@@ -20,9 +20,11 @@ export async function simulate(): Promise<Game> {
     while ((current.gameState !== 'gameComplete') && counter < maxCounter) {
         console.log("state...")
         await game.incrementState();
+        current = game.getGameStateForUI();
         counter++;
     }
 
+    console.log(game.logs);
     console.log(counter);
     return game;
 }
