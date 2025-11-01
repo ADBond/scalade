@@ -1,14 +1,15 @@
 
 import { Game } from '../game/game';
 import { GameConfig } from '../game/gamestate';
+import { AgentName } from '../game/agent/agent';
 
-export async function simulate(): Promise<Game> {
+export async function simulate(agents: AgentName[]): Promise<Game> {
     const config: GameConfig = {
         trumpRule: 'mobile',
         capping: 'uncapped',
         escalations: 4,
     };
-    let game = new Game(['camber', 'camber', 'camber'], config, true);
+    let game = new Game(agents, config, true);
     let current = game.getGameStateForUI();
 
     // getout for infinite loop
@@ -29,10 +30,36 @@ export async function simulate(): Promise<Game> {
     return game;
 }
 
-export async function simulateN(n: number): Promise<void> {
+export async function simulateN(agents: AgentName[], n: number): Promise<Partial<Record<AgentName, number>>[]> {
     let game: Game;
+    let scores: Partial<Record<AgentName, number>>[] = [];
+    let gameRecord: Partial<Record<AgentName, number>> = {};
     for (let index = 0; index < n; index++) {
         console.log(`Simulating: ${index}`)
-        game = await simulate();
+        game = await simulate(agents);
+        let finalScores = game.logs[game.logs.length - 1].finalScores;
+        gameRecord = {};
+        agents.forEach(
+            (agent, i) => gameRecord[agent] = finalScores[i] 
+        );
+        scores.push(gameRecord);
     }
+    return scores;
+}
+
+function product<T>(...arrays: T[][]): T[][] {
+  return arrays.reduce<T[][]>(
+    (acc, curr) =>
+      acc.flatMap(a => curr.map(b => [...a, b])),
+    [[]]
+  );
+}
+
+export async function roundRobin(agents: AgentName[], n: number) {
+    let allScores: Partial<Record<AgentName, number>>[] = [];
+    for (const [a1, a2, a3] of product(agents, agents, agents)) {
+        let scores = await simulateN([a1, a2, a3], n);
+        allScores.push(...scores);
+    }
+    console.log(allScores);
 }

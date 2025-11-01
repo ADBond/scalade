@@ -1,9 +1,9 @@
-import { simulateN } from "./simulate";
+import { roundRobin } from "./simulate";
 
 async function main() {
   console.log("Simulating games");
 
-    await simulateN(10);
+    await roundRobin(['arundel', 'bodiam', 'camber'], 1);
 
   console.log("Complete");
 }

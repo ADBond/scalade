@@ -30,6 +30,7 @@ export class GameLog {
     // each trick is array of [card, playerIndex], along with trump suit + winner index
     private tricks: [Suit, [Card, number][], number][] = [];
 
+    // i realise this is a typo, but not worth the effort to deal with downstream
     public staringScores: number[] = [];
     public handScores: [number, ScoreBreakdown][] = [];
 
@@ -97,6 +98,13 @@ export class GameLog {
 
     captureHoldingMultipliers(playerMultipliers: [Suit, number][][]) {
         this.holdingMultipliers = playerMultipliers;
+    }
+
+    get finalScores(): number[] {
+        return Array.from(
+            this.staringScores,
+            (_, i) => this.staringScores[i] + this.handScores[i][0]
+        );
     }
 
     get json(): string {
