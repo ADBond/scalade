@@ -38,11 +38,22 @@ export async function simulateN(agents: AgentName[], n: number): Promise<Partial
         console.log(`Simulating: ${index}`)
         game = await simulate(agents);
         let finalScores = game.logs[game.logs.length - 1].finalScores;
+        let winningScore = Math.max(...finalScores);
+        let losingScore = Math.min(...finalScores);
         gameRecord = [];
         agents.forEach(
-            (agent, i) => gameRecord.push({agent: agent, score: finalScores[i], position: i})
+            (agent, i) => gameRecord.push(
+                {
+                    agent: agent,
+                    score: finalScores[i],
+                    position: i,
+                    // TODO: some bonus points based on score differences
+                    // TODO: deal with ties properly
+                    leaguePoints: finalScores[i] === winningScore ? 10 : (finalScores[i] === losingScore ? -10 : 0)
+                }
+            )
         );
-        scores.push(gameRecord);
+        scores.push(...gameRecord);
     }
     return scores;
 }
@@ -57,9 +68,27 @@ function product<T>(...arrays: T[][]): T[][] {
 
 export async function roundRobin(agents: AgentName[], n: number) {
     let allScores: Partial<Record<string, any>>[] = [];
+    let results: Partial<Record<AgentName, Record<string, number>>> = {};
     for (const [a1, a2, a3] of product(agents, agents, agents)) {
+        console.log([a1, a2, a3]);
         let scores = await simulateN([a1, a2, a3], n);
         allScores.push(...scores);
     }
     console.log(allScores);
+    agents.forEach(
+        (agent) => {
+            let onlyAgent = allScores.filter(
+                scoreInfo => scoreInfo.agent === agent
+            );
+            let totalPoints = onlyAgent.map(
+                scoreInfo => scoreInfo.leaguePoints
+            ).reduce((a, b) => a + b);
+            results[agent] = {
+                played: onlyAgent.length,
+                leaguePoints: totalPoints,
+                totalScore: onlyAgent.map(scoreInfo => scoreInfo.score).reduce((a, b) => a + b),
+            };
+        }
+    );
+    console.log(results);
 }
