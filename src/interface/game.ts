@@ -4,8 +4,7 @@ import { GameConfig } from "../game/gamestate";
 let game: Game;
 
 export function newGame(config: GameConfig): void {
-    // TODO: use names for display, overriding comp1 comp2 etc which should be internal
-    game = new Game(['Andy', 'Randy1', 'Randy2'], config);
+    game = new Game(['human', 'camber', 'camber'], config);
 }
 
 export function getGame(): Game {

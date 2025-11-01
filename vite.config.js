@@ -8,5 +8,11 @@ export default defineConfig({
   publicDir: 'static',
   define: {
     __COMMIT_HASH__: JSON.stringify(commitHash),
-  }
+  },
+  optimizeDeps: {
+    exclude: ["@tensorflow/tfjs-node"],
+  },
+  ssr: {
+    external: ["@tensorflow/tfjs-node"],
+  },
 })

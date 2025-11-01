@@ -1,5 +1,6 @@
 import { Pack } from './pack';
 import { GameState, GameStateForUI, GameConfig } from './gamestate';
+import { AgentName } from './agent/agent';
 import { GameLog, sendGameLog } from './log';
 
 function randomID(): string {
@@ -26,14 +27,17 @@ export class Game {
   public logs: GameLog[] = [];
   private currentLog: GameLog;
   private gameID: string;
+  private playerNames: AgentName[];
 
   constructor(
-      playerNames: string[],
+      playerNames: AgentName[],
       config: GameConfig = defaultConfig,
+      private simulation: boolean = false,
     ) {
     this.gameID = randomID();
     this.state = new GameState(playerNames, config);
-    this.currentLog = new GameLog(this.gameID, config);
+    this.currentLog = new GameLog(this.gameID, config, playerNames, this.simulation);
+    this.playerNames = playerNames;
     this.incrementState();
   }
 
@@ -51,11 +55,13 @@ export class Game {
 
   async incrementState() {
     await this.state.increment(this.currentLog);
-    console.log(this.currentLog);
+    // console.log(this.currentLog);
     if (this.currentLog.complete) {
       this.logs.push(this.currentLog);
-      sendGameLog(this.currentLog);
-      this.currentLog = new GameLog(this.gameID, this.state.config);
+      if (!this.simulation) {
+        sendGameLog(this.currentLog);
+      }
+      this.currentLog = new GameLog(this.gameID, this.state.config, this.playerNames, this.simulation);
     }
     // console.log(this.jsonLogs);
   }

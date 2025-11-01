@@ -3,9 +3,8 @@ import { Pack } from './pack';
 import { LadderPosition, Player, PlayerName, playerNameArr } from './player';
 import { ScoreBreakdown } from './scores';
 import { GameLog } from './log';
-import { Agent } from './agent/agent';
+import { Agent, AgentName, agentLookup } from './agent/agent';
 // import { randomAgent } from './agent/random';
-import { nnAgent } from './agent/nn';
 
 export type GameMode = 'static' | 'mobile' | 'retromobile';
 export type BonusCapping = 'nobonus' | 2 | 3 | 'uncapped';
@@ -74,10 +73,10 @@ export class GameState {
   public advanceSuit: Suit | null = null;
   public handNumber: number = 0;
 
-  constructor(public playerNames: string[], public config: GameConfig) {
+  constructor(public playerNames: AgentName[], public config: GameConfig) {
     // TODO: more / flexi ??
     const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
-    const agents: Agent[] = ['human', nnAgent("camber"), nnAgent("camber")]
+    const agents: Agent[] = playerNames.map((name) => agentLookup(name));
     this.players = playerNames.map(
       (name, i) => new Player(
           name,
