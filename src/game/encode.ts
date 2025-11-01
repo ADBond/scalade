@@ -189,7 +189,7 @@ export class ModelEncoder {
 }
 
 export const smallEncoder = new ModelEncoder(["hand", "trickNumber", "trumpSuit", "ledSuit"]).encoder;
-export const extendedEncoder = new ModelEncoder(
+export const flawedExtendedEncoder = new ModelEncoder(
     [
         "hand",
         "currentTrick",

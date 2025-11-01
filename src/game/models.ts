@@ -1,8 +1,8 @@
-import { smallEncoder, extendedEncoder } from "./encode";
+import { smallEncoder, flawedExtendedEncoder } from "./encode";
 
 export const modelCatalogue = {
     arundel: smallEncoder,
-    bodiam: extendedEncoder,
-    camber: extendedEncoder,
+    bodiam: flawedExtendedEncoder,
+    camber: flawedExtendedEncoder,
 }
 export type modelName = keyof typeof modelCatalogue;
