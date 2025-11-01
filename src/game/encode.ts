@@ -56,7 +56,7 @@ const CurrentTrickEncoder: Encoder = {
     }
 }
 
-const UnseenCardsEncoder: Encoder = {
+const FlawedUnseenCardsEncoder: Encoder = {
     // Flawed encoder, but need it to match with trained model
     // Should take into account hand as well explicitly
     encode: (gameState: GameState) => {
@@ -71,7 +71,7 @@ const UnseenCardsEncoder: Encoder = {
     }
 }
 
-const opponentVoidsEncoder: Encoder = {
+const FlawedOpponentVoidsEncoder: Encoder = {
     encode: (gameState: GameState) => {
         const currentPlayerIndex = gameState.currentPlayerIndex;
         const nextPlayerIndex = gameState.getNextPlayerIndex(currentPlayerIndex);
@@ -160,8 +160,8 @@ const TrumpSuitEncoder: Encoder = {
 const concreteEncoders = {
     hand: HandEncoder,
     currentTrick: CurrentTrickEncoder,
-    unseenCards: UnseenCardsEncoder,
-    opponentVoids: opponentVoidsEncoder,
+    flawedUnseenCards: FlawedUnseenCardsEncoder,
+    flawedOpponentVoids: FlawedOpponentVoidsEncoder,
     ladders: LaddersEncoder,
     trickNumber: TrickNumberEncoder,
     playingLast: PlayingLastEncoder,
@@ -194,13 +194,13 @@ export const extendedEncoder = new ModelEncoder(
         "hand",
         "currentTrick",
         "playingLast",
-        "unseenCards",
+        "flawedUnseenCards",
         "ladders",
         "holdingBonus",
         "trickNumber",
         "trumpSuit",
         "ledSuit",
         // not all voids - only renounces. No deductions!
-        "opponentVoids",
+        "flawedOpponentVoids",
     ]
 ).encoder;
