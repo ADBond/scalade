@@ -32,15 +32,15 @@ export async function simulate(agents: AgentName[]): Promise<Game> {
 
 export async function simulateN(agents: AgentName[], n: number): Promise<Partial<Record<AgentName, number>>[]> {
     let game: Game;
-    let scores: Partial<Record<AgentName, number>>[] = [];
-    let gameRecord: Partial<Record<AgentName, number>> = {};
+    let scores: Partial<Record<string, any>>[] = [];
+    let gameRecord: Partial<Record<string, any>>[];
     for (let index = 0; index < n; index++) {
         console.log(`Simulating: ${index}`)
         game = await simulate(agents);
         let finalScores = game.logs[game.logs.length - 1].finalScores;
-        gameRecord = {};
+        gameRecord = [];
         agents.forEach(
-            (agent, i) => gameRecord[agent] = finalScores[i] 
+            (agent, i) => gameRecord.push({agent: agent, score: finalScores[i], position: i})
         );
         scores.push(gameRecord);
     }
@@ -56,7 +56,7 @@ function product<T>(...arrays: T[][]): T[][] {
 }
 
 export async function roundRobin(agents: AgentName[], n: number) {
-    let allScores: Partial<Record<AgentName, number>>[] = [];
+    let allScores: Partial<Record<string, any>>[] = [];
     for (const [a1, a2, a3] of product(agents, agents, agents)) {
         let scores = await simulateN([a1, a2, a3], n);
         allScores.push(...scores);
