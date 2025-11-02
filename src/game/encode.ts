@@ -42,6 +42,13 @@ const BrokenHandEncoder: Encoder = {
     }
 }
 
+const HandEncoder: Encoder = {
+    encode: (gameState: GameState) => {
+        // TODO: helper in pack for straightforward size
+        return encodeCards(gameState.currentPlayerHand, gameState.pack.getFullPack().length);
+    }
+}
+
 const CurrentTrickEncoder: Encoder = {
     encode: (gameState: GameState) => {
         const numPlayers = gameState.numPlayers;
@@ -158,6 +165,7 @@ const TrumpSuitEncoder: Encoder = {
 }
 
 const concreteEncoders = {
+    hand: HandEncoder,
     flawedHand: BrokenHandEncoder,
     currentTrick: CurrentTrickEncoder,
     flawedUnseenCards: FlawedUnseenCardsEncoder,
@@ -192,6 +200,23 @@ export const flawedSmallEncoder = new ModelEncoder(["flawedHand", "trickNumber",
 export const flawedExtendedEncoder = new ModelEncoder(
     [
         "flawedHand",
+        "currentTrick",
+        "playingLast",
+        "flawedUnseenCards",
+        "ladders",
+        "holdingBonus",
+        "trickNumber",
+        "trumpSuit",
+        "ledSuit",
+        // not all voids - only renounces. No deductions!
+        "flawedOpponentVoids",
+    ]
+).encoder;
+
+export const smallEncoder = new ModelEncoder(["hand", "trickNumber", "trumpSuit", "ledSuit"]).encoder;
+export const partFlawedExtendedEncoder = new ModelEncoder(
+    [
+        "hand",
         "currentTrick",
         "playingLast",
         "flawedUnseenCards",

@@ -6,8 +6,8 @@ import { AgentName } from '../game/agent/agent';
 export async function simulate(agents: AgentName[]): Promise<Game> {
     const config: GameConfig = {
         trumpRule: 'mobile',
-        capping: 'uncapped',
-        escalations: 4,
+        capping: 3,
+        escalations: 2,
     };
     let game = new Game(agents, config, true);
     let current = game.getGameStateForUI();
@@ -40,18 +40,27 @@ export async function simulateN(agents: AgentName[], n: number): Promise<Partial
         let finalScores = game.logs[game.logs.length - 1].finalScores;
         let winningScore = Math.max(...finalScores);
         let losingScore = Math.min(...finalScores);
+        const aveScore = finalScores.reduce((a, b) => a + b)/finalScores.length;
         gameRecord = [];
+
         agents.forEach(
-            (agent, i) => gameRecord.push(
-                {
-                    agent: agent,
-                    score: finalScores[i],
-                    position: i,
-                    // TODO: some bonus points based on score differences
-                    // TODO: deal with ties properly
-                    leaguePoints: finalScores[i] === winningScore ? 10 : (finalScores[i] === losingScore ? -10 : 0)
-                }
-            )
+            (agent, i) => {
+                const score = finalScores[i];
+                const winningPoints = score === winningScore ? 10 : (score === losingScore ? -10 : 0);
+                const scoreDiff = score - aveScore;
+                const scorePoints = 0.5*Math.sign(scoreDiff) * Math.sqrt(Math.abs(scoreDiff));
+                gameRecord.push(
+                    {
+                        agent: agent,
+                        score: score,
+                        position: i,
+                        // TODO: deal with ties properly
+                        leaguePoints: winningPoints + scorePoints,
+                        winningPoints: winningPoints,
+                    }
+                );
+            }
+
         );
         scores.push(...gameRecord);
     }
@@ -87,6 +96,7 @@ export async function roundRobin(agents: AgentName[], n: number) {
                 played: onlyAgent.length,
                 leaguePoints: totalPoints,
                 totalScore: onlyAgent.map(scoreInfo => scoreInfo.score).reduce((a, b) => a + b),
+                wlPoints: onlyAgent.map(scoreInfo => scoreInfo.winningPoints).reduce((a, b) => a + b),
             };
         }
     );

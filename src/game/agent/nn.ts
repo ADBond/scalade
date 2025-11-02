@@ -18,12 +18,13 @@ export async function loadModel(name: modelName) {
 
   // Build model URL/path
   const base = getBaseUrl();
+  const folder = modelCatalogue[name].folder;
 
   let modelUrl: string;
   if (isNode) {
     // for simulating in Node
     const path = await import("path");
-    modelUrl = `file://${path.resolve(base, "models", name, "model.json")}`;
+    modelUrl = `file://${path.resolve(base, "models", folder, "model.json")}`;
   } else {
     // running in browser
     modelUrl = `${base}models/${name}/model.json`;
@@ -46,7 +47,7 @@ export const nnAgent = (name: modelName): ComputerAgent => ({
     const model = await loadModel(name);
     const inputLength = model.inputs[0].shape[1]!;
 
-    const encoder = modelCatalogue[name];
+    const encoder = modelCatalogue[name].encoder;
     const inputTensor = encoder.encode(gameState);
 
     const prediction = model.predict(inputTensor) as tf.Tensor;
