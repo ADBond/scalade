@@ -35,7 +35,7 @@ export interface Encoder {
     encode: (gameState: GameState) => tf.Tensor
 }
 
-const HandEncoder: Encoder = {
+const BrokenHandEncoder: Encoder = {
     encode: (gameState: GameState) => {
         // TODO: helper in pack for straightforward size
         return encodeCards(gameState.humanHand, gameState.pack.getFullPack().length);
@@ -158,7 +158,7 @@ const TrumpSuitEncoder: Encoder = {
 }
 
 const concreteEncoders = {
-    hand: HandEncoder,
+    flawedHand: BrokenHandEncoder,
     currentTrick: CurrentTrickEncoder,
     flawedUnseenCards: FlawedUnseenCardsEncoder,
     flawedOpponentVoids: FlawedOpponentVoidsEncoder,
@@ -188,10 +188,10 @@ export class ModelEncoder {
     }
 }
 
-export const smallEncoder = new ModelEncoder(["hand", "trickNumber", "trumpSuit", "ledSuit"]).encoder;
+export const flawedSmallEncoder = new ModelEncoder(["flawedHand", "trickNumber", "trumpSuit", "ledSuit"]).encoder;
 export const flawedExtendedEncoder = new ModelEncoder(
     [
-        "hand",
+        "flawedHand",
         "currentTrick",
         "playingLast",
         "flawedUnseenCards",

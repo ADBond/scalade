@@ -1,7 +1,7 @@
-import { smallEncoder, flawedExtendedEncoder } from "./encode";
+import { flawedSmallEncoder, flawedExtendedEncoder } from "./encode";
 
 export const modelCatalogue = {
-    arundel: smallEncoder,
+    arundel: flawedSmallEncoder,
     bodiam: flawedExtendedEncoder,
     camber: flawedExtendedEncoder,
 }

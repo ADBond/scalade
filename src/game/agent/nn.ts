@@ -61,6 +61,9 @@ export const nnAgent = (name: modelName): ComputerAgent => ({
 
     const maxIndex = predictionData.indexOf(maxLegalPrediction);
 
+    // console.log("Game state:");
+    // console.log(inputTensor.dataSync());
+
     // console.log('Prediction:', predictionData);
     // console.log('Probs: ', probabilities);
     // console.log('Max index:', maxIndex);
