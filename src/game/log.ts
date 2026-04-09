@@ -36,7 +36,8 @@ export class GameLog {
 
     public complete: boolean = false;
     private version: string = getCommitHash();
-    private logVersion: number = 5;
+    private logVersion: number = 6;
+    private game: string = 'scalade';
 
     constructor(
         private gameID: string,
@@ -117,7 +118,7 @@ export class GameLog {
 // send game log to storage
 export async function sendGameLog(log: GameLog) {
   try {
-    const res = await fetch("https://guileless-gingersnap-2d9f68.netlify.app/.netlify/functions/saveGameLog", {
+    const res = await fetch("https://qaw-games.netlify.app/.netlify/functions/saveGameLog", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(log),
