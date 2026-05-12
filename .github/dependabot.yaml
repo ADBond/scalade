@@ -1,6 +1,19 @@
 version: 2
 updates:
+  - package-ecosystem: "github-actions"
+    commit-message:
+      prefix: ":dependabot: github-actions"
+      include: "scope"
+    cooldown:
+      default-days: 7
+    directory: "/"
+    schedule:
+      interval: "daily"
+
   - package-ecosystem: npm
+    commit-message:
+      prefix: ":dependabot: npm"
+      include: "scope"
     directory: /
     schedule:
       interval: daily
