@@ -5,12 +5,15 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pages: write
 
     steps:
       - name: Checkout code
