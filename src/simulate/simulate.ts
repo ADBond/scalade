@@ -6,8 +6,8 @@ import { AgentName } from '../game/agent/agent';
 export async function simulate(agents: AgentName[]): Promise<Game> {
     const config: GameConfig = {
         trumpRule: 'mobile',
-        capping: 3,
-        escalations: 2,
+        capping: 'uncapped',
+        escalations: 4,
     };
     let game = new Game(agents, config, true);
     let current = game.getGameStateForUI();
