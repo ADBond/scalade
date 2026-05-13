@@ -17,6 +17,14 @@ class HoldingMultipliers {
         )
     }
 
+    clone(): HoldingMultipliers {
+        let hm = new HoldingMultipliers()
+        hm.holdingMultiplierArray = this.holdingMultiplierArray.map(
+            ([suit, num]) => [suit, num]
+        );
+        return hm;
+    }
+
     set(suit: Suit, multiplier: number) {
         this.holdingMultiplierArray = this.holdingMultiplierArray.map(
             ([holdingSuit, holdingMultiplier]) => {
@@ -54,6 +62,18 @@ export class Player {
         public scores: ScoreBreakdown[] = [],
         public holdingMultipliers: HoldingMultipliers = new HoldingMultipliers(),
     ) { }
+
+    clone(): Player {
+        return new Player(
+            this.displayName,
+            this.name,
+            this.agent,  // TODO: fine to share?
+            this.positionIndex,
+            [...this.hand],
+            [...this.scores],
+            this.holdingMultipliers.clone(),
+        );
+    }
 
     get score(): number {
         const scores = this.scores.map(
