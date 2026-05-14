@@ -175,8 +175,8 @@ export class GameState {
 
   public async increment(log: GameLog | null = null) {
     const state = this.currentState;
-    console.log("Incrementing...");
-    console.log(this);
+    // console.log("Incrementing...");
+    // console.log(this);
     switch (state) {
       case 'initialiseGame':
         this.dealCards(this.pack, log);
@@ -506,7 +506,8 @@ export class GameState {
 
   public moveFromIndex(cardIndex: number): number {
     const cardToPlay = Card.cardFromIndex(cardIndex, this.pack.getFullPack())
-    console.log(`Ready to play ${cardToPlay}, with index ${cardIndex}`);
+    // console.log(`Ready to play ${cardToPlay}, with index ${cardIndex} (in trick ${this.trickIndex})`);
+    // console.log(`Player playing it is ${this.currentPlayerIndex}, trick currently has ${this.trickInProgress.length}`);
 
     if (!this.playCard(cardToPlay)) {
       console.log("Error playing card");
@@ -661,6 +662,7 @@ export class GameState {
       c => c.rank === card.rank && c.suit === card.suit
     );
     if (index < 0) {
+      console.log(`Attempted card not in hand`);
       return false;
     }
     const [playedCard] = hand.splice(index, 1);
@@ -682,6 +684,7 @@ export class GameState {
     //   this.leaderIndex = this.currentPlayerIndex;
     // }
     if (this.trickInProgress.length === this.numPlayers) {
+      // console.log("trick is over.");
       this.currentState = "trickComplete";
       return true;
     }

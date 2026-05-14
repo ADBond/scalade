@@ -73,8 +73,9 @@ function determiniseNaive(state: GameState, agent: ComputerAgent): GameState {
     // don't remember voids, or grounding
     const newState = state.clone();
     const unknownCards = state.pack.filterOut(
-        state.pack.getFullPack(), [...state.currentPlayerHand, ...state.publicCards]
+        state.pack.getFullPack(), [...state.currentPlayerHand, ...state.publicCards, ...state.ladderCards]
     )
+    // console.log(`Cards left: ${unknownCards.length}`);
     Pack.shuffle(unknownCards);
     for (let playerIndex = 0; playerIndex < state.numPlayers; playerIndex++) {
         const player = newState.players[playerIndex];
@@ -88,6 +89,19 @@ function determiniseNaive(state: GameState, agent: ComputerAgent): GameState {
             const card = unknownCards.pop();
             if (card) newState.giveCardToPlayer(playerIndex, card);
         }
+    }
+    newState.spoils = [];
+    for (let i = 0; i < 2; i++) {
+        const card = unknownCards.pop();
+       if (card) newState.spoils.push(card);
+    }
+    newState.deadCards = [];
+    for (let i = 0; i < 2; i++) {
+        const card = unknownCards.pop();
+       if (card) newState.deadCards.push(card);
+    }
+    if (unknownCards.length !== 0) {
+        console.log(`Error, leftover cards: ${unknownCards}`);
     }
     return newState;
 }
@@ -139,10 +153,14 @@ export async function ismcts(
             if (justExpanded) {
                 break;
             }
+            // roll forwards to an action state
+            while (state.currentState !== 'playCard') {
+                await state.increment();
+            }
         }
 
         while (!["handComplete", "gameComplete"].includes(state.currentState)) {  // false positive
-            console.log(`Rollout for ${i}... (${state.currentState}, hand is ${state.handNumber})`);
+            // console.log(`Rollout for ${i}... (${state.currentState}, hand is ${state.handNumber})`);
             await state.increment();
         }
         const rolloutRewards = state.scores;

@@ -8,6 +8,7 @@ export function randomArrayElement<Type>(arr: Type[]): Type {
 
 export const randomAgent: ComputerAgent = {
     async chooseMove(gameState: GameState, legalMoveIndices: number[]) {
+        // console.log(`Random player choosing from ${legalMoveIndices}`);
         return randomArrayElement(legalMoveIndices);
     }
 };

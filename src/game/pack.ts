@@ -60,6 +60,7 @@ export class Pack {
   }
 
   filterOut(cardsToFilterFrom: Card[], cards: Card[]): Card[] {
+    // remove all cards from a given array
     const filteredCards = cardsToFilterFrom.filter((card: Card) => !cards.some(c => Card.cardEquals(card, c)));
     return filteredCards;
   }
