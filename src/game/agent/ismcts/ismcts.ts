@@ -76,6 +76,12 @@ function determiniseNaive(state: GameState, agent: ComputerAgent): GameState {
         state.pack.getFullPack(), [...state.currentPlayerHand, ...state.publicCards, ...state.ladderCards]
     )
     // console.log(`Cards left: ${unknownCards.length}`);
+    // console.log(`current hand: ${state.currentPlayerHand.length}`);
+    // console.log(`public cards: ${state.publicCards.length}`);
+    // console.log(`ladder cards: ${state.ladderCards.length}`);
+    // console.log(state.currentPlayerHand.join(', '));
+    // console.log(state.publicCards.join(', '));
+    // console.log(state.ladderCards.join(', '));
     Pack.shuffle(unknownCards);
     for (let playerIndex = 0; playerIndex < state.numPlayers; playerIndex++) {
         const player = newState.players[playerIndex];
@@ -93,15 +99,16 @@ function determiniseNaive(state: GameState, agent: ComputerAgent): GameState {
     newState.spoils = [];
     for (let i = 0; i < 2; i++) {
         const card = unknownCards.pop();
-       if (card) newState.spoils.push(card);
+        if (card) newState.spoils.push(card);
     }
     newState.deadCards = [];
     for (let i = 0; i < 2; i++) {
         const card = unknownCards.pop();
-       if (card) newState.deadCards.push(card);
+        if (card) newState.deadCards.push(card);
     }
     if (unknownCards.length !== 0) {
         console.log(`Error, leftover cards: ${unknownCards}`);
+        throw Error();
     }
     return newState;
 }

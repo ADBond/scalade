@@ -426,6 +426,8 @@ export class GameState {
         this.rawLadders = this.rawLadders.filter(
           ([card, _player]) => !Card.cardEquals(card, currentLadderCard)
         );
+        // TODO: check how this interacts with models
+        this.publicCards.push(currentLadderCard);
         // use 'trickwinner' placeholder, as we may not know, if we're playing retromobile
         this.rawLadders.push([newLadderCard, 'trickwinner']);
         // remove new card from trick-in-progress, add old card
