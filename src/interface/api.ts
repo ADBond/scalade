@@ -3,13 +3,16 @@ import { GameStateForUI } from "../game/gamestate";
 import { renderWithDelays } from "./render";
 import { getGame } from "./game";
 
-export function playCard(state: GameStateForUI, card: Card): void {
+export function playCard(state: GameStateForUI, card: Card): GameStateForUI {
     const game = getGame();
     game.state.playCard(card);
+    return game.state.getStateForUI();
 }
 
 export async function onHumanPlay(state: GameStateForUI, card: Card) {
-    playCard(state, card);
+    const newState = playCard(state, card);
+    // render the immediate state update so we needn't wait for slower AIs
+    await renderWithDelays([newState]);
     const futureStates = await playUntilHuman();
     await renderWithDelays(futureStates);
 }

@@ -16,6 +16,14 @@ export type GameConfig = {
   escalations: number,
 }
 
+function copyConfig(config: GameConfig): GameConfig {
+    return {
+      trumpRule: config.trumpRule,
+      capping: config.capping,
+      escalations: config.escalations,
+    };
+}
+
 class advanceSuitTracker {
   // TODO: this is basically holdingBonus structure - should we rip it out?
   public advanceSuitArray: [Suit, number][]
@@ -26,6 +34,14 @@ class advanceSuitTracker {
               return [suit, 0];
           }
       )
+  }
+
+  clone(): advanceSuitTracker {
+    const ast = new advanceSuitTracker();
+    ast.advanceSuitArray = this.advanceSuitArray.map(
+      ([suit, num]) => [suit, num]
+    );
+    return ast;
   }
 
   set(suit: Suit, increments: number) {
@@ -97,6 +113,55 @@ export class GameState {
     this.finalTrickWinnerIndex = -1;
   }
 
+  public clone(): GameState {
+      // make a (deep) copy - at least of the things we care about
+      const newConfig = copyConfig(this.config);
+      const playerNames = [...this.playerNames];
+      const newState = new GameState(playerNames, newConfig);
+      // run into issues in updateScores if players aren't unified, so make a lookup
+      const clonedPlayers = Object.fromEntries(this.players.map(player => [player.name, player.clone()]));
+
+      // copy remaining state
+      newState.pack = new Pack();
+      newState.dealerIndex = this.dealerIndex;
+    
+      newState.currentPlayerIndex = this.currentPlayerIndex;
+      newState.finalTrickWinnerIndex = this.finalTrickWinnerIndex;
+      newState.trickIndex = this.trickIndex;
+      // TODO: does it matter that these players are different to the ones in player array?
+      newState.trickInProgress = this.trickInProgress.map(
+          ([card, player]) => [card, clonedPlayers[player.name]]
+      );
+      newState.previousTrick= this.previousTrick.map(
+          ([card, player]) => [card, clonedPlayers[player.name]]
+      );
+      newState.groundings = [...this.groundings];
+      newState.spoils = [...this.spoils];
+      newState.previousSpoils = [...this.previousSpoils];
+      newState.currentHandsGroundings = [...this.currentHandsGroundings];
+
+      newState.deadCards = [...this.deadCards];
+      newState.publicCards = [...this.publicCards];
+
+      newState.renounces = this.renounces.map(
+        (renounces) => new Set(renounces)
+      );
+      newState.rawLadders = this.rawLadders.map(
+          ([card, player]) => [card, (player === 'trickwinner' || player === null) ? player : clonedPlayers[player.name]]
+      );
+      newState.suitRungsAscended = this.suitRungsAscended.clone();
+
+      newState._trumpSuit = this._trumpSuit;
+      newState.currentState = this.currentState;
+      newState.advanceSuit = this.advanceSuit;
+      newState.handNumber = this.handNumber;
+
+      newState.players = this.players.map(player => clonedPlayers[player.name]);
+      newState.trickIndex = this.trickIndex;
+
+      return newState;
+  }
+
   // config stuff
   get gameMode(): GameMode {
     return this.config.trumpRule;
@@ -110,8 +175,10 @@ export class GameState {
     return this.config.capping
   }
 
-  public async increment(log: GameLog) {
+  public async increment(log: GameLog | null = null) {
     const state = this.currentState;
+    // console.log("Incrementing...");
+    // console.log(this);
     switch (state) {
       case 'initialiseGame':
         this.dealCards(this.pack, log);
@@ -275,6 +342,10 @@ export class GameState {
     return this.trumpSuitFromLadders();
   }
 
+  get scores(): number[] {
+    return this.players.map(player => player.score);
+  }
+
   trumpSuitFromLadders(): Suit {
     // find the lowest-ranked cards, as relates to trick-taking power
     const ladderCards = this.ladderCards;
@@ -357,6 +428,8 @@ export class GameState {
         this.rawLadders = this.rawLadders.filter(
           ([card, _player]) => !Card.cardEquals(card, currentLadderCard)
         );
+        // TODO: check how this interacts with models
+        this.publicCards.push(currentLadderCard);
         // use 'trickwinner' placeholder, as we may not know, if we're playing retromobile
         this.rawLadders.push([newLadderCard, 'trickwinner']);
         // remove new card from trick-in-progress, add old card
@@ -435,6 +508,17 @@ export class GameState {
     return [];
   }
 
+  public moveFromIndex(cardIndex: number): number {
+    const cardToPlay = Card.cardFromIndex(cardIndex, this.pack.getFullPack())
+    // console.log(`Ready to play ${cardToPlay}, with index ${cardIndex} (in trick ${this.trickIndex})`);
+    // console.log(`Player playing it is ${this.currentPlayerIndex}, trick currently has ${this.trickInProgress.length}`);
+
+    if (!this.playCard(cardToPlay)) {
+      console.log("Error playing card");
+    }
+    return cardIndex;
+  }
+
   private async computerMove(): Promise<number> {
     const agent = this.currentPlayer.agent;
     if (agent === 'human') {
@@ -445,15 +529,10 @@ export class GameState {
 
     const currentLegalMoves = this.legalMoveIndices;
     const cardToPlayIndex = await agent.chooseMove(this, currentLegalMoves);
-    const cardToPlay = Card.cardFromIndex(cardToPlayIndex, this.pack.getFullPack())
-
-    if (!this.playCard(cardToPlay)) {
-      console.log("Error playing card");
-    }
-    return cardToPlayIndex;
+    return this.moveFromIndex(cardToPlayIndex);
   }
 
-  private resetTrick(log: GameLog) {
+  private resetTrick(log: GameLog | null) {
     let trumpSuit: Suit;
     if ((this.gameMode === 'static') || (this.gameMode === 'mobile')) {
       trumpSuit = this.trumpSuit;
@@ -476,8 +555,10 @@ export class GameState {
     // current trick info -> previous trick
     this.previousTrick = this.trickInProgress
 
-    log.captureTrick(trumpSuit, this.trickInProgress, winnerPlayer.positionIndex);
-    log.captureLadders(this.ladders);
+    if (log !== null) {
+      log.captureTrick(trumpSuit, this.trickInProgress, winnerPlayer.positionIndex);
+      log.captureLadders(this.ladders);
+    }
 
     // empty the trick, and increment the counter!
     this.trickInProgress = [];
@@ -489,7 +570,7 @@ export class GameState {
     }
   }
 
-  private dealCards(pack: Pack, log: GameLog, count: number = 12) {
+  private dealCards(pack: Pack, log: GameLog | null, count: number = 12) {
     const halfHandSizeRoundedUp = Math.ceil(count / 2);
     this.pack.reset()
     let remainingPack = this.pack.filterOut(this.pack.getFullPack(), this.ladderCards);
@@ -546,17 +627,19 @@ export class GameState {
     this.publicCards = [];
     this.renounces = this.players.map((_player) => new Set());
     // update game log
-    log.dealerIndex = this.dealerIndex;
-    log.handNumber = this.handNumber;
-    log.escalations = this.escalations;
-    log.advanceSuit = this.advanceSuit;
-    log.captureCrossCards("spoils", this.spoils);
-    log.captureCrossCards("deads", this.deadCards);
-    log.captureCrossCards("grounding", this.currentHandsGroundings);
-    log.captureHands(this.players.map((player) => [...this.getPlayerHand(player.positionIndex)]));
-    log.staringScores = this.players.map((player) => player.score);
-    log.captureLadders(this.ladders);
-    log.captureHoldingMultipliers(this.players.map((player) => player.holdingMultipliers.getAll()));
+    if (log !== null) {
+      log.dealerIndex = this.dealerIndex;
+      log.handNumber = this.handNumber;
+      log.escalations = this.escalations;
+      log.advanceSuit = this.advanceSuit;
+      log.captureCrossCards("spoils", this.spoils);
+      log.captureCrossCards("deads", this.deadCards);
+      log.captureCrossCards("grounding", this.currentHandsGroundings);
+      log.captureHands(this.players.map((player) => [...this.getPlayerHand(player.positionIndex)]));
+      log.staringScores = this.players.map((player) => player.score);
+      log.captureLadders(this.ladders);
+      log.captureHoldingMultipliers(this.players.map((player) => player.holdingMultipliers.getAll()));
+    }
   }
 
   giveCardToPlayer(playerIndex: number, card: Card) {
@@ -583,6 +666,7 @@ export class GameState {
       c => c.rank === card.rank && c.suit === card.suit
     );
     if (index < 0) {
+      console.log(`Attempted card not in hand`);
       return false;
     }
     const [playedCard] = hand.splice(index, 1);
@@ -604,6 +688,7 @@ export class GameState {
     //   this.leaderIndex = this.currentPlayerIndex;
     // }
     if (this.trickInProgress.length === this.numPlayers) {
+      // console.log("trick is over.");
       this.currentState = "trickComplete";
       return true;
     }
@@ -612,7 +697,7 @@ export class GameState {
     return true;
   }
 
-  updateScores(log: GameLog) {
+  updateScores(log: GameLog | null) {
     this.players.forEach(
       (player) => player.scores.push(new ScoreBreakdown([], 0))
     )
@@ -647,12 +732,14 @@ export class GameState {
     const breakdowns: ScoreBreakdown[] = this.players.map(
       (player) => player.scores.slice(-1).pop()
     ) as ScoreBreakdown[];
-    log.handScores = breakdowns.map(
-      (breakdown) => [breakdown.score, breakdown]
-    );
-    log.escalationsFinal = this.escalations;
-    log.finalAdvanceSuit = this.advanceSuit;
-    log.complete = true;
+    if (log !== null) {
+      log.handScores = breakdowns.map(
+        (breakdown) => [breakdown.score, breakdown]
+      );
+      log.escalationsFinal = this.escalations;
+      log.finalAdvanceSuit = this.advanceSuit;
+      log.complete = true;
+    }
     this.currentState = 'newHand';
   }
 
