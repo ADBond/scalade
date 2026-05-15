@@ -160,13 +160,13 @@ export async function ismcts(
             if (justExpanded) {
                 break;
             }
-            // roll forwards to an action state
-            while (state.currentState !== 'playCard') {
+            // roll forwards to an action state, or terminal state
+            while (!["handComplete", "gameComplete", "newHand", "playCard"].includes(state.currentState)) {
                 await state.increment();
             }
         }
 
-        while (!["handComplete", "gameComplete"].includes(state.currentState)) {  // false positive
+        while (!["handComplete", "gameComplete", "newHand"].includes(state.currentState)) {  // false positive
             // console.log(`Rollout for ${i}... (${state.currentState}, hand is ${state.handNumber})`);
             await state.increment();
         }
@@ -193,7 +193,7 @@ export async function ismcts(
         maxDepth = Math.max(depth, maxDepth);
         // console.log(`Iteration ${i} complete`);
     }
-    console.log(`ISMCTS complete, ${iterations} iterations, maximum tree depth ${maxDepth}`);
+    // console.log(`ISMCTS complete, ${iterations} iterations, maximum tree depth ${maxDepth}`);
     const highestVisits = Math.max(
         ...Object.values(rootNode.children).map(
             node => node.visits
