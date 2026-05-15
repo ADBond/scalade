@@ -118,6 +118,8 @@ export class GameState {
       const newConfig = copyConfig(this.config);
       const playerNames = [...this.playerNames];
       const newState = new GameState(playerNames, newConfig);
+      // run into issues in updateScores if players aren't unified, so make a lookup
+      const clonedPlayers = Object.fromEntries(this.players.map(player => [player.name, player.clone()]));
 
       // copy remaining state
       newState.pack = new Pack();
@@ -128,10 +130,10 @@ export class GameState {
       newState.trickIndex = this.trickIndex;
       // TODO: does it matter that these players are different to the ones in player array?
       newState.trickInProgress = this.trickInProgress.map(
-          ([card, player]) => [card, player.clone()]
+          ([card, player]) => [card, clonedPlayers[player.name]]
       );
       newState.previousTrick= this.previousTrick.map(
-          ([card, player]) => [card, player.clone()]
+          ([card, player]) => [card, clonedPlayers[player.name]]
       );
       newState.groundings = [...this.groundings];
       newState.spoils = [...this.spoils];
@@ -145,7 +147,7 @@ export class GameState {
         (renounces) => new Set(renounces)
       );
       newState.rawLadders = this.rawLadders.map(
-          ([card, player]) => [card, (player === 'trickwinner' || player === null) ? player : player.clone()]
+          ([card, player]) => [card, (player === 'trickwinner' || player === null) ? player : clonedPlayers[player.name]]
       );
       newState.suitRungsAscended = this.suitRungsAscended.clone();
 
@@ -154,7 +156,7 @@ export class GameState {
       newState.advanceSuit = this.advanceSuit;
       newState.handNumber = this.handNumber;
 
-      newState.players = this.players.map(player => player.clone());
+      newState.players = this.players.map(player => clonedPlayers[player.name]);
       newState.trickIndex = this.trickIndex;
 
       return newState;
