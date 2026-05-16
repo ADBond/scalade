@@ -36,7 +36,7 @@ export class GameLog {
 
     public complete: boolean = false;
     private version: string = getCommitHash();
-    private logVersion: number = 6;
+    private logVersion: number = 7;
     private game: string = 'scalade';
 
     constructor(
