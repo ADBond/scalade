@@ -3,7 +3,7 @@ import { roundRobin } from "./simulate";
 async function main() {
   console.log("Simulating games");
 
-    await roundRobin(['arundel', 'bodiam', 'camber', 'ismcts1000'], 1);
+    await roundRobin(['random', 'arundel', 'bodiam', 'camber', 'ismcts1000'], 3);
 
   console.log("Complete");
 }

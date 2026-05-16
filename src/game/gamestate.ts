@@ -571,6 +571,7 @@ export class GameState {
   }
 
   private dealCards(pack: Pack, log: GameLog | null, count: number = 12) {
+    console.log(`Dealing hand ${this.handNumber}`);
     const halfHandSizeRoundedUp = Math.ceil(count / 2);
     this.pack.reset()
     let remainingPack = this.pack.filterOut(this.pack.getFullPack(), this.ladderCards);
