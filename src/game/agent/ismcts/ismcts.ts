@@ -122,7 +122,7 @@ export async function ismcts(
     rootState: GameState,
     rolloutAgent: ComputerAgent,
     iterations: number = 10,
-    c: number = 15,
+    c: number = 10,
 ): Promise<[number, ISMCTSNode]> {
     // console.log(`ISMCTS called ${Math.random()}`);
     const initialPlayerIndex = rootState.currentPlayerIndex;
@@ -170,10 +170,13 @@ export async function ismcts(
             // console.log(`Rollout for ${i}... (${state.currentState}, hand is ${state.handNumber})`);
             await state.increment();
         }
+        if (state.currentState === "handComplete") {
+            await state.increment();
+        }
         const rolloutRewards = state.scores;
         const rolloutZeroSum = zeroSum(rolloutRewards);
 
-        let result = [0.0, 0.0, 0.0, 0.0];
+        let result = [0.0, 0.0, 0.0];
         for (let j = 0; j < result.length; j++) {
             result[j] = rolloutZeroSum[j] - initialScores[j];
         }
