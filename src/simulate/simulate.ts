@@ -7,7 +7,7 @@ export async function simulate(agents: AgentName[]): Promise<Game> {
     const config: GameConfig = {
         trumpRule: 'mobile',
         capping: 'uncapped',
-        escalations: 4,
+        escalations: 1,
     };
     let game = new Game(agents, config, true);
     let current = game.getGameStateForUI();
