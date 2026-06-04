@@ -17,7 +17,7 @@ Approximate:
 }
 ```
 
-with zero sum correction:
+with zero sum correction (but still without proper rollout, so zero-scored hands):
 ```json
 {
   random: { played: 225, leaguePoints: -290, totalScore: 17503 },
@@ -27,3 +27,15 @@ with zero sum correction:
   ismcts1000: { played: 225, leaguePoints: -30, totalScore: 18639 }
 }
 ```
+
+and full rollouts & c=10
+```json
+{
+  random: { played: 225, leaguePoints: -540, totalScore: 14851 },
+  arundel: { played: 225, leaguePoints: -310, totalScore: 16542 },
+  bodiam: { played: 225, leaguePoints: -300, totalScore: 16467 },
+  camber: { played: 225, leaguePoints: -60, totalScore: 17508 },
+  ismcts1000: { played: 225, leaguePoints: 1230, totalScore: 31122 }
+}
+```
+

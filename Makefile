@@ -3,3 +3,6 @@ start-app:
 
 stop-app:
 	docker compose down -v
+
+simulate:
+	docker compose run --build --rm --entrypoint "npm run simulate" frontend
