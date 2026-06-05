@@ -69,7 +69,6 @@ export class GameState {
   public dealerIndex: number;
   public currentPlayerIndex: number;
   public finalTrickWinnerIndex: number;
-  public cardsPerHand: number = 12;  // TODO: dynamic
   public trickIndex: number;
   public trickInProgress: [Card, Player][] = [];
   public previousTrick: [Card, Player][] = [];
@@ -209,7 +208,7 @@ export class GameState {
     }
   }
 
-  get handSize(): number {
+  get cardsPerHand(): number {
     switch (this.numPlayers) {
       case 3:
         return 12;
@@ -602,7 +601,7 @@ export class GameState {
 
   private dealCards(log: GameLog | null) {
     console.log(`Dealing hand ${this.handNumber}`);
-    const count = this.handSize;
+    const count = this.cardsPerHand;
     const halfHandSizeRoundedUp = Math.ceil(count / 2);
     this.pack.reset()
     let remainingPack = this.pack.filterOut(this.pack.getFullPack(), this.ladderCards);
