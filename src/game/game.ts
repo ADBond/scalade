@@ -19,6 +19,7 @@ const defaultConfig: GameConfig = {
   trumpRule: 'mobile',
   escalations: 2,
   capping: 'uncapped',
+  numPlayers: 3,
 }
 
 export class Game {
@@ -29,10 +30,11 @@ export class Game {
   private playerNames: AgentName[];
 
   constructor(
-      playerNames: AgentName[],
+      opponent: AgentName,
       config: GameConfig = defaultConfig,
       private simulation: boolean = false,
     ) {
+    const playerNames: AgentName[] = ['human', ...Array(config.numPlayers - 1).fill(opponent)];
     this.gameID = randomID();
     this.state = new GameState(playerNames, config);
     this.currentLog = new GameLog(this.gameID, config, playerNames, this.simulation);

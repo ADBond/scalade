@@ -14,6 +14,7 @@ const DEFAULTS: GameConfig = {
   trumpRule: "mobile",
   escalations: 2,
   capping: "uncapped",
+  numPlayers: 3,
 };
 
 
@@ -22,6 +23,10 @@ const menu = document.getElementById("new-game-menu")!;
 const form = document.getElementById("new-game-form") as HTMLFormElement;
 
 function resetValues() {
+  (form.querySelector(
+    `input[name="numplayers"][value="${DEFAULTS.numPlayers}"]`
+  ) as HTMLInputElement).checked = true;
+
   (form.querySelector(
     `input[name="trumprule"][value="${DEFAULTS.trumpRule}"]`
   ) as HTMLInputElement).checked = true;
@@ -50,11 +55,13 @@ form.addEventListener("submit", async (e) => {
   const formData = new FormData(form);
   const trumprule = formData.get("trumprule") as GameMode;
   const escalations = formData.get("escalations") as string;
+  const numPlayers = formData.get("numplayers") as string;
   const capping = formData.get("capping") as BonusCapping;
   const config: GameConfig = {
     trumpRule: trumprule,
     escalations: parseInt(escalations),
     capping: capping,
+    numPlayers: parseInt(numPlayers),
   }
 
   menu.hidden = true;

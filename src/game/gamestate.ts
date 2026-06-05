@@ -14,6 +14,7 @@ export type GameConfig = {
   trumpRule: GameMode,
   capping: BonusCapping,
   escalations: number,
+  numPlayers: number,
 }
 
 function copyConfig(config: GameConfig): GameConfig {
@@ -21,6 +22,7 @@ function copyConfig(config: GameConfig): GameConfig {
       trumpRule: config.trumpRule,
       capping: config.capping,
       escalations: config.escalations,
+      numPlayers: config.numPlayers,
     };
 }
 
