@@ -65,7 +65,7 @@ class advanceSuitTracker {
 
 export class GameState {
   public players: Player[] = [];
-  public pack: Pack = new Pack();
+  public pack: Pack;
   public dealerIndex: number;
   public currentPlayerIndex: number;
   public finalTrickWinnerIndex: number;
@@ -104,6 +104,7 @@ export class GameState {
     for (const name of playerNames) {
       this.players.push();
     }
+    this.pack = new Pack(this.minRank);
     this.rawLadders = this.getStartingLadders();
     // choose a random initial dealer
     this.dealerIndex = Math.floor(Math.random() * playerNames.length);
@@ -122,7 +123,7 @@ export class GameState {
       const clonedPlayers = Object.fromEntries(this.players.map(player => [player.name, player.clone()]));
 
       // copy remaining state
-      newState.pack = new Pack();
+      newState.pack = this.pack.clone();
       newState.dealerIndex = this.dealerIndex;
     
       newState.currentPlayerIndex = this.currentPlayerIndex;
@@ -181,7 +182,7 @@ export class GameState {
     // console.log(this);
     switch (state) {
       case 'initialiseGame':
-        this.dealCards(this.pack, log);
+        this.dealCards(log);
         break;
       case 'playCard':
         const moveIndex = await this.computerMove();
@@ -198,13 +199,42 @@ export class GameState {
         } else {
           this.previousSpoils = this.spoils.slice();
           this.dealerIndex = this.getNextPlayerIndex(this.dealerIndex);
-          this.dealCards(this.pack, log);
+          this.dealCards(log);
         }
         break;
       case 'gameComplete':
         break;
       default:
         // error!
+    }
+  }
+
+  get handSize(): number {
+    switch (this.numPlayers) {
+      case 3:
+        return 12;
+      case 4:
+        return 10;
+      case 5:
+        return 8;
+      case 6:
+        return 6;
+      default:
+        throw Error(`Unsupported player count: ${this.numPlayers}`);
+    }
+    
+  }
+
+  get minRank(): number {
+    switch (this.numPlayers) {
+      case 3:
+      case 6:
+        return 4;
+      case 4:
+      case 5:
+        return 3;
+      default:
+        throw Error(`Unsupported player count: ${this.numPlayers}`);
     }
   }
 
@@ -570,8 +600,9 @@ export class GameState {
     }
   }
 
-  private dealCards(pack: Pack, log: GameLog | null, count: number = 12) {
+  private dealCards(log: GameLog | null) {
     console.log(`Dealing hand ${this.handNumber}`);
+    const count = this.handSize;
     const halfHandSizeRoundedUp = Math.ceil(count / 2);
     this.pack.reset()
     let remainingPack = this.pack.filterOut(this.pack.getFullPack(), this.ladderCards);

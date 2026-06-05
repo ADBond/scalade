@@ -22,7 +22,6 @@ const defaultConfig: GameConfig = {
 }
 
 export class Game {
-  private pack = new Pack();
   public state: GameState;
   public logs: GameLog[] = [];
   private currentLog: GameLog;
