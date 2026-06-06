@@ -101,10 +101,7 @@ export class GameState {
           agents[i],
           i,
         )
-    )
-    for (const name of playerNames) {
-      this.players.push();
-    }
+    );
     this.pack = new Pack(this.minRank);
     this.rawLadders = this.getStartingLadders();
     // choose a random initial dealer
@@ -664,7 +661,7 @@ export class GameState {
     for (let i = 0; i < count; i++) {
       // for (const player of this.state.players) {
         // TODO: loop this properly!
-      for (let playerIndex = 0; playerIndex < 3; playerIndex++) {
+      for (let playerIndex = 0; playerIndex < this.numPlayers; playerIndex++) {
         const card = remainingPack.pop();
         if (card) this.giveCardToPlayer(playerIndex, card);
       }
