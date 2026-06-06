@@ -308,12 +308,6 @@ export async function renderState(state: GameStateForUI) {
   prevAreaEl.innerHTML = '';
   prevAreaEl.classList.add('prev-area');
 
-        // <div class="prev-area">
-        //     <div id="prev-comp1" class="prev-slot"></div>
-        //     <div id="prev-comp2" class="prev-slot"></div>
-        //     <div id="prev-player" class="prev-slot"></div>
-        // </div>
-
   state.playerNames.forEach(playerName => {
     const areaEl = document.createElement('div');
     areaEl.classList.add('player-area');
@@ -416,6 +410,7 @@ export async function renderState(state: GameStateForUI) {
     (playerName) => {
       const prevScoreEl = document.createElement('td');
       prevScoreEl.id = `score-player-${playerName}`;
+      // TODO: need to translate to team prev instead for this
       prevScoreEl.innerText = `(${state.scoreBreakdownsPrevious[playerName]!.score})`;
       prevScoresHolder.appendChild(prevScoreEl);
     }

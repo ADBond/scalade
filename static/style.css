@@ -118,6 +118,8 @@ body {
     width: 50%;
 }
 
+/* TODO: generlias for player countss */
+
 .player-area.player {
     bottom: 10px;
     left: 50%;
@@ -462,6 +464,7 @@ body {
     transform-origin: center center;
 }
 
+/* TODO: generalise for player counts */
 #prev-comp1 {
     top: 0;
     left: 0;
