@@ -302,28 +302,51 @@ export async function renderState(state: GameStateForUI) {
     )
   });
 
-  state.playerNames.forEach(p => {
-    const playedEl = document.getElementById(`played-${p}`)!;
-    playedEl.innerHTML = '';
-    const card = state.played[p as PlayerName]!;
-    const el = createCardElement(card !== null ? card.toStringShort(): "");
-    el.classList.add('played-card');
-    playedEl.appendChild(el);
-  });
+  const playerAreaEl = document.getElementById('player-areas')!;
+  const prevAreaEl = document.getElementById('prev-area')!;
+  playerAreaEl.innerHTML = '';
+  prevAreaEl.innerHTML = '';
+  prevAreaEl.classList.add('prev-area');
 
-  state.playerNames.forEach(p => {
-    const prevEl = document.getElementById(`prev-${p}`)!;
-    prevEl.innerHTML = '';
-    const card = state.previous[p as PlayerName]!;
-    const el = createCardElement(card !== null ? card.toStringShort(): "");
-    el.classList.add('played-card');
-    prevEl.appendChild(el);
-  });
+        // <div class="prev-area">
+        //     <div id="prev-comp1" class="prev-slot"></div>
+        //     <div id="prev-comp2" class="prev-slot"></div>
+        //     <div id="prev-player" class="prev-slot"></div>
+        // </div>
 
-  state.playerNames.forEach(p => {
-    const bonusEl = document.getElementById(`hb-${p}`)!;
-    bonusEl.innerHTML = '';
-    const bonuses = state.holdingBonus[p as PlayerName];
+  state.playerNames.forEach(playerName => {
+    const areaEl = document.createElement('div');
+    areaEl.classList.add('player-area');
+    areaEl.classList.add(playerName);
+    playerAreaEl.appendChild(areaEl);
+
+    const ladderEl = document.createElement('div');
+    ladderEl.id = `ladder-${playerName}`;
+    ladderEl.classList.add('ladder');
+    areaEl.appendChild(ladderEl);
+
+    const playedEl = document.createElement('div');
+    playedEl.id = `played-${playerName}`;
+    playedEl.classList.add('played');
+    areaEl.appendChild(playedEl);
+    const playedCard = state.played[playerName as PlayerName]!;
+    const playedCardEl = createCardElement(playedCard !== null ? playedCard.toStringShort(): "");
+    playedCardEl.classList.add('played-card');
+    playedEl.appendChild(playedCardEl);
+
+    const prevEl = document.createElement('div');
+    prevEl.id = `prev-${playerName}`;
+    prevEl.classList.add('prev-slot');
+    const prevCard = state.previous[playerName as PlayerName]!;
+    const prevCardEl = createCardElement(prevCard !== null ? prevCard.toStringShort(): "");
+    prevCardEl.classList.add('played-card');
+    prevEl.appendChild(prevCardEl);
+
+    const bonusEl = document.createElement('div');
+    bonusEl.id = `hb-${playerName}`;
+    bonusEl.classList.add('holding-bonus');
+    areaEl.appendChild(bonusEl);
+    const bonuses = state.holdingBonus[playerName as PlayerName];
     for (const [suit, multiplier] of Object.entries(bonuses)) {
       for (let i = 0; i < multiplier; i++) {
         const suitEl = createSuitElement(suit);
@@ -398,7 +421,6 @@ export async function renderState(state: GameStateForUI) {
     }
   )
 
-  // TODO: generalise this rendering
   renderScoreBreakdown(state.scoreBreakdownsPrevious);
 
   // document.getElementById('debug')!.innerText = `${state.gameState}`;

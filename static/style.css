@@ -326,6 +326,7 @@ body {
     width: 2%;
 }
 
+/* TODO: not these numbers! We can do better */
 #sb-table tbody td:nth-child(7),
 #sb-table tbody td:nth-child(13) {
     background-color: #eee;
