@@ -118,21 +118,41 @@ body {
     width: 50%;
 }
 
-/* TODO: generlias for player countss */
-
-.player-area.player {
+.player-area.player-3 {
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.player-area.comp1 {
+.player-area.comp1-3 {
     top: 20px;
     left: -10px;
 }
 
-.player-area.comp2 {
+.player-area.comp2-3 {
     top: 20px;
+    right: -10px;
+}
+
+.player-area.player-4 {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-area.comp1-4 {
+    top: 50px;
+    left: -10px;
+}
+
+.player-area.comp2-4 {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-area.comp3-4 {
+    top: 50px;
     right: -10px;
 }
 

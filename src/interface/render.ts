@@ -301,6 +301,7 @@ export async function renderState(state: GameStateForUI) {
       createCardElement(card.toStringShort(), state.whoseTurn === "player" ? (() => onHumanPlay(state, card)) : undefined)
     )
   });
+  const numPlayers = state.playerNames.length;
 
   const playerAreaEl = document.getElementById('player-areas')!;
   const prevAreaEl = document.getElementById('prev-area')!;
@@ -310,8 +311,8 @@ export async function renderState(state: GameStateForUI) {
 
   state.playerNames.forEach(playerName => {
     const areaEl = document.createElement('div');
-    areaEl.classList.add('player-area');
-    areaEl.classList.add(playerName);
+    areaEl.classList.add(`player-area`);
+    areaEl.classList.add(`${playerName}-${numPlayers}`);
     playerAreaEl.appendChild(areaEl);
 
     const ladderEl = document.createElement('div');
