@@ -1,6 +1,6 @@
 import { Card, SUITS, Suit, arbitrarySuit } from './card';
 import { Pack } from './pack';
-import { LadderPosition, Player, PlayerName, playerNameArr } from './player';
+import { LadderPosition, Player, PlayerName, playerNameArr, TeamName } from './player';
 import { ScoreBreakdown } from './scores';
 import { GameLog } from './log';
 import { Agent, AgentName, agentLookup } from './agent/agent';
@@ -92,7 +92,7 @@ export class GameState {
 
   constructor(public playerNames: AgentName[], public config: GameConfig) {
     // TODO: more / flexi ??
-    const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
+    const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2', 'comp3', 'comp4', 'comp5'];
     const agents: Agent[] = playerNames.map((name) => agentLookup(name));
     this.players = playerNames.map(
       (name, i) => new Player(
@@ -296,6 +296,28 @@ export class GameState {
     )[0];
   }
 
+  getTeamPlayer(teamName: TeamName): Player {
+    // get an arbitrary member of the team
+    switch (teamName) {
+      case 'player':
+      case 'team02':
+      case 'team024':
+        return this.players[0];
+      case 'comp1':
+      case 'team13':
+      case 'team135':
+        return this.players[1];
+      case 'comp2':
+        return this.players[2];
+      case 'comp3':
+        return this.players[3];
+      case 'comp4':
+        return this.players[4];
+      default:
+        throw Error(`Bad team: ${teamName}`);
+    }
+  }
+
   private getPlayedCard(name: PlayerName, trick: [Card, Player][]): Card | null {
     const playerPlayedCards = trick.filter(
       ([_card, player]) => player.name === name
@@ -325,6 +347,25 @@ export class GameState {
 
   get numPlayers(): number {
     return this.players.length;
+  }
+
+  get names(): PlayerName[] {
+    return this.players.map(player => player.name);
+  }
+
+  get teamNames(): TeamName[] {
+    switch (this.numPlayers) {
+      case 3:
+        return ['player', 'comp1', 'comp2'];
+      case 4:
+        return ['team02', 'team13'];
+      case 5:
+        return ['player', 'comp1', 'comp2', 'comp3', 'comp4'];
+      case 6:
+        return ['team024', 'team135'];
+      default:
+        throw Error(`Unsupported player count: ${this.numPlayers}`);
+    } 
   }
 
   getNextPlayerIndex(playerIndex: number): number {
@@ -778,17 +819,27 @@ export class GameState {
 
   getStateForUI(): GameStateForUI {
     return ({
-      hands: {comp1: [], player: this.currentState === "handComplete" ? [] : this.humanHand.slice(), comp2: []},
+      hands: {
+        comp1: [],
+        player: this.currentState === "handComplete" ? [] : this.humanHand.slice(),
+        comp2: [],
+        comp3: [],
+        comp4: [],
+        comp5: [],
+      },
+      playerNames: this.names,
+      teamNames: this.teamNames,
       trumps: this.trumpSuit,
+      // TODO: only map those we need
       played: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.trickInProgress)])
-      ) as Record<PlayerName, Card | null>,
+        this.names.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.trickInProgress)])
+      ) as Partial<Record<PlayerName, Card | null>>,
       previous: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.previousTrick)])
-      ) as Record<PlayerName, Card | null>,
+        this.names.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.previousTrick)])
+      ) as Partial<Record<PlayerName, Card | null>>,
       ladder: {
         ...Object.fromEntries(
-          playerNameArr.map(
+          this.names.map(
             (name): [PlayerName, Card[]] => [
               name,
               this.ladders.filter(
@@ -809,14 +860,16 @@ export class GameState {
       playTo: this.playTo,
       capping: this.capping,
       // scores: {comp1: 0, player: 0, comp2: 0},
+      // or {team02: 0, team13: 0}
       scores: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).score])
-      ) as Record<PlayerName, number>,
+        this.teamNames.map((teamName): [TeamName, number] => [teamName, this.getTeamPlayer(teamName).score])
+      ),
+      // breakdown we want by player
       scoreBreakdownsPrevious: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, ScoreBreakdown] => [name, this.getPlayer(name).previousScore])
-      ) as Record<PlayerName, ScoreBreakdown>,
+        this.names.map((name): [PlayerName, ScoreBreakdown] => [name, this.getPlayer(name).previousScore])
+      ),
       holdingBonus: Object.fromEntries(
-        playerNameArr.map(
+        this.names.map(
           (name): [PlayerName, Record<string, number>] => [
             name,
             Object.fromEntries(
@@ -839,14 +892,16 @@ export class GameState {
 
 export interface GameStateForUI {
   hands: Record<PlayerName, Card[]>;
-  played: Record<PlayerName, Card | null>;
-  previous: Record<PlayerName, Card | null>;
+  playerNames: PlayerName[];
+  teamNames: TeamName[];
+  played: Partial<Record<PlayerName, Card | null>>;
+  previous: Partial<Record<PlayerName, Card | null>>;
   holdingBonus: Record<PlayerName, Record<string, number>>;
   ladder: Record<LadderPosition, Card[]>;
   penultimate: Card[];
   dead: Card[];
-  scores: Record<PlayerName, number>;
-  scoreBreakdownsPrevious: Record<PlayerName, ScoreBreakdown>;
+  scores: Partial<Record<TeamName, number>>;
+  scoreBreakdownsPrevious: Partial<Record<PlayerName, ScoreBreakdown>>;
   escalations: number;
   handNumber: number;
   trumps: Suit | null;
