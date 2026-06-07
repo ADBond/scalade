@@ -293,34 +293,82 @@ export class GameState {
     )[0];
   }
 
-  getTeamPlayers(teamName: TeamName): Player[] {
-    switch (teamName) {
+  getPlayerTeam(playerName: PlayerName): TeamName {
+    switch (playerName) {
       case 'player':
-        return [this.players[0]];
-      case 'team02':
-        return [this.players[0], this.players[2]];
-      case 'team024':
-        return [this.players[0], this.players[2], this.players[4]];
+        switch (this.numPlayers) {
+          case 3:
+          case 5:
+            return 'player';
+          case 4:
+            return 'team02';
+          case 6:
+            return 'team024';
+          default:
+            throw Error(`Unsupported player count: ${this.numPlayers}`);
+        }
       case 'comp1':
-        return [this.players[1]];
-      case 'team13':
-        return [this.players[1], this.players[3]];
-      case 'team135':
-        return [this.players[1], this.players[3], this.players[5]];
+        switch (this.numPlayers) {
+          case 3:
+          case 5:
+            return 'comp1';
+          case 4:
+            return 'team13';
+          case 6:
+            return 'team135';
+          default:
+            throw Error(`Unsupported player count: ${this.numPlayers}`);
+        } 
       case 'comp2':
-        return [this.players[2]];
+        switch (this.numPlayers) {
+          case 3:
+          case 5:
+            return 'comp2';
+          case 4:
+            return 'team02';
+          case 6:
+            return 'team024';
+          default:
+            throw Error(`Unsupported player count: ${this.numPlayers}`);
+        } 
       case 'comp3':
-        return [this.players[3]];
+        switch (this.numPlayers) {
+          case 5:
+            return 'comp3';
+          case 4:
+            return 'team13';
+          case 6:
+            return 'team135';
+          default:
+            throw Error(`Unsupported player count: ${this.numPlayers}`);
+        } 
       case 'comp4':
-        return [this.players[4]];
-      default:
-        throw Error(`Bad team: ${teamName}`);
+        switch (this.numPlayers) {
+          case 5:
+            return 'comp4';
+          case 6:
+            return 'team024';
+          default:
+            throw Error(`Unsupported player count: ${this.numPlayers}`);
+        } 
+      case 'comp5':
+        return 'team135';
     }
   }
 
+  getTeamPlayers(teamName: TeamName): Player[] {
+    return this.players.filter(
+      player => this.getPlayerTeam(player.name)
+    );
+  }
+
   getTeamPlayer(teamName: TeamName): Player {
-    return this.getTeamPlayers(teamName)[0];
     // get an arbitrary member of the team
+    return this.getTeamPlayers(teamName)[0];
+  }
+
+  getTeamScore(teamName: TeamName): number {
+    return this.getTeamPlayers(teamName).map(p => p.score).reduce((total, value) => total + value, 0);
   }
 
   private getPlayedCard(name: PlayerName, trick: [Card, Player][]): Card | null {
@@ -420,7 +468,12 @@ export class GameState {
   }
 
   get scores(): number[] {
-    return this.players.map(player => player.score);
+    return this.players.map(
+      player => {
+        const team = this.getPlayerTeam(player.name);
+        return this.getTeamScore(team);
+      }
+    );
   }
 
   trumpSuitFromLadders(): Suit {
@@ -871,7 +924,7 @@ export class GameState {
           (teamName): [TeamName, number] => {
             return [
               teamName,
-              this.getTeamPlayers(teamName).map(p => p.score).reduce((total, value) => total + value, 0),
+              this.getTeamScore(teamName),
             ]
           }
         )

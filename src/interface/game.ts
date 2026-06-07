@@ -3,7 +3,7 @@ import { Game } from "../game/game";
 import { GameConfig } from "../game/gamestate";
 
 let game: Game;
-const opp: AgentName = 'random';
+const opp: AgentName = 'ismcts1000';
 
 export function newGame(config: GameConfig): void {
     const playerNames: AgentName[] = ['human', ...Array(config.numPlayers - 1).fill(opp)];
