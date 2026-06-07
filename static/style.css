@@ -103,7 +103,7 @@ body {
 .game-board {
     position: relative;
     width: 800px;
-    height: 450px;
+    height: 500px;
     top: 10px;
     margin: 20px auto;
     border: 2px solid #fff;
@@ -159,8 +159,10 @@ body {
 .ladder.neutral {
     position: absolute;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 10px;
+    width: 80px;
+    height: 100%;
+    /* background-color: #070; */
 }
 
 .played,
@@ -179,9 +181,9 @@ body {
 }
 
 /* TODO: maybe */
-/* .ladder .card {
-    transform: scale(0.8);
-} */
+.ladder .card {
+    transform: scale(0.9);
+}
 
 .card {
     display: inline-block;
