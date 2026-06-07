@@ -141,7 +141,7 @@ body {
 }
 
 .player-area.comp1-4 {
-    top: 50px;
+    top: 100px;
     left: -10px;
 }
 
@@ -152,7 +152,7 @@ body {
 }
 
 .player-area.comp3-4 {
-    top: 50px;
+    top: 100px;
     right: -10px;
 }
 
@@ -177,6 +177,11 @@ body {
 .ladder {
     width: 400px;
 }
+
+/* TODO: maybe */
+/* .ladder .card {
+    transform: scale(0.8);
+} */
 
 .card {
     display: inline-block;
@@ -502,7 +507,7 @@ body {
 }
 
 #prev-comp1-4 {
-    top: 30px;
+    top: 45px;
     left: 0;
 }
 
@@ -513,7 +518,7 @@ body {
 }
 
 #prev-comp3-4 {
-    top: 30px;
+    top: 45px;
     right: 0;
 }
 
