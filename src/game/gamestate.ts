@@ -307,6 +307,7 @@ export class GameState {
           default:
             throw Error(`Unsupported player count: ${this.numPlayers}`);
         }
+        break;
       case 'comp1':
         switch (this.numPlayers) {
           case 3:
@@ -318,7 +319,8 @@ export class GameState {
             return 'team135';
           default:
             throw Error(`Unsupported player count: ${this.numPlayers}`);
-        } 
+        }
+        break;
       case 'comp2':
         switch (this.numPlayers) {
           case 3:
@@ -330,7 +332,8 @@ export class GameState {
             return 'team024';
           default:
             throw Error(`Unsupported player count: ${this.numPlayers}`);
-        } 
+        }
+        break;
       case 'comp3':
         switch (this.numPlayers) {
           case 5:
@@ -341,7 +344,8 @@ export class GameState {
             return 'team135';
           default:
             throw Error(`Unsupported player count: ${this.numPlayers}`);
-        } 
+        }
+        break;
       case 'comp4':
         switch (this.numPlayers) {
           case 5:
@@ -350,15 +354,17 @@ export class GameState {
             return 'team024';
           default:
             throw Error(`Unsupported player count: ${this.numPlayers}`);
-        } 
+        }
+        break;
       case 'comp5':
         return 'team135';
+        break;
     }
   }
 
   getTeamPlayers(teamName: TeamName): Player[] {
     return this.players.filter(
-      player => this.getPlayerTeam(player.name)
+      player => this.getPlayerTeam(player.name) === teamName
     );
   }
 
