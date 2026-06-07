@@ -6,7 +6,8 @@ let game: Game;
 const opp: AgentName = 'random';
 
 export function newGame(config: GameConfig): void {
-    game = new Game(opp, config);
+    const playerNames: AgentName[] = ['human', ...Array(config.numPlayers - 1).fill(opp)];
+    game = new Game(playerNames, config);
 }
 
 export function getGame(): Game {

@@ -30,11 +30,10 @@ export class Game {
   private playerNames: AgentName[];
 
   constructor(
-      opponent: AgentName,
+      playerNames: AgentName[],
       config: GameConfig = defaultConfig,
       private simulation: boolean = false,
     ) {
-    const playerNames: AgentName[] = ['human', ...Array(config.numPlayers - 1).fill(opponent)];
     this.gameID = randomID();
     this.state = new GameState(playerNames, config);
     this.currentLog = new GameLog(this.gameID, config, playerNames, this.simulation);
