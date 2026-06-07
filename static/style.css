@@ -485,17 +485,39 @@ body {
 }
 
 /* TODO: generalise for player counts */
-#prev-comp1 {
+#prev-comp1-3 {
     top: 0;
     left: 0;
 }
 
-#prev-comp2 {
+#prev-comp2-3 {
     top: 0;
     right: 0;
 }
 
-#prev-player {
+#prev-player-3 {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+}
+
+#prev-comp1-4 {
+    top: 30px;
+    left: 0;
+}
+
+#prev-comp2-4 {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+}
+
+#prev-comp3-4 {
+    top: 30px;
+    right: 0;
+}
+
+#prev-player-4 {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%) scale(0.75);

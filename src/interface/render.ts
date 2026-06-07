@@ -330,7 +330,7 @@ export async function renderState(state: GameStateForUI) {
     playedEl.appendChild(playedCardEl);
 
     const prevEl = document.createElement('div');
-    prevEl.id = `prev-${playerName}`;
+    prevEl.id = `prev-${playerName}-${numPlayers}`;
     prevEl.classList.add('prev-slot');
     prevAreaEl.appendChild(prevEl);
     const prevCard = state.previous[playerName as PlayerName]!;
