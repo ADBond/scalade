@@ -405,14 +405,11 @@ export async function renderState(state: GameStateForUI) {
       teamScoreEl.id = `score-${teamName}`;
       teamScoreEl.innerText = `${state.scores[teamName]!}`;
       currentScoresHolder.appendChild(teamScoreEl);
-    }
-  )
-  state.playerNames.forEach(
-    (playerName) => {
+
       const prevScoreEl = document.createElement('td');
-      prevScoreEl.id = `score-player-${playerName}`;
+      prevScoreEl.id = `score-player-${teamName}`;
       // TODO: need to translate to team prev instead for this
-      prevScoreEl.innerText = `(${state.scoreBreakdownsPrevious[playerName]!.score})`;
+      prevScoreEl.innerText = `(${state.scoresPrev[teamName]!})`;
       prevScoresHolder.appendChild(prevScoreEl);
     }
   )

@@ -1,6 +1,6 @@
 import { Card, SUITS, Suit, arbitrarySuit } from './card';
 import { Pack } from './pack';
-import { LadderPosition, Player, PlayerName, playerNameArr, TeamName } from './player';
+import { LadderPosition, Player, PlayerName, TeamName } from './player';
 import { ScoreBreakdown } from './scores';
 import { GameLog } from './log';
 import { Agent, AgentName, agentLookup } from './agent/agent';
@@ -293,26 +293,34 @@ export class GameState {
     )[0];
   }
 
-  getTeamPlayer(teamName: TeamName): Player {
-    // get an arbitrary member of the team
+  getTeamPlayers(teamName: TeamName): Player[] {
     switch (teamName) {
       case 'player':
+        return [this.players[0]];
       case 'team02':
+        return [this.players[0], this.players[2]];
       case 'team024':
-        return this.players[0];
+        return [this.players[0], this.players[2], this.players[4]];
       case 'comp1':
+        return [this.players[1]];
       case 'team13':
+        return [this.players[1], this.players[3]];
       case 'team135':
-        return this.players[1];
+        return [this.players[1], this.players[3], this.players[5]];
       case 'comp2':
-        return this.players[2];
+        return [this.players[2]];
       case 'comp3':
-        return this.players[3];
+        return [this.players[3]];
       case 'comp4':
-        return this.players[4];
+        return [this.players[4]];
       default:
         throw Error(`Bad team: ${teamName}`);
     }
+  }
+
+  getTeamPlayer(teamName: TeamName): Player {
+    return this.getTeamPlayers(teamName)[0];
+    // get an arbitrary member of the team
   }
 
   private getPlayedCard(name: PlayerName, trick: [Card, Player][]): Card | null {
@@ -859,7 +867,28 @@ export class GameState {
       // scores: {comp1: 0, player: 0, comp2: 0},
       // or {team02: 0, team13: 0}
       scores: Object.fromEntries(
-        this.teamNames.map((teamName): [TeamName, number] => [teamName, this.getTeamPlayer(teamName).score])
+        this.teamNames.map(
+          (teamName): [TeamName, number] => {
+            return [
+              teamName,
+              this.getTeamPlayers(teamName).map(p => p.score).reduce((total, value) => total + value, 0),
+            ]
+          }
+        )
+      ),
+      scoresPrev: Object.fromEntries(
+        this.teamNames.map(
+          (teamName): [TeamName, number] => {
+            return [
+              teamName,
+              this.getTeamPlayers(teamName).map(
+                p => p.previousScore.score
+              ).reduce(
+                (total, value) => total + value, 0
+              ),
+            ]
+          }
+        )
       ),
       // breakdown we want by player
       scoreBreakdownsPrevious: Object.fromEntries(
@@ -898,6 +927,7 @@ export interface GameStateForUI {
   penultimate: Card[];
   dead: Card[];
   scores: Partial<Record<TeamName, number>>;
+  scoresPrev: Partial<Record<TeamName, number>>;
   scoreBreakdownsPrevious: Partial<Record<PlayerName, ScoreBreakdown>>;
   escalations: number;
   handNumber: number;
