@@ -187,6 +187,38 @@ body {
     right: -10px;
 }
 
+/* 6-player */
+.player-area.player-6 {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-area.comp1-6 {
+    top: 280px;
+    left: -10px;
+}
+
+.player-area.comp2-6 {
+    top: 30px;
+    left: -10px;
+}
+
+.player-area.comp3-6 {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-area.comp4-6 {
+    top: 30px;
+    right: -10px;
+}
+
+.player-area.comp5-6 {
+    top: 280px;
+    right: -10px;
+}
 
 .ladder.neutral {
     position: absolute;
@@ -599,6 +631,40 @@ body {
     left: 50%;
     transform: translateX(-50%) scale(0.75);
 }
+
+/* 6-player */
+#prev-comp1-6 {
+    top: 120px;
+    left: 0;
+}
+
+#prev-comp2-6 {
+    top: 30px;
+    left: 0;
+}
+
+#prev-comp3-6 {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+}
+
+#prev-comp4-6 {
+    top: 30px;
+    right: 0;
+}
+
+#prev-comp5-6 {
+    top: 120px;
+    right: 0;
+}
+
+#prev-player-6 {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+}
+
 
 .prev-slot .card {
     margin: 2px;
