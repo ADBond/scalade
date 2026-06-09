@@ -9,7 +9,7 @@ declare const __COMMIT_HASH__: string;
 
 export class GameLog {
     // snapshots of all ladders, from before first trick to after last
-    // number is player index 0-2, fixed
+    // number is player index 0-(n-1), fixed
     // 0 is human player
     private ladders: [Card, number | null][][] = [];
     private hands: Card[][] = [];
@@ -17,8 +17,7 @@ export class GameLog {
     private spoils: Card[] = [];
     private deads: Card[] = [];
     private holdingMultipliers: [Suit, number][][] = [];
-    // TODO: generalise this if we ever generalise count in app
-    private playerCount: number = 3;
+    private playerCount: number;
     // this allows us to translate player index to position in hand
     public dealerIndex: number = -1;
     public handNumber: number = -1;
@@ -45,7 +44,9 @@ export class GameLog {
         private players: AgentName[],
         // mainly to help filter if we accidentally send off simulated data
         private simulated: boolean = false,
-    ) {}
+    ) {
+        this.playerCount = players.length;
+    }
 
     captureLadders(ladders: [Card, Player | null][]) {
         const sortedLadders: [Card, number | null][] = ladders.map(
