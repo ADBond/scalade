@@ -19,10 +19,10 @@ const defaultConfig: GameConfig = {
   trumpRule: 'mobile',
   escalations: 2,
   capping: 'uncapped',
+  numPlayers: 3,
 }
 
 export class Game {
-  private pack = new Pack();
   public state: GameState;
   public logs: GameLog[] = [];
   private currentLog: GameLog;

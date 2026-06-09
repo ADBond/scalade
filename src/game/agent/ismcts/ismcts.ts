@@ -108,6 +108,8 @@ function determiniseNaive(state: GameState, agent: ComputerAgent): GameState {
     }
     if (unknownCards.length !== 0) {
         console.log(`Error, leftover cards: ${unknownCards}`);
+        console.log(state);
+        console.log(newState);
         throw Error();
     }
     return newState;
@@ -127,6 +129,7 @@ export async function ismcts(
     // console.log(`ISMCTS called ${Math.random()}`);
     const initialPlayerIndex = rootState.currentPlayerIndex;
     const initialScores = zeroSum(rootState.scores);
+    const numPlayers = rootState.numPlayers;
     const rootNode = new ISMCTSNode(initialPlayerIndex);
     let maxDepth = 0;
     let depth;
@@ -156,6 +159,7 @@ export async function ismcts(
                 node = node.bestChildByUCB(legalMoves, c);
             }
             // console.log(state);
+            // console.log(node);
             state.moveFromIndex(node.move);
             if (justExpanded) {
                 break;
@@ -176,7 +180,7 @@ export async function ismcts(
         const rolloutRewards = state.scores;
         const rolloutZeroSum = zeroSum(rolloutRewards);
 
-        let result = [0.0, 0.0, 0.0];
+        let result = Array(numPlayers).fill(0.0);
         for (let j = 0; j < result.length; j++) {
             result[j] = rolloutZeroSum[j] - initialScores[j];
         }

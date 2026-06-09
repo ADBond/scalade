@@ -7,6 +7,12 @@ export class Pack {
     this.reset();
   }
 
+  clone(): Pack {
+    const clone = new Pack(this.minRank);
+    clone.cards = [...this.cards];
+    return clone;
+  }
+
   reset() {
     this.cards = this.getFullPack();
   }

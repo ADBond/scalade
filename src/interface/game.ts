@@ -1,10 +1,13 @@
+import { AgentName } from "../game/agent/agent";
 import { Game } from "../game/game";
 import { GameConfig } from "../game/gamestate";
 
 let game: Game;
+const opp: AgentName = 'ismcts1000';
 
 export function newGame(config: GameConfig): void {
-    game = new Game(['human', 'ismcts1000', 'ismcts1000'], config);
+    const playerNames: AgentName[] = ['human', ...Array(config.numPlayers - 1).fill(opp)];
+    game = new Game(playerNames, config);
 }
 
 export function getGame(): Game {

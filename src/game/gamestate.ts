@@ -1,6 +1,6 @@
 import { Card, SUITS, Suit, arbitrarySuit } from './card';
 import { Pack } from './pack';
-import { LadderPosition, Player, PlayerName, playerNameArr } from './player';
+import { LadderPosition, Player, PlayerName, TeamName } from './player';
 import { ScoreBreakdown } from './scores';
 import { GameLog } from './log';
 import { Agent, AgentName, agentLookup } from './agent/agent';
@@ -14,6 +14,7 @@ export type GameConfig = {
   trumpRule: GameMode,
   capping: BonusCapping,
   escalations: number,
+  numPlayers: number,
 }
 
 function copyConfig(config: GameConfig): GameConfig {
@@ -21,6 +22,7 @@ function copyConfig(config: GameConfig): GameConfig {
       trumpRule: config.trumpRule,
       capping: config.capping,
       escalations: config.escalations,
+      numPlayers: config.numPlayers,
     };
 }
 
@@ -65,11 +67,10 @@ class advanceSuitTracker {
 
 export class GameState {
   public players: Player[] = [];
-  public pack: Pack = new Pack();
+  public pack: Pack;
   public dealerIndex: number;
   public currentPlayerIndex: number;
   public finalTrickWinnerIndex: number;
-  public cardsPerHand: number = 12;  // TODO: dynamic
   public trickIndex: number;
   public trickInProgress: [Card, Player][] = [];
   public previousTrick: [Card, Player][] = [];
@@ -91,7 +92,7 @@ export class GameState {
 
   constructor(public playerNames: AgentName[], public config: GameConfig) {
     // TODO: more / flexi ??
-    const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2'];
+    const playerConfig: PlayerName[] = ['player', 'comp1', 'comp2', 'comp3', 'comp4', 'comp5'];
     const agents: Agent[] = playerNames.map((name) => agentLookup(name));
     this.players = playerNames.map(
       (name, i) => new Player(
@@ -100,10 +101,8 @@ export class GameState {
           agents[i],
           i,
         )
-    )
-    for (const name of playerNames) {
-      this.players.push();
-    }
+    );
+    this.pack = new Pack(this.minRank);
     this.rawLadders = this.getStartingLadders();
     // choose a random initial dealer
     this.dealerIndex = Math.floor(Math.random() * playerNames.length);
@@ -122,7 +121,7 @@ export class GameState {
       const clonedPlayers = Object.fromEntries(this.players.map(player => [player.name, player.clone()]));
 
       // copy remaining state
-      newState.pack = new Pack();
+      newState.pack = this.pack.clone();
       newState.dealerIndex = this.dealerIndex;
     
       newState.currentPlayerIndex = this.currentPlayerIndex;
@@ -181,7 +180,7 @@ export class GameState {
     // console.log(this);
     switch (state) {
       case 'initialiseGame':
-        this.dealCards(this.pack, log);
+        this.dealCards(log);
         break;
       case 'playCard':
         const moveIndex = await this.computerMove();
@@ -198,13 +197,42 @@ export class GameState {
         } else {
           this.previousSpoils = this.spoils.slice();
           this.dealerIndex = this.getNextPlayerIndex(this.dealerIndex);
-          this.dealCards(this.pack, log);
+          this.dealCards(log);
         }
         break;
       case 'gameComplete':
         break;
       default:
         // error!
+    }
+  }
+
+  get cardsPerHand(): number {
+    switch (this.numPlayers) {
+      case 3:
+        return 12;
+      case 4:
+        return 10;
+      case 5:
+        return 8;
+      case 6:
+        return 6;
+      default:
+        throw Error(`Unsupported player count: ${this.numPlayers}`);
+    }
+    
+  }
+
+  get minRank(): number {
+    switch (this.numPlayers) {
+      case 3:
+      case 6:
+        return 4;
+      case 4:
+      case 5:
+        return 3;
+      default:
+        throw Error(`Unsupported player count: ${this.numPlayers}`);
     }
   }
 
@@ -265,6 +293,90 @@ export class GameState {
     )[0];
   }
 
+  getPlayerTeam(playerName: PlayerName): TeamName {
+    switch (playerName) {
+      case 'player':
+        switch (this.numPlayers) {
+          case 3:
+          case 5:
+            return 'player';
+          case 4:
+            return 'team02';
+          case 6:
+            return 'team024';
+          default:
+            throw Error(`Unsupported player count: ${this.numPlayers}`);
+        }
+        break;
+      case 'comp1':
+        switch (this.numPlayers) {
+          case 3:
+          case 5:
+            return 'comp1';
+          case 4:
+            return 'team13';
+          case 6:
+            return 'team135';
+          default:
+            throw Error(`Unsupported player count: ${this.numPlayers}`);
+        }
+        break;
+      case 'comp2':
+        switch (this.numPlayers) {
+          case 3:
+          case 5:
+            return 'comp2';
+          case 4:
+            return 'team02';
+          case 6:
+            return 'team024';
+          default:
+            throw Error(`Unsupported player count: ${this.numPlayers}`);
+        }
+        break;
+      case 'comp3':
+        switch (this.numPlayers) {
+          case 5:
+            return 'comp3';
+          case 4:
+            return 'team13';
+          case 6:
+            return 'team135';
+          default:
+            throw Error(`Unsupported player count: ${this.numPlayers}`);
+        }
+        break;
+      case 'comp4':
+        switch (this.numPlayers) {
+          case 5:
+            return 'comp4';
+          case 6:
+            return 'team024';
+          default:
+            throw Error(`Unsupported player count: ${this.numPlayers}`);
+        }
+        break;
+      case 'comp5':
+        return 'team135';
+        break;
+    }
+  }
+
+  getTeamPlayers(teamName: TeamName): Player[] {
+    return this.players.filter(
+      player => this.getPlayerTeam(player.name) === teamName
+    );
+  }
+
+  getTeamPlayer(teamName: TeamName): Player {
+    // get an arbitrary member of the team
+    return this.getTeamPlayers(teamName)[0];
+  }
+
+  getTeamScore(teamName: TeamName): number {
+    return this.getTeamPlayers(teamName).map(p => p.score).reduce((total, value) => total + value, 0);
+  }
+
   private getPlayedCard(name: PlayerName, trick: [Card, Player][]): Card | null {
     const playerPlayedCards = trick.filter(
       ([_card, player]) => player.name === name
@@ -294,6 +406,25 @@ export class GameState {
 
   get numPlayers(): number {
     return this.players.length;
+  }
+
+  get names(): PlayerName[] {
+    return this.players.map(player => player.name);
+  }
+
+  get teamNames(): TeamName[] {
+    switch (this.numPlayers) {
+      case 3:
+        return ['player', 'comp1', 'comp2'];
+      case 4:
+        return ['team02', 'team13'];
+      case 5:
+        return ['player', 'comp1', 'comp2', 'comp3', 'comp4'];
+      case 6:
+        return ['team024', 'team135'];
+      default:
+        throw Error(`Unsupported player count: ${this.numPlayers}`);
+    } 
   }
 
   getNextPlayerIndex(playerIndex: number): number {
@@ -343,7 +474,12 @@ export class GameState {
   }
 
   get scores(): number[] {
-    return this.players.map(player => player.score);
+    return this.players.map(
+      player => {
+        const team = this.getPlayerTeam(player.name);
+        return this.getTeamScore(team);
+      }
+    );
   }
 
   trumpSuitFromLadders(): Suit {
@@ -570,8 +706,9 @@ export class GameState {
     }
   }
 
-  private dealCards(pack: Pack, log: GameLog | null, count: number = 12) {
+  private dealCards(log: GameLog | null) {
     console.log(`Dealing hand ${this.handNumber}`);
+    const count = this.cardsPerHand;
     const halfHandSizeRoundedUp = Math.ceil(count / 2);
     this.pack.reset()
     let remainingPack = this.pack.filterOut(this.pack.getFullPack(), this.ladderCards);
@@ -591,7 +728,7 @@ export class GameState {
     for (let i = 0; i < count; i++) {
       // for (const player of this.state.players) {
         // TODO: loop this properly!
-      for (let playerIndex = 0; playerIndex < 3; playerIndex++) {
+      for (let playerIndex = 0; playerIndex < this.numPlayers; playerIndex++) {
         const card = remainingPack.pop();
         if (card) this.giveCardToPlayer(playerIndex, card);
       }
@@ -746,17 +883,27 @@ export class GameState {
 
   getStateForUI(): GameStateForUI {
     return ({
-      hands: {comp1: [], player: this.currentState === "handComplete" ? [] : this.humanHand.slice(), comp2: []},
+      hands: {
+        comp1: [],
+        player: this.currentState === "handComplete" ? [] : this.humanHand.slice(),
+        comp2: [],
+        comp3: [],
+        comp4: [],
+        comp5: [],
+      },
+      playerNames: this.names,
+      teamNames: this.teamNames,
       trumps: this.trumpSuit,
+      // TODO: only map those we need
       played: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.trickInProgress)])
-      ) as Record<PlayerName, Card | null>,
+        this.names.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.trickInProgress)])
+      ) as Partial<Record<PlayerName, Card | null>>,
       previous: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.previousTrick)])
-      ) as Record<PlayerName, Card | null>,
+        this.names.map((name): [PlayerName, Card | null] => [name, this.getPlayedCard(name, this.previousTrick)])
+      ) as Partial<Record<PlayerName, Card | null>>,
       ladder: {
         ...Object.fromEntries(
-          playerNameArr.map(
+          this.names.map(
             (name): [PlayerName, Card[]] => [
               name,
               this.ladders.filter(
@@ -777,14 +924,37 @@ export class GameState {
       playTo: this.playTo,
       capping: this.capping,
       // scores: {comp1: 0, player: 0, comp2: 0},
+      // or {team02: 0, team13: 0}
       scores: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, number] => [name, this.getPlayer(name).score])
-      ) as Record<PlayerName, number>,
+        this.teamNames.map(
+          (teamName): [TeamName, number] => {
+            return [
+              teamName,
+              this.getTeamScore(teamName),
+            ]
+          }
+        )
+      ),
+      scoresPrev: Object.fromEntries(
+        this.teamNames.map(
+          (teamName): [TeamName, number] => {
+            return [
+              teamName,
+              this.getTeamPlayers(teamName).map(
+                p => p.previousScore.score
+              ).reduce(
+                (total, value) => total + value, 0
+              ),
+            ]
+          }
+        )
+      ),
+      // breakdown we want by player
       scoreBreakdownsPrevious: Object.fromEntries(
-        playerNameArr.map((name): [PlayerName, ScoreBreakdown] => [name, this.getPlayer(name).previousScore])
-      ) as Record<PlayerName, ScoreBreakdown>,
+        this.names.map((name): [PlayerName, ScoreBreakdown] => [name, this.getPlayer(name).previousScore])
+      ),
       holdingBonus: Object.fromEntries(
-        playerNameArr.map(
+        this.names.map(
           (name): [PlayerName, Record<string, number>] => [
             name,
             Object.fromEntries(
@@ -807,14 +977,17 @@ export class GameState {
 
 export interface GameStateForUI {
   hands: Record<PlayerName, Card[]>;
-  played: Record<PlayerName, Card | null>;
-  previous: Record<PlayerName, Card | null>;
+  playerNames: PlayerName[];
+  teamNames: TeamName[];
+  played: Partial<Record<PlayerName, Card | null>>;
+  previous: Partial<Record<PlayerName, Card | null>>;
   holdingBonus: Record<PlayerName, Record<string, number>>;
   ladder: Record<LadderPosition, Card[]>;
   penultimate: Card[];
   dead: Card[];
-  scores: Record<PlayerName, number>;
-  scoreBreakdownsPrevious: Record<PlayerName, ScoreBreakdown>;
+  scores: Partial<Record<TeamName, number>>;
+  scoresPrev: Partial<Record<TeamName, number>>;
+  scoreBreakdownsPrevious: Partial<Record<PlayerName, ScoreBreakdown>>;
   escalations: number;
   handNumber: number;
   trumps: Suit | null;

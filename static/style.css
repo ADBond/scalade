@@ -103,7 +103,7 @@ body {
 .game-board {
     position: relative;
     width: 800px;
-    height: 450px;
+    height: 580px;
     top: 10px;
     margin: 20px auto;
     border: 2px solid #fff;
@@ -118,27 +118,115 @@ body {
     width: 50%;
 }
 
-.player-area.player {
+/* 3-player */
+.player-area.player-3 {
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.player-area.comp1 {
+.player-area.comp1-3 {
     top: 20px;
     left: -10px;
 }
 
-.player-area.comp2 {
+.player-area.comp2-3 {
     top: 20px;
+    right: -10px;
+}
+
+/* 4-player */
+.player-area.player-4 {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-area.comp1-4 {
+    top: 100px;
+    left: -10px;
+}
+
+.player-area.comp2-4 {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-area.comp3-4 {
+    top: 100px;
+    right: -10px;
+}
+
+/* 5-player */
+.player-area.player-5 {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-area.comp1-5 {
+    top: 150px;
+    left: -10px;
+}
+
+.player-area.comp2-5 {
+    top: 10px;
+    right: 25%;
+    transform: translateX(-20%);
+}
+
+.player-area.comp3-5 {
+    top: 10px;
+    left: 25%;
+    transform: translateX(20%);
+}
+
+.player-area.comp4-5 {
+    top: 150px;
+    right: -10px;
+}
+
+/* 6-player */
+.player-area.player-6 {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-area.comp1-6 {
+    top: 280px;
+    left: -10px;
+}
+
+.player-area.comp2-6 {
+    top: 30px;
+    left: -10px;
+}
+
+.player-area.comp3-6 {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-area.comp4-6 {
+    top: 30px;
+    right: -10px;
+}
+
+.player-area.comp5-6 {
+    top: 280px;
     right: -10px;
 }
 
 .ladder.neutral {
     position: absolute;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 10px;
+    width: 80px;
+    height: 100%;
+    /* background-color: #070; */
 }
 
 .played,
@@ -154,6 +242,19 @@ body {
 
 .ladder {
     width: 400px;
+}
+
+.ladder .card {
+    transform: scale(0.95);
+    border: 4px solid #7021b9;
+}
+
+#player-areas .ladder .card {
+    margin-left: -50px;
+}
+
+#player-areas .ladder {
+    transform: translateX(25px);
 }
 
 .card {
@@ -326,6 +427,7 @@ body {
     width: 2%;
 }
 
+/* TODO: not these numbers! We can do better */
 #sb-table tbody td:nth-child(7),
 #sb-table tbody td:nth-child(13) {
     background-color: #eee;
@@ -452,7 +554,7 @@ body {
 .prev-area {
     position: relative;
     width: 100%;
-    height: 200px;
+    height: 275px;
 }
 
 .prev-slot {
@@ -461,21 +563,108 @@ body {
     transform-origin: center center;
 }
 
-#prev-comp1 {
+/* 3-player */
+#prev-comp1-3 {
     top: 0;
     left: 0;
 }
 
-#prev-comp2 {
+#prev-comp2-3 {
     top: 0;
     right: 0;
 }
 
-#prev-player {
+#prev-player-3 {
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+}
+
+/* 4-player */
+#prev-comp1-4 {
+    top: 45px;
+    left: 0;
+}
+
+#prev-comp2-4 {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+}
+
+#prev-comp3-4 {
+    top: 45px;
+    right: 0;
+}
+
+#prev-player-4 {
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+}
+
+/* 5-player */
+#prev-comp1-5 {
+    top: 100px;
+    left: 0;
+}
+
+#prev-comp2-5 {
+    top: 20px;
+    left: 20%;
+    transform: translateX(-25%) scale(0.75);
+}
+
+#prev-comp3-5 {
+    top: 20px;
+    right: 20%;
+    transform: translateX(25%) scale(0.75);
+}
+
+#prev-comp4-5 {
+    top: 100px;
+    right: 0;
+}
+
+#prev-player-5 {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%) scale(0.75);
 }
+
+/* 6-player */
+#prev-comp1-6 {
+    top: 120px;
+    left: 0;
+}
+
+#prev-comp2-6 {
+    top: 30px;
+    left: 0;
+}
+
+#prev-comp3-6 {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+}
+
+#prev-comp4-6 {
+    top: 30px;
+    right: 0;
+}
+
+#prev-comp5-6 {
+    top: 120px;
+    right: 0;
+}
+
+#prev-player-6 {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.75);
+}
+
 
 .prev-slot .card {
     margin: 2px;

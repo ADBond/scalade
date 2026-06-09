@@ -1,6 +1,6 @@
 import { createCardElement, createSuitElement } from './ui';
 import { GameStateForUI, GameMode, BonusCapping, state } from '../game/gamestate';
-import { LadderPosition, PlayerName, playerNameArr } from '../game/player';
+import { LadderPosition, PlayerName, TeamName } from '../game/player';
 import { onHumanPlay } from './api';
 import { ScoreBreakdown } from '../game/scores';
 import { SUITS, Suit } from '../game/card';
@@ -18,20 +18,90 @@ const cappingDisplay: Record<BonusCapping, string> = {
   uncapped: "Uncapped HM",
 }
 
-function scoreColgroups(): string {
+function displayNameTeam(team: TeamName, numPlayers: number): string {
+  switch (team) {
+    case 'player':
+      return 'Player';
+    case 'team02':
+      return 'Player & N';
+    case 'team024':
+      return 'Player & NW & NE';
+    case 'team13':
+      return 'E & W';
+    case 'team135':
+      return 'N & SW & SE';
+    case 'comp1':
+      return numPlayers === 3 ? 'West' : 'W';
+    case 'comp2':
+      return numPlayers === 3 ? 'East' : 'NW';
+    case 'comp3':
+      return 'NE';
+    case 'comp4':
+      return 'E';
+  }
+}
+
+function displayNamePlayer(player: PlayerName, numPlayers: number): string {
+  switch (player) {
+    case 'player':
+      return 'Player';
+    case 'comp1':
+      switch (numPlayers) {
+        case 3:
+        case 4:
+          return 'West';
+        case 5:
+          return 'W';
+        case 6:
+          return 'SW';
+      }
+    case 'comp2':
+      switch (numPlayers) {
+        case 3:
+        case 4:
+          return 'North';
+        case 5:
+        case 6:
+          return 'NW';
+      }
+    case 'comp3':
+      switch (numPlayers) {
+        case 4:
+          return 'East';
+        case 5:
+          return 'NE';
+        case 6:
+          return 'N';
+      }
+    case 'comp4':
+      switch (numPlayers) {
+        case 5:
+          return 'E';
+        case 6:
+          return 'NE';
+      }
+    case 'comp5':
+      return 'SE';
+  }
+  throw new Error(`Bad lookup: ${player}, ${numPlayers}`);
+}
+
+function scoreColgroups(playerNameArr: PlayerName[], numPlayers: number): string {
   const playerColgroupsArr = playerNameArr.map(
-    (playerName) => {
-      return `
+    (playerName, idx) => {
+      let colsStr = `
         <col class="sb-${playerName} sb-wide">
         <col class="sb-${playerName} sb-narrow">
         <col class="sb-${playerName} sb-wide">
         <col class="sb-${playerName} sb-narrow">
         <col class="sb-${playerName} sb-wide">
       `;
+      if (idx !== numPlayers - 1) {
+        colsStr += `<col class="sb-${playerName} sb-dummy">`;
+      }
+      return colsStr;
     }
   );
-  playerColgroupsArr[0] += `<col class="sb-player sb-dummy">`;
-  playerColgroupsArr[1] += `<col class="sb-comp1 sb-dummy">`;
   const playerColgroups = playerColgroupsArr.join("");
   return `
   <colgroup>
@@ -41,9 +111,12 @@ function scoreColgroups(): string {
   `
 }
 
-function scoreBreakdownHeaderRow(displayNameLookup: Record<PlayerName, string>): string{
-  const playerHeaders = Object.entries(displayNameLookup).map(
-    ([_playerName, displayName]) => `<th colspan=6>${displayName}</th>`
+function scoreBreakdownHeaderRow(playerNames: PlayerName[], numPlayers: number): string{
+  const playerHeaders = playerNames.map(
+    (playerName) => {
+      const displayName = displayNamePlayer(playerName, numPlayers);
+      return `<th colspan=6>${displayName}</th>`;
+    }
   ).join("");
   return `
     <tr>
@@ -53,8 +126,7 @@ function scoreBreakdownHeaderRow(displayNameLookup: Record<PlayerName, string>):
   `;
 }
 
-function scoreBreakdownSubHeaderRow(): string{
-  const numPlayers = 3;
+function scoreBreakdownSubHeaderRow(numPlayers: number): string{
   const playerHeaders = `
     <th>B</th>
     <th></th>
@@ -70,7 +142,7 @@ function scoreBreakdownSubHeaderRow(): string{
   `
 }
 
-function constructSuitRow(scoreDetails: Record<PlayerName, ScoreBreakdown>, suit: Suit){
+function constructSuitRow(scoreDetails: Partial<Record<PlayerName, ScoreBreakdown>>, suit: Suit){
   const playerCols = Object.entries(scoreDetails).map(
     ([_playerName, breakdown]) => {
       let cellContents: string[];
@@ -108,7 +180,7 @@ function constructSuitRow(scoreDetails: Record<PlayerName, ScoreBreakdown>, suit
   `;
 }
 
-function constructFTRow(scoreDetails: Record<PlayerName, ScoreBreakdown>){
+function constructFTRow(scoreDetails: Partial<Record<PlayerName, ScoreBreakdown>>){
   // TODO: bit awkward to keep this, and total, in sync with suitRow
   const playerCols = Object.entries(scoreDetails).map(
     ([_playerName, breakdown]) => {
@@ -147,7 +219,7 @@ function constructFTRow(scoreDetails: Record<PlayerName, ScoreBreakdown>){
   `;
 }
 
-function constructTotalRow(scoreDetails: Record<PlayerName, ScoreBreakdown>){
+function constructTotalRow(scoreDetails: Partial<Record<PlayerName, ScoreBreakdown>>){
   // TODO: bit awkward to keep this, and total, in sync with suitRow
   const playerCols = Object.entries(scoreDetails).map(
     ([_playerName, breakdown]) => {
@@ -186,22 +258,18 @@ function constructTotalRow(scoreDetails: Record<PlayerName, ScoreBreakdown>){
   `;
 }
 
-function renderScoreBreakdown(scoreDetails: Record<PlayerName, ScoreBreakdown>): void {
-  // TODO: can i put this more central, as we use it elsewhere
-  const displayNameLookup: Record<PlayerName, string> = {
-    player: 'Player',
-    comp1: 'Left',
-    comp2: 'Right',
-  };
-  const playerNames = Object.keys(displayNameLookup) as PlayerName[];
+function renderScoreBreakdown(scoreDetails: Partial<Record<PlayerName, ScoreBreakdown>>): void {
+
+  const playerNames = Object.keys(scoreDetails) as PlayerName[];
+  const numPlayers = Object.keys(scoreDetails).length;
   // is this the best way to construct this? not sure, but it is certainly _a_ way
   // too tedious to build in html by hand
   const breakdownTable = document.getElementById("sb-table")!;
   const tableInnardsHTML = `
-    ${scoreColgroups()}
+    ${scoreColgroups(playerNames, numPlayers)}
     <thead>
-    ${scoreBreakdownHeaderRow(displayNameLookup)}
-    ${scoreBreakdownSubHeaderRow()}
+    ${scoreBreakdownHeaderRow(playerNames, numPlayers)}
+    ${scoreBreakdownSubHeaderRow(numPlayers)}
     </thead>
     <tbody>
     ${SUITS.map(suit => constructSuitRow(scoreDetails, suit)).join("")}
@@ -229,29 +297,48 @@ export async function renderState(state: GameStateForUI) {
       createCardElement(card.toStringShort(), state.whoseTurn === "player" ? (() => onHumanPlay(state, card)) : undefined)
     )
   });
+  const numPlayers = state.playerNames.length;
 
-  ['player', 'comp1', 'comp2'].forEach(p => {
-    const playedEl = document.getElementById(`played-${p}`)!;
-    playedEl.innerHTML = '';
-    const card = state.played[p as PlayerName];
-    const el = createCardElement(card !== null ? card.toStringShort(): "");
-    el.classList.add('played-card');
-    playedEl.appendChild(el);
-  });
+  const playerAreaEl = document.getElementById('player-areas')!;
+  const prevAreaEl = document.getElementById('prev-area')!;
+  playerAreaEl.innerHTML = '';
+  prevAreaEl.innerHTML = '';
+  prevAreaEl.classList.add('prev-area');
 
-  ['player', 'comp1', 'comp2'].forEach(p => {
-    const prevEl = document.getElementById(`prev-${p}`)!;
-    prevEl.innerHTML = '';
-    const card = state.previous[p as PlayerName];
-    const el = createCardElement(card !== null ? card.toStringShort(): "");
-    el.classList.add('played-card');
-    prevEl.appendChild(el);
-  });
+  state.playerNames.forEach(playerName => {
+    const areaEl = document.createElement('div');
+    areaEl.classList.add(`player-area`);
+    areaEl.classList.add(`${playerName}-${numPlayers}`);
+    playerAreaEl.appendChild(areaEl);
 
-  ['player', 'comp1', 'comp2'].forEach(p => {
-    const bonusEl = document.getElementById(`hb-${p}`)!;
-    bonusEl.innerHTML = '';
-    const bonuses = state.holdingBonus[p as PlayerName];
+    const ladderEl = document.createElement('div');
+    ladderEl.id = `ladder-${playerName}`;
+    ladderEl.classList.add('ladder');
+    areaEl.appendChild(ladderEl);
+
+    const playedEl = document.createElement('div');
+    playedEl.id = `played-${playerName}`;
+    playedEl.classList.add('played');
+    areaEl.appendChild(playedEl);
+    const playedCard = state.played[playerName as PlayerName]!;
+    const playedCardEl = createCardElement(playedCard !== null ? playedCard.toStringShort(): "");
+    playedCardEl.classList.add('played-card');
+    playedEl.appendChild(playedCardEl);
+
+    const prevEl = document.createElement('div');
+    prevEl.id = `prev-${playerName}-${numPlayers}`;
+    prevEl.classList.add('prev-slot');
+    prevAreaEl.appendChild(prevEl);
+    const prevCard = state.previous[playerName as PlayerName]!;
+    const prevCardEl = createCardElement(prevCard !== null ? prevCard.toStringShort(): "");
+    prevCardEl.classList.add('played-card');
+    prevEl.appendChild(prevCardEl);
+
+    const bonusEl = document.createElement('div');
+    bonusEl.id = `hb-${playerName}`;
+    bonusEl.classList.add('holding-bonus');
+    areaEl.appendChild(bonusEl);
+    const bonuses = state.holdingBonus[playerName as PlayerName];
     for (const [suit, multiplier] of Object.entries(bonuses)) {
       for (let i = 0; i < multiplier; i++) {
         const suitEl = createSuitElement(suit);
@@ -261,7 +348,7 @@ export async function renderState(state: GameStateForUI) {
     }
   });
 
-  ['neutral', 'player', 'comp1', 'comp2'].forEach(p => {
+  ['neutral', ...state.playerNames].forEach(p => {
     const ladderEl = document.getElementById(`ladder-${p}`)!;
     const ladders = state.ladder;
     // sort ladder for consistent ordering - by suit
@@ -300,13 +387,29 @@ export async function renderState(state: GameStateForUI) {
   trumpEl.appendChild(createSuitElement(state.trumps ? state.trumps.toStringShort() : ""));
 
   // populate the scores in the UI
-  document.getElementById('score-player')!.innerText = `${state.scores.player}`;
-  document.getElementById('score-comp1')!.innerText = `${state.scores.comp1}`;
-  document.getElementById('score-comp2')!.innerText = `${state.scores.comp2}`;
+  const namesHolder = document.getElementById('scores-headers')!;
+  const currentScoresHolder = document.getElementById('scores-current')!;
+  const prevScoresHolder = document.getElementById('scores-previous')!;
+  namesHolder.innerHTML = '';
+  currentScoresHolder.innerHTML = '';
+  prevScoresHolder.innerHTML = '';
+  state.teamNames.forEach(
+    (teamName) => {
+      const headerEl = document.createElement('th');
+      headerEl.innerText = displayNameTeam(teamName, state.playerNames.length);
+      namesHolder.appendChild(headerEl);
+      const teamScoreEl = document.createElement('td');
+      teamScoreEl.id = `score-${teamName}`;
+      teamScoreEl.innerText = `${state.scores[teamName]!}`;
+      currentScoresHolder.appendChild(teamScoreEl);
 
-  document.getElementById('score-player-prev')!.innerText = `(${state.scoreBreakdownsPrevious.player.score})`;
-  document.getElementById('score-comp1-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp1.score})`;
-  document.getElementById('score-comp2-prev')!.innerText = `(${state.scoreBreakdownsPrevious.comp2.score})`;
+      const prevScoreEl = document.createElement('td');
+      prevScoreEl.id = `score-player-${teamName}`;
+      // TODO: need to translate to team prev instead for this
+      prevScoreEl.innerText = `(${state.scoresPrev[teamName]!})`;
+      prevScoresHolder.appendChild(prevScoreEl);
+    }
+  )
 
   renderScoreBreakdown(state.scoreBreakdownsPrevious);
 

@@ -2,9 +2,20 @@ import { Card, Suit, SUITS } from "./card";
 import { Agent } from "./agent/agent";
 import { ScoreBreakdown } from "./scores";
 
-export const playerNameArr = ['player', 'comp1', 'comp2'] as const;
+export const playerNameArr = ['player', 'comp1', 'comp2', 'comp3', 'comp4', 'comp5'] as const;
 export type PlayerName = typeof playerNameArr[number];
 export type LadderPosition = PlayerName | 'neutral';
+export type TeamName = (
+    'player' |
+    'comp1' |
+    'comp2' |
+    'comp3' |
+    'comp4' |
+    'team02' |
+    'team13' |
+    'team024' |
+    'team135'
+);
 
 class HoldingMultipliers {
     private holdingMultiplierArray: [Suit, number][]
