@@ -126,7 +126,7 @@ export async function ismcts(
     iterations: number = 10,
     c: number = 10,
 ): Promise<[number, ISMCTSNode]> {
-    console.log(`ISMCTS called ${Math.random()}`);
+    // console.log(`ISMCTS called ${Math.random()}`);
     const initialPlayerIndex = rootState.currentPlayerIndex;
     const initialScores = zeroSum(rootState.scores);
     const numPlayers = rootState.numPlayers;
@@ -134,7 +134,7 @@ export async function ismcts(
     let maxDepth = 0;
     let depth;
     for (let i = 0; i < iterations; i++) {
-        console.log(`ISMCTS iteration ${i}`);
+        // console.log(`ISMCTS iteration ${i}`);
         let state = determinise(rootState, rolloutAgent);
         let node = rootNode;
         // walk down tree until we get a node to expand
@@ -159,7 +159,7 @@ export async function ismcts(
                 node = node.bestChildByUCB(legalMoves, c);
             }
             // console.log(state);
-            console.log(node);
+            // console.log(node);
             state.moveFromIndex(node.move);
             if (justExpanded) {
                 break;
