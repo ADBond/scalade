@@ -31,14 +31,13 @@ function displayNameTeam(team: TeamName, numPlayers: number): string {
     case 'team135':
       return 'N & SW & SE';
     case 'comp1':
-      // TODO: better 5p names once we've settled on layout
-      return numPlayers === 3 ? 'West' : 'p1';
+      return numPlayers === 3 ? 'West' : 'W';
     case 'comp2':
-      return numPlayers === 3 ? 'East' : 'p2';
+      return numPlayers === 3 ? 'East' : 'NW';
     case 'comp3':
-      return 'p3';
+      return 'NE';
     case 'comp4':
-      return 'p4';
+      return 'E';
   }
 }
 
@@ -47,24 +46,21 @@ function displayNamePlayer(player: PlayerName, numPlayers: number): string {
     case 'player':
       return 'Player';
     case 'comp1':
-      // TODO: better 5p names once we've settled on layout
       switch (numPlayers) {
         case 3:
         case 4:
           return 'West';
         case 5:
-          return 'p1';
+          return 'W';
         case 6:
           return 'SW';
       }
     case 'comp2':
-      // TODO: better 5p names once we've settled on layout
       switch (numPlayers) {
         case 3:
         case 4:
           return 'North';
         case 5:
-          return 'p2';
         case 6:
           return 'NW';
       }
@@ -73,14 +69,14 @@ function displayNamePlayer(player: PlayerName, numPlayers: number): string {
         case 4:
           return 'East';
         case 5:
-          return 'p3';
+          return 'NE';
         case 6:
           return 'N';
       }
     case 'comp4':
       switch (numPlayers) {
         case 5:
-          return 'p4';
+          return 'E';
         case 6:
           return 'NE';
       }
