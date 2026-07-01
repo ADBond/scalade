@@ -16,7 +16,7 @@
     "@types/node": "^20.19.41",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
-    "vite": "^6.4.2"
+    "vite": "^8.1.0"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.22.0",
